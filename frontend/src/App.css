@@ -1,0 +1,259 @@
+/* App Root */
+.app-root {
+  width: 100%;
+  min-height: 100vh;
+}
+
+/* Auth / Home Pages */
+.home-container {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  padding: 2rem;
+  background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+}
+
+.home-header {
+  text-align: center;
+  margin-bottom: 2rem;
+}
+
+.home-header h1 {
+  font-size: 3.5rem;
+  color: var(--primary);
+  margin-bottom: 0.5rem;
+}
+
+.home-header h2 {
+  font-size: 1.75rem;
+  color: var(--text-muted);
+  font-weight: 400;
+}
+
+.auth-options {
+  display: flex;
+  gap: 1.5rem;
+  margin-top: 2.5rem;
+  justify-content: center;
+}
+
+.auth-options .btn-primary,
+.auth-options .btn-secondary {
+  padding: 1rem 3rem;
+  font-size: 1.35rem;
+  min-width: 160px;
+}
+
+/* Forms */
+.form-card {
+  background: var(--card-bg);
+  padding: 2.5rem;
+  border-radius: 12px;
+  box-shadow: var(--shadow-lg);
+  width: 100%;
+  max-width: 400px;
+}
+
+.form-title {
+  text-align: center;
+  margin-bottom: 1.5rem;
+  color: var(--text-main);
+  font-size: 1.8rem;
+  font-weight: 700;
+}
+
+.form-group {
+  margin-bottom: 1.5rem;
+  text-align: left;
+}
+
+.form-group label {
+  display: block;
+  font-size: 1.1rem;
+  font-weight: 600;
+  margin-bottom: 0.5rem;
+  color: var(--text-main);
+}
+
+.form-group input,
+.form-group select,
+.form-group textarea {
+  width: 100%;
+  padding: 0.85rem;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  font-size: 1.1rem;
+  background-color: var(--bg);
+  color: var(--text-main);
+  transition: all 0.2s;
+  font-family: inherit;
+}
+
+.form-group input:focus,
+.form-group select:focus,
+.form-group textarea:focus {
+  border-color: var(--primary);
+  outline: none;
+  background-color: white;
+  box-shadow: 0 0 0 3px rgba(49, 130, 206, 0.15);
+}
+
+/* Buttons */
+.btn-primary, .action-btn {
+  display: inline-block;
+  background-color: var(--primary);
+  color: white;
+  padding: 0.75rem 1.75rem;
+  border-radius: 6px;
+  font-size: 1rem;
+  font-weight: 600;
+  transition: all 0.2s ease;
+  text-align: center;
+  border: none;
+}
+
+.btn-primary:hover, .action-btn:hover {
+  background-color: var(--primary-hover);
+  transform: translateY(-1px);
+  box-shadow: var(--shadow-md);
+}
+
+.btn-secondary {
+  display: inline-block;
+  background-color: white;
+  color: var(--text-main);
+  padding: 0.75rem 1.75rem;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  font-size: 1rem;
+  font-weight: 500;
+  transition: all 0.2s;
+}
+
+.btn-secondary:hover {
+  background-color: var(--bg);
+  border-color: var(--text-muted);
+  transform: translateY(-1px);
+}
+
+/* Dashboard Layout & Components */
+.page-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 2rem;
+  padding-bottom: 1rem;
+  border-bottom: 1px solid var(--border);
+}
+
+.page-header h1 {
+  font-size: 1.8rem;
+  color: var(--text-main);
+}
+
+.dashboard-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 1.5rem;
+  margin-bottom: 2rem;
+}
+
+.dashboard-card {
+  background: var(--card-bg);
+  padding: 1.75rem;
+  border-radius: 10px;
+  box-shadow: var(--shadow-sm);
+  border: 1px solid var(--border);
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.dashboard-card:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-md);
+}
+
+.card-title {
+  display: block;
+  font-size: 1rem;
+  font-weight: 600;
+  margin-bottom: 0.75rem;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.card-value {
+  font-size: 2.75rem;
+  font-weight: 700;
+  color: var(--text-main);
+}
+
+.request-form-card {
+  background: var(--card-bg);
+  padding: 2.5rem;
+  border-radius: 10px;
+  box-shadow: var(--shadow-md);
+  margin-top: 1rem;
+  border: 1px solid var(--border);
+}
+
+.form-actions {
+  margin-top: 2rem;
+  display: flex;
+  justify-content: flex-end;
+}
+
+.home-footer {
+  margin-top: auto;
+  padding-top: 2rem;
+  color: var(--text-muted);
+  font-size: 0.9rem;
+}
+
+/* Badges */
+.cr-badge {
+    background-color: var(--student-theme);
+    color: white;
+    font-size: 0.75rem;
+    padding: 0.25rem 0.6rem;
+    border-radius: 9999px;
+    font-weight: 600;
+    vertical-align: middle;
+}
+
+
+/* Icon Buttons */
+.icon-btn {
+  background: none;
+  border: none;
+  padding: 8px;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: all 0.2s;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.icon-btn:hover {
+  background-color: rgba(0, 0, 0, 0.05);
+}
+
+.edit-btn {
+  color: #3182ce;
+  margin-right: 0.5rem;
+}
+
+.edit-btn:hover {
+  background-color: #ebf8ff;
+}
+
+.delete-btn {
+  color: #e53e3e;
+}
+
+.delete-btn:hover {
+  background-color: #fff5f5;
+}
