@@ -1,7 +1,7 @@
 import { Routes, Route } from 'react-router-dom'
 import Home from './components/Home'
 import Login from './components/Login'
-import Register from './components/Register'
+
 import AdminDashboard from './components/admin/AdminDashboard'
 import AdminHome from './components/admin/AdminHome'
 import AdminFaculty from './components/admin/AdminFaculty'
@@ -25,7 +25,7 @@ function App() {
       <Routes>
         <Route path="/" element={<Home />} />
         <Route path="/login" element={<Login />} />
-        <Route path="/register" element={<Register />} />
+        
         
         {/* Admin Module Routes */}
         <Route path="/admin" element={<AdminDashboard />}>
