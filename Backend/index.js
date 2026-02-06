@@ -4,6 +4,8 @@ import mongoose from 'mongoose';
 import cookieParser from 'cookie-parser';
 dotenv.config();
 import cors from 'cors';
+import swaggerUi from 'swagger-ui-express';
+import swaggerSpec from './swagger.js';
 import AuthRoute from './routes/auth.route.js';
 import FacultyRoute from './routes/faculty.route.js';
 import CourseRoute from './routes/course.route.js';
@@ -22,6 +24,9 @@ app.use(cors(
         credentials:true
     }
 ));
+
+// Swagger UI
+app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 
 app.use('/api/auth',AuthRoute);
 app.use('/api/faculty', FacultyRoute);
