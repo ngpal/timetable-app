@@ -8,6 +8,7 @@ import AuthRoute from './routes/auth.route.js';
 import FacultyRoute from './routes/faculty.route.js';
 import CourseRoute from './routes/course.route.js';
 import ClassroomRoute from './routes/classroom.route.js';
+import DashboardRoute from './routes/dashboard.route.js';
 
 const PORT = process.env.PORT;
 
@@ -26,6 +27,7 @@ app.use('/api/auth',AuthRoute);
 app.use('/api/faculty', FacultyRoute);
 app.use('/api/courses', CourseRoute);
 app.use('/api/rooms', ClassroomRoute);
+app.use('/api/dashboard', DashboardRoute);
 
 mongoose.connect(process.env.MONGO_URI)
 .then(() => console.log("Mongo Db is connected!"))
