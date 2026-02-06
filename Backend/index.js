@@ -6,6 +6,7 @@ dotenv.config();
 import cors from 'cors';
 import AuthRoute from './routes/auth.route.js';
 import FacultyRoute from './routes/faculty.route.js';
+import CourseRoute from './routes/course.route.js';
 
 const PORT = process.env.PORT;
 
@@ -22,6 +23,7 @@ app.use(cors(
 
 app.use('/api/auth',AuthRoute);
 app.use('/api/faculty', FacultyRoute);
+app.use('/api/courses', CourseRoute);
 
 mongoose.connect(process.env.MONGO_URI)
 .then(() => console.log("Mongo Db is connected!"))
