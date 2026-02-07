@@ -8,6 +8,7 @@ import AdminFaculty from './components/admin/AdminFaculty'
 import AdminCourses from './components/admin/AdminCourses'
 import AdminRooms from './components/admin/AdminRooms'
 import AdminTimetable from './components/admin/AdminTimetable'
+import AmritaTimetable from './components/admin/AmritaTimetable'
 import FacultyDashboard from './components/faculty/FacultyDashboard'
 import FacultyHome from './components/faculty/FacultyHome'
 import FacultyTimetable from './components/faculty/FacultyTimetable'
@@ -34,6 +35,7 @@ function App() {
           <Route path="courses" element={<AdminCourses />} />
           <Route path="rooms" element={<AdminRooms />} />
           <Route path="timetable" element={<AdminTimetable />} />
+          <Route path="amrita-timetable" element={<AmritaTimetable />} />
         </Route>
 
         {/* Faculty Module Routes */}

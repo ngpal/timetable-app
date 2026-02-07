@@ -15,7 +15,8 @@ const AdminDashboard = () => {
     { path: '/admin/faculty', label: 'Faculty Management' },
     { path: '/admin/courses', label: 'Course Management' },
     { path: '/admin/rooms', label: 'Classroom Management' },
-    { path: '/admin/timetable', label: 'Timetable Manager' },
+    { path: '/admin/timetable', label: 'Constraints & Settings' },
+    { path: '/admin/amrita-timetable', label: 'View Timetable' },
   ];
 
   return (

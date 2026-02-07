@@ -1,6 +1,6 @@
 import express from  'express';
 import { verifyAdmin } from '../utils/verifyUser.js';
-import { login } from '../controllers/auth.controller.js';
+import { login, logout } from '../controllers/auth.controller.js';
 
 const router = express.Router();
 
@@ -60,6 +60,19 @@ const router = express.Router();
  *         description: Server error
  */
 router.post('/login', login);
+
+/**
+ * @swagger
+ * /api/auth/logout:
+ *   post:
+ *     summary: Logout user
+ *     description: Clears authentication cookie and logs out the user
+ *     tags: [Authentication]
+ *     responses:
+ *       200:
+ *         description: Logged out successfully
+ */
+router.post('/logout', logout);
 
 /**
  * @swagger

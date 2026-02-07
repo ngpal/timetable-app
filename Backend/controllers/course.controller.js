@@ -12,32 +12,93 @@ export const getCourses = async (req, res) => {
 
 // POST: Add a new course
 export const addCourse = async (req, res) => {
-    const { courseCode, courseName, theoryHours, labHours, department } = req.body;
+    const { 
+        courseCode, 
+        courseName, 
+        credits,
+        semester,
+        year,
+        courseType,
+        electiveCategory,
+        theoryHours, 
+        labHours,
+        requiresLab,
+        labComponent,
+        department,
+        description
+    } = req.body;
+    
     try {
         const newCourse = await Course.create({
             courseCode,
             courseName,
-            theoryHours: Number(theoryHours),
-            labHours: Number(labHours),
-            department
+            credits: credits || 3,
+            semester,
+            year,
+            courseType: courseType || 'Core',
+            electiveCategory,
+            theoryHours: theoryHours || 0,
+            labHours: labHours || 0,
+            requiresLab: requiresLab || false,
+            labComponent: labComponent || {},
+            department,
+            description
         });
+        
         res.status(201).json(newCourse);
     } catch (error) {
-        res.status(400).json({ message: "Course Code must be unique" });
+        console.error('Add course error:', error);
+        res.status(400).json({ message: error.message || "Error creating course" });
     }
 };
 
 // PUT: Update course details
 export const updateCourse = async (req, res) => {
+    const { 
+        courseCode, 
+        courseName, 
+        credits,
+        semester,
+        year,
+        courseType,
+        electiveCategory,
+        theoryHours, 
+        labHours,
+        requiresLab,
+        labComponent,
+        department,
+        description
+    } = req.body;
+    
     try {
         const updatedCourse = await Course.findByIdAndUpdate(
-            req.params.id, 
-            req.body, 
+            req.params.id,
+            {
+                courseCode,
+                courseName,
+                credits,
+                semester,
+                year,
+                courseType,
+                electiveCategory,
+                theoryHours,
+                labHours,
+                requiresLab,
+                labComponent,
+                department,
+                description
+            },
             { new: true }
         );
+        
+        if (!updatedCourse) {
+            return res.status(404).json({ message: "Course not found" });
+        }
+        
         res.status(200).json(updatedCourse);
     } catch (error) {
-        res.status(500).json({ message: "Update failed" });
+        console.error('Update course error:', error);
+        res.status(500).json({ message: "Update failed", error: error.message });
     }
 };
 

@@ -13,7 +13,19 @@ export const getFaculty = async (req, res) => {
 
 // POST: Create User and Faculty profile
 export const addFaculty = async (req, res) => {
-    const { name, email, department, facultyType, designation } = req.body;
+    const { 
+        name, 
+        email, 
+        phoneNumber,
+        department, 
+        facultyType, 
+        designation,
+        isClassAdvisor,
+        specialization,
+        qualifications,
+        workConstraints
+    } = req.body;
+    
     try {
         // Create base user first
         const newUser = await User.create({ name, email, role: 'Faculty' });
@@ -21,14 +33,27 @@ export const addFaculty = async (req, res) => {
         // Create faculty details linked to that user
         const newFaculty = await Faculty.create({
             userId: newUser._id,
+            name,
+            email,
+            phoneNumber,
             department,
             facultyType,
-            designation
+            designation,
+            isClassAdvisor: isClassAdvisor || false,
+            specialization: specialization || [],
+            qualifications,
+            workConstraints: {
+                maxHoursPerWeek: workConstraints?.maxHoursPerWeek || 40,
+                maxHoursPerDay: workConstraints?.maxHoursPerDay || 6,
+                maxConsecutiveHours: workConstraints?.maxConsecutiveHours || 3,
+                availableDays: workConstraints?.availableDays || ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday']
+            }
         });
 
         res.status(201).json({ user: newUser, faculty: newFaculty });
     } catch (error) {
-        res.status(400).json({ message: "Error: Email exists or invalid data" });
+        console.error('Add faculty error:', error);
+        res.status(400).json({ message: error.message || "Error: Email exists or invalid data" });
     }
 };
 
@@ -48,7 +73,19 @@ export const deleteFaculty = async (req, res) => {
 
 // PUT: Update Faculty and linked User data
 export const updateFaculty = async (req, res) => {
-    const { name, email, department, facultyType, designation } = req.body;
+    const { 
+        name, 
+        email, 
+        phoneNumber,
+        department, 
+        facultyType, 
+        designation,
+        isClassAdvisor,
+        specialization,
+        qualifications,
+        workConstraints
+    } = req.body;
+    
     try {
         // Find the Faculty record first
         const facultyRecord = await Faculty.findById(req.params.id);
@@ -64,15 +101,28 @@ export const updateFaculty = async (req, res) => {
         const updatedFaculty = await Faculty.findByIdAndUpdate(
             req.params.id,
             {
+                name,
+                email,
+                phoneNumber,
                 department,
                 facultyType,
-                designation
+                designation,
+                isClassAdvisor,
+                specialization,
+                qualifications,
+                workConstraints: {
+                    maxHoursPerWeek: workConstraints?.maxHoursPerWeek || 40,
+                    maxHoursPerDay: workConstraints?.maxHoursPerDay || 6,
+                    maxConsecutiveHours: workConstraints?.maxConsecutiveHours || 3,
+                    availableDays: workConstraints?.availableDays || ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday']
+                }
             },
             { new: true }
         ).populate('userId', 'name email');
 
         res.status(200).json(updatedFaculty);
     } catch (error) {
+        console.error('Update faculty error:', error);
         res.status(500).json({ message: "Update failed", error: error.message });
     }
 };

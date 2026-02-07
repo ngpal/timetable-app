@@ -8,13 +8,19 @@ const AdminRooms = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const [editingRoom, setEditingRoom] = useState(null);
+  const [selectedFacilities, setSelectedFacilities] = useState([]);
 
   // Form state
   const [formData, setFormData] = useState({
     roomId: '',
-    roomName: '',
+    building: '',
+    floor: '',
+    block: '',
     roomType: 'Classroom',
-    capacity: 0
+    capacity: 60,
+    labType: '',
+    facilities: [],
+    isAvailable: true
   });
 
   // Fetch rooms on component mount
@@ -36,11 +42,21 @@ const AdminRooms = () => {
   };
 
   const handleInputChange = (e) => {
-    const { name, value } = e.target;
+    const { name, value, type, checked } = e.target;
     setFormData(prev => ({
       ...prev,
-      [name]: value
+      [name]: type === 'checkbox' ? checked : (type === 'number' ? parseInt(value) || 0 : value)
     }));
+  };
+
+  const handleFacilityToggle = (facility) => {
+    setFormData(prev => {
+      const facilities = prev.facilities || [];
+      const newFacilities = facilities.includes(facility)
+        ? facilities.filter(f => f !== facility)
+        : [...facilities, facility];
+      return { ...prev, facilities: newFacilities };
+    });
   };
 
   const handleSubmit = async (e) => {
@@ -74,9 +90,14 @@ const AdminRooms = () => {
     setEditingRoom(room);
     setFormData({
       roomId: room.roomId || '',
-      roomName: room.roomName || '',
+      building: room.building || '',
+      floor: room.floor || '',
+      block: room.block || '',
       roomType: room.roomType || 'Classroom',
-      capacity: room.capacity || 0
+      capacity: room.capacity || 60,
+      labType: room.labType || '',
+      facilities: room.facilities || [],
+      isAvailable: room.isAvailable !== undefined ? room.isAvailable : true
     });
     setShowForm(true);
   };
@@ -101,9 +122,14 @@ const AdminRooms = () => {
   const resetForm = () => {
     setFormData({
       roomId: '',
-      roomName: '',
+      building: '',
+      floor: '',
+      block: '',
       roomType: 'Classroom',
-      capacity: 0
+      capacity: 60,
+      labType: '',
+      facilities: [],
+      isAvailable: true
     });
     setEditingRoom(null);
     setError(null);
@@ -154,41 +180,178 @@ const AdminRooms = () => {
                 required 
               />
             </div>
-            <div className="form-group">
-              <label>Room Name</label>
-              <input 
-                type="text" 
-                name="roomName"
-                placeholder="e.g. Seminar Hall" 
-                value={formData.roomName}
-                onChange={handleInputChange}
-                required 
-              />
+            <div style={{display: 'flex', gap: '1rem'}}>
+              <div className="form-group" style={{flex: 1}}>
+                <label>Building</label>
+                <select 
+                  name="building"
+                  value={formData.building}
+                  onChange={handleInputChange}
+                  required
+                >
+                  <option value="">Select Building</option>
+                  <option value="ABIII">ABIII</option>
+                  <option value="AB-I">AB-I</option>
+                  <option value="AB-II">AB-II</option>
+                  <option value="TAG">TAG</option>
+                  <option value="Library">Library</option>
+                </select>
+              </div>
+              <div className="form-group" style={{flex: 1}}>
+                <label>Floor</label>
+                <select 
+                  name="floor"
+                  value={formData.floor}
+                  onChange={handleInputChange}
+                >
+                  <option value="">Select Floor</option>
+                  <option value="GF">Ground Floor (GF)</option>
+                  <option value="FF">First Floor (FF)</option>
+                  <option value="SF">Second Floor (SF)</option>
+                  <option value="TF">Third Floor (TF)</option>
+                  <option value="FoF">Fourth Floor (FoF)</option>
+                </select>
+              </div>
+              <div className="form-group" style={{flex: 1}}>
+                <label>Block</label>
+                <input 
+                  type="text" 
+                  name="block"
+                  placeholder="e.g., C, D, E" 
+                  value={formData.block}
+                  onChange={handleInputChange}
+                  maxLength="2"
+                />
+              </div>
             </div>
-            <div className="form-group">
-              <label>Capacity</label>
-              <input 
-                type="number" 
-                name="capacity"
-                placeholder="Enter seating capacity" 
-                min="1"
-                value={formData.capacity}
-                onChange={handleInputChange}
-                required 
-              />
+
+            <div style={{display: 'flex', gap: '1rem'}}>
+              <div className="form-group" style={{flex: 1}}>
+                <label>Room Type</label>
+                <select 
+                  name="roomType"
+                  value={formData.roomType}
+                  onChange={handleInputChange}
+                  required
+                >
+                  <option value="Classroom">Classroom</option>
+                  <option value="Lab">Lab</option>
+                  <option value="Computer Lab">Computer Lab</option>
+                  <option value="Hardware Lab">Hardware Lab</option>
+                  <option value="Seminar Hall">Seminar Hall</option>
+                  <option value="Auditorium">Auditorium</option>
+                </select>
+              </div>
+              <div className="form-group" style={{flex: 1}}>
+                <label>Capacity</label>
+                <input 
+                  type="number" 
+                  name="capacity"
+                  placeholder="Enter seating capacity" 
+                  min="1"
+                  value={formData.capacity}
+                  onChange={handleInputChange}
+                  required 
+                />
+              </div>
             </div>
+
+            {(formData.roomType.includes('Lab')) && (
+              <div className="form-group">
+                <label>Lab Type</label>
+                <select 
+                  name="labType"
+                  value={formData.labType}
+                  onChange={handleInputChange}
+                >
+                  <option value="">Select Lab Type</option>
+                  <option value="CP LAB">Computer Programming Lab (CP LAB)</option>
+                  <option value="HW LAB">Hardware Lab (HW LAB)</option>
+                  <option value="NETWORK LAB">Network Lab</option>
+                  <option value="ELECTRONICS LAB">Electronics Lab</option>
+                  <option value="RESEARCH LAB">Research Lab</option>
+                </select>
+              </div>
+            )}
+
             <div className="form-group">
-              <label>Type</label>
-              <select 
-                name="roomType"
-                value={formData.roomType}
-                onChange={handleInputChange}
-                required
-              >
-                <option value="Classroom">Classroom</option>
-                <option value="Lab">Lab</option>
-              </select>
+              <label style={{display: 'block', marginBottom: '0.75rem'}}>Facilities</label>
+              <div style={{
+                display: 'grid',
+                gridTemplateColumns: 'repeat(3, 1fr)',
+                gap: '0.75rem',
+                marginTop: '0.5rem'
+              }}>
+                {['Projector', 'Whiteboard', 'AC', 'Computers', 'Smart Board', 'Audio System'].map(facility => (
+                  <label key={facility} style={{
+                    display: 'flex', 
+                    alignItems: 'center', 
+                    cursor: 'pointer',
+                    padding: '0.5rem',
+                    borderRadius: '6px',
+                    transition: 'background-color 0.2s'
+                  }}>
+                    <input 
+                      type="checkbox"
+                      checked={formData.facilities?.includes(facility)}
+                      onChange={() => handleFacilityToggle(facility)}
+                      style={{
+                        marginRight: '0.5rem',
+                        marginTop: '0',
+                        cursor: 'pointer',
+                        width: '16px',
+                        height: '16px'
+                      }}
+                    />
+                    <span>{facility}</span>
+                  </label>
+                ))}
+              </div>
             </div>
+
+            <div className="form-group">
+              <label style={{
+                display: 'flex',
+                alignItems: 'center',
+                cursor: 'pointer',
+                padding: '0.5rem',
+                borderRadius: '6px',
+                backgroundColor: '#f0f9ff',
+                border: '1px solid #bae6fd'
+              }}>
+                <input 
+                  type="checkbox"
+                  name="isAvailable"
+                  checked={formData.isAvailable}
+                  onChange={handleInputChange}
+                  style={{
+                    marginRight: '0.5rem',
+                    marginTop: '0',
+                    cursor: 'pointer',
+                    width: '16px',
+                    height: '16px'
+                  }}
+                />
+                <span style={{fontWeight: '500'}}>Room is Available</span>
+              </label>
+            </div>
+
+            <div style={{
+              padding: '0.75rem',
+              backgroundColor: '#f0f9ff',
+              border: '1px solid #bae6fd',
+              borderRadius: '6px',
+              marginTop: '1rem'
+            }}>
+              <small style={{color: '#0369a1'}}>
+                <strong>Note:</strong> Full Room ID will be auto-generated as: {formData.building}
+                {formData.floor && ` - ${formData.floor}`}
+                {formData.block && `-${formData.block}`}
+                {formData.roomType.includes('Lab') && formData.labType && ` ${formData.labType}`}
+                {` ${formData.roomId || '[Room Number]'}`}
+              </small>
+            </div>
+
             <div className="form-actions">
               <button 
                 type="button" 

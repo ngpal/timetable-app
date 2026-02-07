@@ -10,33 +10,101 @@ export const getClassrooms = async (req, res) => {
     }
 };
 
-// POST add new room
+// POST: Add a new classroom
 export const addClassroom = async (req, res) => {
-    const { roomId, roomName, roomType, capacity } = req.body;
+    const { 
+        roomId, 
+        building,
+        floor,
+        block,
+        roomType, 
+        capacity,
+        labType,
+        facilities,
+        isAvailable
+    } = req.body;
+    
     try {
-        const newRoom = await Classroom.create({
+        // Auto-generate fullRoomId
+        let fullRoomId = building;
+        if (floor) fullRoomId += ` - ${floor}`;
+        if (block) fullRoomId += `-${block}`;
+        if (roomType === 'Lab' || roomType === 'Computer Lab') {
+            fullRoomId += ` ${labType || 'LAB'}`;
+        }
+        fullRoomId += ` ${roomId}`;
+        
+        const newClassroom = await Classroom.create({
             roomId,
-            roomName,
+            roomName: fullRoomId, // Auto-generate from fullRoomId
+            building,
+            floor,
+            block,
+            fullRoomId,
             roomType,
-            capacity: Number(capacity)
+            capacity: capacity || 60,
+            labType,
+            facilities: facilities || [],
+            isAvailable: isAvailable !== undefined ? isAvailable : true
         });
-        res.status(201).json(newRoom);
+        
+        res.status(201).json(newClassroom);
     } catch (error) {
-        res.status(400).json({ message: "Room ID must be unique" });
+        console.error('Add classroom error:', error);
+        res.status(400).json({ message: error.message || "Error creating classroom" });
     }
 };
 
-// PUT update room
+// PUT: Update classroom details
 export const updateClassroom = async (req, res) => {
+    const { 
+        roomId, 
+        building,
+        floor,
+        block,
+        roomType, 
+        capacity,
+        labType,
+        facilities,
+        isAvailable
+    } = req.body;
+    
     try {
-        const updatedRoom = await Classroom.findByIdAndUpdate(
-            req.params.id, 
-            req.body, 
+        // Auto-generate fullRoomId
+        let fullRoomId = building;
+        if (floor) fullRoomId += ` - ${floor}`;
+        if (block) fullRoomId += `-${block}`;
+        if (roomType === 'Lab' || roomType === 'Computer Lab') {
+            fullRoomId += ` ${labType || 'LAB'}`;
+        }
+        fullRoomId += ` ${roomId}`;
+        
+        const updatedClassroom = await Classroom.findByIdAndUpdate(
+            req.params.id,
+            {
+                roomId,
+                roomName: fullRoomId, // Auto-generate from fullRoomId
+                building,
+                floor,
+                block,
+                fullRoomId,
+                roomType,
+                capacity,
+                labType,
+                facilities,
+                isAvailable
+            },
             { new: true }
         );
-        res.status(200).json(updatedRoom);
+        
+        if (!updatedClassroom) {
+            return res.status(404).json({ message: "Classroom not found" });
+        }
+        
+        res.status(200).json(updatedClassroom);
     } catch (error) {
-        res.status(500).json({ message: "Update failed" });
+        console.error('Update classroom error:', error);
+        res.status(500).json({ message: "Update failed", error: error.message });
     }
 };
 
