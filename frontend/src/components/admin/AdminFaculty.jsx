@@ -449,7 +449,11 @@ const AdminFaculty = () => {
                     <td>{faculty.phoneNumber || '-'}</td>
                     <td>{faculty.department}</td>
                     <td>{faculty.designation}</td>
-                    <td><span className="status-badge status-active">{faculty.facultyType}</span></td>
+                    <td>
+                      <span className="status-badge status-active" style={{whiteSpace: 'nowrap'}}>
+                        {faculty.facultyType}
+                      </span>
+                    </td>
                     <td style={{maxWidth: '150px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap'}}>
                       {Array.isArray(faculty.specialization) && faculty.specialization.length > 0
                         ? faculty.specialization.join(', ')
