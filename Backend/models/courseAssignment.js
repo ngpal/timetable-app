@@ -47,8 +47,8 @@ const courseAssignmentSchema = new mongoose.Schema({
         courseName: { type: String, required: true },
         courseType: { 
             type: String, 
-            enum: ['Theory', 'Lab', 'Elective', 'Project'],
-            default: 'Theory'
+            enum: ['Core', 'Elective', 'Professional Elective', 'Open Elective', 'Lab', 'Project', 'Seminar'],
+            default: 'Core'
         },
         credits: { type: Number, default: 3 },
         faculty: [{

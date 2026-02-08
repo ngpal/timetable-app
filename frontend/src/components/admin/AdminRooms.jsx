@@ -398,7 +398,7 @@ const AdminRooms = () => {
                 {rooms.map((room) => (
                   <tr key={room._id}>
                     <td>{room.roomId}</td>
-                    <td>{room.roomName}</td>
+                    <td style={{fontWeight: '500'}}>{room.fullRoomId || room.roomName || '-'}</td>
                     <td>
                       <span className={`status-badge ${room.roomType === 'Lab' ? 'status-inactive' : 'status-active'}`}>
                         {room.roomType}

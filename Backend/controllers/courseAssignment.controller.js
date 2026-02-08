@@ -4,11 +4,12 @@ import CourseAssignment from '../models/courseAssignment.js';
 export const getAllCourseAssignments = async (req, res) => {
     try {
         const assignments = await CourseAssignment.find()
-            .populate('courses.faculty.facultyId', 'userId department designation')
-            .populate('classAdvisors.facultyId', 'userId department')
+            .populate('courses.faculty.facultyId', 'name department designation')
+            .populate('classAdvisors.facultyId', 'name department')
             .sort({ createdAt: -1 });
         res.status(200).json(assignments);
     } catch (error) {
+        console.error('Get all assignments error:', error);
         res.status(500).json({ message: 'Error fetching course assignments', error: error.message });
     }
 };
@@ -25,8 +26,8 @@ export const getCourseAssignment = async (req, res) => {
             section,
             isActive: true
         })
-        .populate('courses.faculty.facultyId', 'userId department designation')
-        .populate('classAdvisors.facultyId', 'userId department');
+        .populate('courses.faculty.facultyId', 'name department designation')
+        .populate('classAdvisors.facultyId', 'name department');
         
         if (!assignment) {
             return res.status(404).json({ 
@@ -36,6 +37,7 @@ export const getCourseAssignment = async (req, res) => {
         
         res.status(200).json(assignment);
     } catch (error) {
+        console.error('Get assignment error:', error);
         res.status(500).json({ message: 'Error fetching course assignment', error: error.message });
     }
 };
@@ -43,19 +45,28 @@ export const getCourseAssignment = async (req, res) => {
 // Create new course assignment
 export const createCourseAssignment = async (req, res) => {
     try {
+        console.log('Creating course assignment with data:', JSON.stringify(req.body, null, 2));
+        
         const assignmentData = {
             ...req.body,
-            createdBy: req.user?.id
+            createdBy: req.user?.id || null
         };
         
         const newAssignment = new CourseAssignment(assignmentData);
         const savedAssignment = await newAssignment.save();
+        
+        console.log('Course assignment created successfully:', savedAssignment._id);
         
         res.status(201).json({
             message: 'Course assignment created successfully',
             assignment: savedAssignment
         });
     } catch (error) {
+        console.error('Error creating course assignment:', error);
+        console.error('Error details:', error.message);
+        if (error.errors) {
+            console.error('Validation errors:', JSON.stringify(error.errors, null, 2));
+        }
         res.status(500).json({ message: 'Error creating course assignment', error: error.message });
     }
 };
@@ -63,6 +74,9 @@ export const createCourseAssignment = async (req, res) => {
 // Update course assignment
 export const updateCourseAssignment = async (req, res) => {
     try {
+        console.log('Updating course assignment:', req.params.id);
+        console.log('Update data:', JSON.stringify(req.body, null, 2));
+        
         const updatedAssignment = await CourseAssignment.findByIdAndUpdate(
             req.params.id,
             req.body,
@@ -73,11 +87,18 @@ export const updateCourseAssignment = async (req, res) => {
             return res.status(404).json({ message: 'Course assignment not found' });
         }
         
+        console.log('Course assignment updated successfully');
+        
         res.status(200).json({
             message: 'Course assignment updated successfully',
             assignment: updatedAssignment
         });
     } catch (error) {
+        console.error('Error updating course assignment:', error);
+        console.error('Error details:', error.message);
+        if (error.errors) {
+            console.error('Validation errors:', JSON.stringify(error.errors, null, 2));
+        }
         res.status(500).json({ message: 'Error updating course assignment', error: error.message });
     }
 };

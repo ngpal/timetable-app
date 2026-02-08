@@ -57,7 +57,6 @@ courseSchema.virtual('totalLoad').get(function() {
 });
 
 // Index for quick lookups
-courseSchema.index({ courseCode: 1 });
 courseSchema.index({ department: 1, semester: 1 });
 
 const Course = mongoose.model('Course', courseSchema);

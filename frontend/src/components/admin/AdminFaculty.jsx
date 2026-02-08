@@ -432,39 +432,53 @@ const AdminFaculty = () => {
                 <tr>
                   <th>Name</th>
                   <th>Email</th>
-                  <th>Phone</th>
                   <th>Department</th>
                   <th>Designation</th>
                   <th>Type</th>
                   <th>Specialization</th>
-                  <th>Class Advisor</th>
-                  <th>Actions</th>
+                  <th style={{width: '80px', textAlign: 'center'}}>Advisor</th>
+                  <th style={{width: '100px'}}>Actions</th>
                 </tr>
               </thead>
               <tbody>
                 {facultyList.map((faculty) => (
                   <tr key={faculty._id}>
-                    <td>{faculty.name || faculty.userId?.name || 'N/A'}</td>
-                    <td>{faculty.email || faculty.userId?.email || 'N/A'}</td>
-                    <td>{faculty.phoneNumber || '-'}</td>
+                    <td style={{fontWeight: '500'}}>{faculty.name || faculty.userId?.name || 'N/A'}</td>
+                    <td style={{fontSize: '0.8rem'}}>{faculty.email || faculty.userId?.email || 'N/A'}</td>
                     <td>{faculty.department}</td>
-                    <td>{faculty.designation}</td>
+                    <td style={{fontSize: '0.8rem'}}>{faculty.designation}</td>
                     <td>
-                      <span className="status-badge status-active" style={{whiteSpace: 'nowrap'}}>
+                      <span className="status-badge status-active" style={{whiteSpace: 'nowrap', fontSize: '0.75rem'}}>
                         {faculty.facultyType}
                       </span>
                     </td>
-                    <td style={{maxWidth: '150px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap'}}>
-                      {Array.isArray(faculty.specialization) && faculty.specialization.length > 0
-                        ? faculty.specialization.join(', ')
-                        : '-'}
+                    <td style={{maxWidth: '180px'}}>
+                      {Array.isArray(faculty.specialization) && faculty.specialization.length > 0 ? (
+                        <div style={{
+                          display: 'flex',
+                          flexWrap: 'wrap',
+                          gap: '0.25rem'
+                        }}>
+                          {faculty.specialization.map((spec, idx) => (
+                            <span
+                              key={idx}
+                              style={{
+                                padding: '0.125rem 0.4rem',
+                                backgroundColor: '#e0e7ff',
+                                color: '#4338ca',
+                                borderRadius: '4px',
+                                fontSize: '0.7rem',
+                                whiteSpace: 'nowrap'
+                              }}
+                            >
+                              {spec}
+                            </span>
+                          ))}
+                        </div>
+                      ) : '-'}
                     </td>
-                    <td>
-                      {faculty.isClassAdvisor && (
-                        <span className="status-badge" style={{backgroundColor: '#48bb78', color: 'white'}}>
-                          ✓ Advisor
-                        </span>
-                      )}
+                    <td style={{textAlign: 'center', fontSize: '1.25rem', color: '#48bb78'}}>
+                      {faculty.isClassAdvisor && '✓'}
                     </td>
                     <td>
                       <button 

@@ -63,7 +63,6 @@ const facultySchema = new mongoose.Schema({
 }, { timestamps: true });
 
 // Index for quick lookups
-facultySchema.index({ email: 1 });
 facultySchema.index({ department: 1 });
 
 const Faculty = mongoose.model('Faculty', facultySchema);
