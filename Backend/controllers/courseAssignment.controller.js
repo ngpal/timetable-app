@@ -26,6 +26,7 @@ export const getCourseAssignment = async (req, res) => {
             section,
             isActive: true
         })
+        .sort({ createdAt: -1 }) // Get the latest one (fixes duplicate S3/S5 ambiguity)
         .populate('courses.faculty.facultyId', 'name department designation')
         .populate('classAdvisors.facultyId', 'name department');
         

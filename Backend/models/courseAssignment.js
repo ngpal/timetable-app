@@ -97,6 +97,14 @@ const courseAssignmentSchema = new mongoose.Schema({
     createdBy: { 
         type: mongoose.Schema.Types.ObjectId, 
         ref: 'User' 
+    },
+    
+    // Generation Metadata
+    generationStats: {
+        fitness: { type: Number },
+        generations: { type: Number },
+        hardViolations: { type: Number },
+        generatedAt: { type: Date }
     }
 }, { timestamps: true });
 

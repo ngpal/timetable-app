@@ -11,23 +11,32 @@ import { HARD_CONSTRAINTS, SOFT_CONSTRAINTS, DAYS_OF_WEEK, normalizeSoftScore } 
  * Validate all hard constraints
  * @param {Object} courseAssignment - Course assignment with timetableSlots
  * @param {Array} allAssignments - All course assignments (for cross-section conflicts)
+ * @param {Object} config - Configuration object with enabled/disabled constraints
  * @returns {Array} - Array of violations { constraintId, description, details }
  */
-export function validateHardConstraints(courseAssignment, allAssignments = []) {
+export function validateHardConstraints(courseAssignment, allAssignments = [], config = {}) {
   const violations = [];
   const slots = courseAssignment.timetableSlots || [];
 
-  // Check faculty conflicts
-  const facultyConflicts = checkFacultyConflicts(slots, allAssignments);
-  violations.push(...facultyConflicts);
 
-  // Check room conflicts
-  const roomConflicts = checkRoomConflicts(slots, allAssignments);
-  violations.push(...roomConflicts);
+  
+  // Check faculty conflicts (Usually always required, potentially toggleable if needed)
+  if (config.noFacultyOverlap !== false) {
+      const facultyConflicts = checkFacultyConflicts(slots, allAssignments);
+      violations.push(...facultyConflicts);
+  }
+
+  // Check room conflicts (Controlled by UI 'No Room Overlap')
+  if (config.noRoomOverlap !== false) {
+      const roomConflicts = checkRoomConflicts(slots, allAssignments);
+      violations.push(...roomConflicts);
+  }
 
   // Check section conflicts (overlapping slots)
-  const sectionConflicts = checkSectionConflicts(slots);
-  violations.push(...sectionConflicts);
+  if (config.noSectionOverlap !== false) {
+      const sectionConflicts = checkSectionConflicts(slots);
+      violations.push(...sectionConflicts);
+  }
 
   // Check course hours requirements
   const hoursViolations = checkCourseHoursRequirement(courseAssignment);

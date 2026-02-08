@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { getCourseAssignment } from '../../services/courseAssignmentService';
 import './AmritaTimetable.css';
 
-const AmritaTimetable = () => {
+const AmritaTimetable = ({ previewData = null }) => {
   const [config, setConfig] = useState({
     academicYear: '2025-2026',
     semester: 'Odd',
@@ -12,6 +12,13 @@ const AmritaTimetable = () => {
   
   const [timetableData, setTimetableData] = useState(null);
   const [loading, setLoading] = useState(false);
+
+  // If previewData is provided, use it directly (Preview Mode)
+  useEffect(() => {
+    if (previewData) {
+        setTimetableData(previewData);
+    }
+  }, [previewData]);
 
   // Slot structure - matches TimetableEditor
   const slots = [
@@ -29,8 +36,11 @@ const AmritaTimetable = () => {
   const days = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'];
 
   useEffect(() => {
-    loadTimetable();
-  }, [config]);
+    // Only load from DB if NO preview data is provided
+    if (!previewData && config.department && config.section) {
+        loadTimetable();
+    }
+  }, [config, previewData]);
 
   const loadTimetable = async () => {
     try {
@@ -49,7 +59,6 @@ const AmritaTimetable = () => {
       setLoading(false);
     }
   };
-
 
 
   const getSlotData = (day, slotNumber) => {
@@ -122,7 +131,8 @@ const AmritaTimetable = () => {
 
   return (
     <div className="amrita-timetable-container">
-      {/* Control Panel */}
+      {/* Control Panel - Hide in Preview Mode to avoid confusion */}
+      {!previewData && (
       <div style={{
         backgroundColor: 'white',
         padding: '1rem',
@@ -134,6 +144,7 @@ const AmritaTimetable = () => {
         flexWrap: 'wrap',
         alignItems: 'center'
       }}>
+        {/* ... existing controls ... */}
         <div>
           <label style={{marginRight: '0.5rem', fontWeight: 'bold'}}>Academic Year:</label>
           <input 
@@ -187,22 +198,23 @@ const AmritaTimetable = () => {
           Load Timetable
         </button>
       </div>
+      )}
 
       {/* Header */}
       <div className="timetable-header">
-        <h2>TIME TABLE</h2>
+        <h2>{previewData ? 'GENERATED PREVIEW' : 'TIME TABLE'}</h2>
       </div>
 
       {/* Configuration */}
       <div className="timetable-config">
         <div className="config-row">
           <div className="config-item">
-            <label>Dept-CSE</label>
-            <span>Semester: {config.semester === 'Odd' ? 'VI' : 'V'}</span>
+            <label>Dept-{(timetableData?.department || config.department)}</label>
+            <span>Semester: {(timetableData?.semester === 'Odd' ? 'VI' : 'V') || 'VI'}</span>
           </div>
           <div className="config-item">
-            <label>Class: B.Tech CSE</label>
-            <span>Section: {config.section}</span>
+            <label>Class: {timetableData?.program || 'B.Tech'} {(timetableData?.department || config.department)}</label>
+            <span>Section: {(timetableData?.section || config.section)}</span>
           </div>
           <div className="config-item">
             <label>AB III</label>
@@ -275,7 +287,7 @@ const AmritaTimetable = () => {
                     <td 
                       key={`${day}-${slot.number}`}
                       className="timetable-cell"
-                      style={{ backgroundColor: getSlotColor(slotData?.slotType) }}
+                      style={{ backgroundColor: getSlotColor(slotData?.slotType || slotData?.sessionType) }}
                     >
                       {renderSlotContent(slotData)}
                     </td>
@@ -324,7 +336,7 @@ const AmritaTimetable = () => {
                           )}
                         </td>
                         <td>
-                          {course.faculty.map(f => f.facultyId?.name || 'TBD').join(', ')}
+                          {course.faculty.map(f => f.facultyId?.name || f.name || 'TBD').join(', ')}
                         </td>
                         <td>{venue}</td>
                       </tr>
@@ -355,7 +367,7 @@ const AmritaTimetable = () => {
                         <td>{course.courseCode}</td>
                         <td>{course.courseName}</td>
                         <td>
-                          {course.faculty.map(f => f.facultyId?.name || 'TBD').join(', ')}
+                          {course.faculty.map(f => f.facultyId?.name || f.name || 'TBD').join(', ')}
                         </td>
                         <td>{course.venue}</td>
                       </tr>
@@ -403,9 +415,9 @@ const AmritaTimetable = () => {
                               </span>
                             )}
                           </td>
-                          <td>{incharge?.facultyId?.name || 'TBD'}</td>
+                          <td>{incharge?.facultyId?.name || incharge?.name || 'TBD'}</td>
                           <td>
-                            {assisting.map(f => f.facultyId?.name || 'TBD').join(', ') || 'N/A'}
+                            {assisting.map(f => f.facultyId?.name || f.name || 'TBD').join(', ') || 'N/A'}
                           </td>
                           <td>{venue}</td>
                         </tr>
@@ -429,9 +441,8 @@ const AmritaTimetable = () => {
           borderRadius: '8px',
           marginTop: '2rem'
         }}>
-          <h3 style={{ color: '#856404' }}>No Timetable Found</h3>
-          <p style={{ color: '#856404' }}>No course assignment exists for this section.</p>
-          <p style={{ color: '#856404' }}>Please create a course assignment in the <strong>Course Assignments</strong> page first, then use the <strong>Timetable Editor</strong> to fill in the time slots.</p>
+          <h3 style={{ color: '#856404' }}>{previewData ? 'Generating Preview...' : 'No Timetable Found'}</h3>
+          {!previewData && <p style={{ color: '#856404' }}>No course assignment exists for this section.</p>}
         </div>
       )}
     </div>
