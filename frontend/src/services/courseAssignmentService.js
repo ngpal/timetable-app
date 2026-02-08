@@ -36,7 +36,12 @@ export const deleteCourseAssignment = async (id) => {
     return response.data;
 };
 
-export const updateSlot = async (id, slotData) => {
-    const response = await axiosInstance.put(`/${id}/slot`, slotData);
-    return response.data;
+// Update a specific timetable slot
+export const updateSlot = async (assignmentId, day, slotNumber, slotData) => {
+  const response = await axiosInstance.put(`/${assignmentId}/slots`, {
+    day,
+    slotNumber,
+    slotData
+  });
+  return response.data;
 };

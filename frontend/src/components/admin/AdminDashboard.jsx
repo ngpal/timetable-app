@@ -16,8 +16,8 @@ const AdminDashboard = () => {
     { path: '/admin/courses', label: 'Course Management' },
     { path: '/admin/rooms', label: 'Classroom Management' },
     { path: '/admin/course-assignments', label: 'Course Assignments' },
-    { path: '/admin/timetable', label: 'Constraints & Settings' },
     { path: '/admin/amrita-timetable', label: 'View Timetable' },
+    { path: '/admin/timetable', label: 'Constraints & Settings' },
   ];
 
   return (
@@ -26,21 +26,19 @@ const AdminDashboard = () => {
         <h2>Admin Console</h2>
         <nav className="sidebar-nav">
           {menuItems.map((item) => {
-            // Precise active state matching
-            const isActive = item.path === '/admin' 
-              ? location.pathname === '/admin' 
-              : location.pathname.startsWith(item.path);
+          // Exact path matching to prevent multiple active states
+          const isActive = location.pathname === item.path;
               
-            return (
-              <Link
-                key={item.path}
-                to={item.path}
-                className={`nav-item ${isActive ? 'active' : ''}`}
-              >
-                {item.label}
-              </Link>
-            );
-          })}
+          return (
+            <Link
+              key={item.path}
+              to={item.path}
+              className={`nav-item ${isActive ? 'active' : ''}`}
+            >
+              {item.label}
+            </Link>
+          );
+        })}
         </nav>
         <div className="sidebar-footer">
           <button className="logout-btn" onClick={handleLogout}>

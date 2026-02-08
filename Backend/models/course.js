@@ -23,13 +23,35 @@ const courseSchema = new mongoose.Schema({
     theoryHours: { type: Number, default: 0 },
     labHours: { type: Number, default: 0 },
     
-    // Lab Requirements
+    // Session Types (NEW - supports multiple session types for one course)
+    sessionTypes: [{
+        type: {
+            type: String,
+            enum: ['Theory', 'Lab', 'Tutorial', 'Project'],
+            required: true
+        },
+        hoursPerWeek: {
+            type: Number,
+            required: true
+        },
+        requiresLab: {
+            type: Boolean,
+            default: false
+        },
+        labType: String,
+        requiresAssistingFaculty: {
+            type: Boolean,
+            default: false
+        }
+    }],
+    
+    // Lab Requirements (kept for backward compatibility)
     requiresLab: { type: Boolean, default: false },
     labComponent: {
         hasLab: { type: Boolean, default: false },
         labHours: { type: Number, default: 0 },
         requiresAssistingFaculty: { type: Boolean, default: false },
-        labType: { type: String } // "Computer Lab", "Hardware Lab"
+        labType: { type: String }
     },
     
     // Department

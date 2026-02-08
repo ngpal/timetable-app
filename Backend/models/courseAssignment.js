@@ -17,12 +17,20 @@ const timetableSlotSchema = new mongoose.Schema({
         enum: ['Theory', 'Lab', 'Project', 'CIR', 'Break', 'Elective', 'Occupied', 'Discussion'],
         default: 'Theory'
     },
-    courseCode: { type: String }, // e.g., '23CSE311'
-    courseName: { type: String }, // For display purposes
-    venue: { type: String }, // e.g., 'ABIII - C204'
-    spanSlots: { type: Number, default: 1 }, // For merged cells (labs typically span 2-3 slots)
-    notes: { type: String }, // e.g., 'Discussion/Evaluation Hour AB3- C204'
-    occupiedBy: { type: String }, // e.g., 'III B.Tech-F' for blocked slots
+    courseCode: { type: String },
+    courseName: { type: String },
+    sessionType: {
+        type: String,
+        enum: ['Theory', 'Lab', 'Tutorial', 'Project'],
+        default: 'Theory'
+    },
+    facultyName: { type: String },
+    venue: { type: String },
+    spanSlots: { type: Number, default: 1 },
+    isSpanContinuation: { type: Boolean, default: false },
+    spanStartSlot: { type: Number },
+    notes: { type: String },
+    occupiedBy: { type: String },
     faculty: [{ 
         type: mongoose.Schema.Types.ObjectId, 
         ref: 'Faculty' 
@@ -31,15 +39,15 @@ const timetableSlotSchema = new mongoose.Schema({
 
 const courseAssignmentSchema = new mongoose.Schema({
     // Academic Information
-    academicYear: { type: String, required: true }, // e.g., "2025-2026"
+    academicYear: { type: String, required: true },
     semester: { 
         type: String, 
         enum: ['Odd', 'Even'], 
         required: true 
     },
-    department: { type: String, required: true }, // e.g., "CSE"
-    section: { type: String, required: true }, // e.g., "D"
-    program: { type: String, default: 'B.Tech' }, // e.g., "B.Tech", "M.Tech"
+    department: { type: String, required: true },
+    section: { type: String, required: true },
+    program: { type: String, default: 'B.Tech' },
     
     // Course Information
     courses: [{
@@ -49,6 +57,11 @@ const courseAssignmentSchema = new mongoose.Schema({
             type: String, 
             enum: ['Core', 'Elective', 'Professional Elective', 'Open Elective', 'Lab', 'Project', 'Seminar'],
             default: 'Core'
+        },
+        sessionType: {
+            type: String,
+            enum: ['Theory', 'Lab', 'Tutorial', 'Project'],
+            default: 'Theory'
         },
         credits: { type: Number, default: 3 },
         faculty: [{

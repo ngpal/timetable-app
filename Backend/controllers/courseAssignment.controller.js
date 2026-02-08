@@ -103,6 +103,57 @@ export const updateCourseAssignment = async (req, res) => {
     }
 };
 
+// Update a specific timetable slot
+export const updateTimetableSlot = async (req, res) => {
+    try {
+        const { id } = req.params;
+        const { day, slotNumber, slotData } = req.body;
+        
+        console.log('Updating slot:', { id, day, slotNumber, slotData });
+        
+        const assignment = await CourseAssignment.findById(id);
+        
+        if (!assignment) {
+            return res.status(404).json({ message: 'Course assignment not found' });
+        }
+        
+        // Find existing slot
+        const existingSlotIndex = assignment.timetableSlots.findIndex(
+            slot => slot.day === day && slot.slotNumber === slotNumber
+        );
+        
+        if (slotData === null || slotData === undefined) {
+            // Clear the slot
+            if (existingSlotIndex !== -1) {
+                assignment.timetableSlots.splice(existingSlotIndex, 1);
+            }
+        } else {
+            // Update or add slot
+            const newSlot = {
+                day,
+                slotNumber,
+                ...slotData
+            };
+            
+            if (existingSlotIndex !== -1) {
+                assignment.timetableSlots[existingSlotIndex] = newSlot;
+            } else {
+                assignment.timetableSlots.push(newSlot);
+            }
+        }
+        
+        await assignment.save();
+        
+        res.status(200).json({
+            message: 'Slot updated successfully',
+            assignment
+        });
+    } catch (error) {
+        console.error('Error updating slot:', error);
+        res.status(500).json({ message: 'Error updating slot', error: error.message });
+    }
+};
+
 // Update specific slot in timetable
 export const updateSlot = async (req, res) => {
     try {

@@ -35,9 +35,9 @@ function App() {
           <Route path="faculty" element={<AdminFaculty />} />
           <Route path="courses" element={<AdminCourses />} />
           <Route path="rooms" element={<AdminRooms />} />
-          <Route path="timetable" element={<AdminTimetable />} />
           <Route path="course-assignments" element={<AdminCourseAssignment />} />
           <Route path="amrita-timetable" element={<AmritaTimetable />} />
+          <Route path="timetable" element={<AdminTimetable />} />
         </Route>
 
         {/* Faculty Module Routes */}

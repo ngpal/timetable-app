@@ -314,7 +314,8 @@ async function seedDatabase() {
     const cseFaculty = createdFaculty.filter(f => f.department === 'CSE');
     const cseCourses = createdCourses.filter(c => c.department === 'CSE');
     
-    const courseAssignment = await CourseAssignment.create({
+    // Create Course Assignment for CSE 2nd Year Section A
+    const courseAssignmentA = await CourseAssignment.create({
       academicYear: '2025-2026',
       semester: 'Odd',
       department: 'CSE',
@@ -325,6 +326,7 @@ async function seedDatabase() {
           courseCode: cseCourses[0].courseCode,
           courseName: cseCourses[0].courseName,
           courseType: cseCourses[0].courseType,
+          sessionType: 'Theory',
           credits: cseCourses[0].credits,
           faculty: [
             { facultyId: cseFaculty[0]._id, role: 'Incharge' }
@@ -335,6 +337,7 @@ async function seedDatabase() {
           courseCode: cseCourses[1].courseCode,
           courseName: cseCourses[1].courseName,
           courseType: cseCourses[1].courseType,
+          sessionType: 'Theory',
           credits: cseCourses[1].credits,
           faculty: [
             { facultyId: cseFaculty[2]._id, role: 'Incharge' }
@@ -345,6 +348,7 @@ async function seedDatabase() {
           courseCode: cseCourses[2].courseCode,
           courseName: cseCourses[2].courseName,
           courseType: cseCourses[2].courseType,
+          sessionType: 'Theory',
           credits: cseCourses[2].credits,
           faculty: [
             { facultyId: cseFaculty[1]._id, role: 'Incharge' }
@@ -352,9 +356,21 @@ async function seedDatabase() {
           venue: 'ABIII - C301'
         },
         {
+          courseCode: cseCourses[3].courseCode,
+          courseName: cseCourses[3].courseName,
+          courseType: cseCourses[3].courseType,
+          sessionType: 'Theory',
+          credits: cseCourses[3].credits,
+          faculty: [
+            { facultyId: cseFaculty[0]._id, role: 'Incharge' }
+          ],
+          venue: 'ABIII - C302'
+        },
+        {
           courseCode: cseCourses[4].courseCode,
           courseName: cseCourses[4].courseName,
           courseType: cseCourses[4].courseType,
+          sessionType: 'Lab',
           credits: cseCourses[4].credits,
           faculty: [
             { facultyId: cseFaculty[0]._id, role: 'Incharge' },
@@ -362,6 +378,39 @@ async function seedDatabase() {
           ],
           venue: 'ABIII - TF-CP LAB 1'
         }
+      ],
+      timetableSlots: [
+        // Monday
+        { day: 'Monday', slotNumber: 1, courseCode: cseCourses[0].courseCode, courseName: cseCourses[0].courseName, sessionType: 'Theory', facultyName: cseFaculty[0].name, venue: 'ABIII - C204', slotType: 'Theory', spanSlots: 1 },
+        { day: 'Monday', slotNumber: 2, courseCode: cseCourses[1].courseCode, courseName: cseCourses[1].courseName, sessionType: 'Theory', facultyName: cseFaculty[2].name, venue: 'ABIII - C205', slotType: 'Theory', spanSlots: 1 },
+        { day: 'Monday', slotNumber: 3, courseCode: cseCourses[2].courseCode, courseName: cseCourses[2].courseName, sessionType: 'Theory', facultyName: cseFaculty[1].name, venue: 'ABIII - C301', slotType: 'Theory', spanSlots: 1 },
+        { day: 'Monday', slotNumber: 4, courseCode: cseCourses[3].courseCode, courseName: cseCourses[3].courseName, sessionType: 'Theory', facultyName: cseFaculty[0].name, venue: 'ABIII - C302', slotType: 'Theory', spanSlots: 1 },
+        // Slot 5 is lunch
+        { day: 'Monday', slotNumber: 6, courseCode: cseCourses[4].courseCode, courseName: cseCourses[4].courseName, sessionType: 'Lab', facultyName: cseFaculty[0].name, venue: 'ABIII - TF-CP LAB 1', slotType: 'Lab', spanSlots: 2 },
+        { day: 'Monday', slotNumber: 7, courseCode: cseCourses[4].courseCode, courseName: cseCourses[4].courseName, sessionType: 'Lab', facultyName: cseFaculty[0].name, venue: 'ABIII - TF-CP LAB 1', slotType: 'Lab', isSpanContinuation: true, spanStartSlot: 6 },
+        
+        // Tuesday
+        { day: 'Tuesday', slotNumber: 1, courseCode: cseCourses[1].courseCode, courseName: cseCourses[1].courseName, sessionType: 'Theory', facultyName: cseFaculty[2].name, venue: 'ABIII - C205', slotType: 'Theory', spanSlots: 1 },
+        { day: 'Tuesday', slotNumber: 2, courseCode: cseCourses[0].courseCode, courseName: cseCourses[0].courseName, sessionType: 'Theory', facultyName: cseFaculty[0].name, venue: 'ABIII - C204', slotType: 'Theory', spanSlots: 1 },
+        { day: 'Tuesday', slotNumber: 3, courseCode: cseCourses[3].courseCode, courseName: cseCourses[3].courseName, sessionType: 'Theory', facultyName: cseFaculty[0].name, venue: 'ABIII - C302', slotType: 'Theory', spanSlots: 1 },
+        { day: 'Tuesday', slotNumber: 4, courseCode: cseCourses[2].courseCode, courseName: cseCourses[2].courseName, sessionType: 'Theory', facultyName: cseFaculty[1].name, venue: 'ABIII - C301', slotType: 'Theory', spanSlots: 1 },
+        
+        // Wednesday
+        { day: 'Wednesday', slotNumber: 1, courseCode: cseCourses[2].courseCode, courseName: cseCourses[2].courseName, sessionType: 'Theory', facultyName: cseFaculty[1].name, venue: 'ABIII - C301', slotType: 'Theory', spanSlots: 1 },
+        { day: 'Wednesday', slotNumber: 2, courseCode: cseCourses[3].courseCode, courseName: cseCourses[3].courseName, sessionType: 'Theory', facultyName: cseFaculty[0].name, venue: 'ABIII - C302', slotType: 'Theory', spanSlots: 1 },
+        { day: 'Wednesday', slotNumber: 3, courseCode: cseCourses[0].courseCode, courseName: cseCourses[0].courseName, sessionType: 'Theory', facultyName: cseFaculty[0].name, venue: 'ABIII - C204', slotType: 'Theory', spanSlots: 1 },
+        { day: 'Wednesday', slotNumber: 4, courseCode: cseCourses[1].courseCode, courseName: cseCourses[1].courseName, sessionType: 'Theory', facultyName: cseFaculty[2].name, venue: 'ABIII - C205', slotType: 'Theory', spanSlots: 1 },
+        
+        // Thursday
+        { day: 'Thursday', slotNumber: 1, courseCode: cseCourses[3].courseCode, courseName: cseCourses[3].courseName, sessionType: 'Theory', facultyName: cseFaculty[0].name, venue: 'ABIII - C302', slotType: 'Theory', spanSlots: 1 },
+        { day: 'Thursday', slotNumber: 2, courseCode: cseCourses[2].courseCode, courseName: cseCourses[2].courseName, sessionType: 'Theory', facultyName: cseFaculty[1].name, venue: 'ABIII - C301', slotType: 'Theory', spanSlots: 1 },
+        { day: 'Thursday', slotNumber: 3, courseCode: cseCourses[1].courseCode, courseName: cseCourses[1].courseName, sessionType: 'Theory', facultyName: cseFaculty[2].name, venue: 'ABIII - C205', slotType: 'Theory', spanSlots: 1 },
+        { day: 'Thursday', slotNumber: 4, courseCode: cseCourses[0].courseCode, courseName: cseCourses[0].courseName, sessionType: 'Theory', facultyName: cseFaculty[0].name, venue: 'ABIII - C204', slotType: 'Theory', spanSlots: 1 },
+        
+        // Friday
+        { day: 'Friday', slotNumber: 1, courseCode: cseCourses[0].courseCode, courseName: cseCourses[0].courseName, sessionType: 'Theory', facultyName: cseFaculty[0].name, venue: 'ABIII - C204', slotType: 'Theory', spanSlots: 1 },
+        { day: 'Friday', slotNumber: 2, courseCode: cseCourses[1].courseCode, courseName: cseCourses[1].courseName, sessionType: 'Theory', facultyName: cseFaculty[2].name, venue: 'ABIII - C205', slotType: 'Theory', spanSlots: 1 },
+        { day: 'Friday', slotNumber: 3, courseCode: cseCourses[2].courseCode, courseName: cseCourses[2].courseName, sessionType: 'Theory', facultyName: cseFaculty[1].name, venue: 'ABIII - C301', slotType: 'Theory', spanSlots: 1 }
       ],
       classAdvisors: [
         {
@@ -372,7 +421,116 @@ async function seedDatabase() {
       isActive: true
     });
     
-    console.log(`  ✓ CSE S3-A (${courseAssignment.courses.length} courses)`);
+    console.log(`  ✓ CSE 2nd Year S3-A (${courseAssignmentA.courses.length} courses, ${courseAssignmentA.timetableSlots.length} slots)`);
+    
+    // Create Course Assignment for CSE 2nd Year Section B
+    const courseAssignmentB = await CourseAssignment.create({
+      academicYear: '2025-2026',
+      semester: 'Odd',
+      department: 'CSE',
+      section: 'B',
+      program: 'B.Tech',
+      courses: [
+        {
+          courseCode: cseCourses[0].courseCode,
+          courseName: cseCourses[0].courseName,
+          courseType: cseCourses[0].courseType,
+          sessionType: 'Theory',
+          credits: cseCourses[0].credits,
+          faculty: [
+            { facultyId: cseFaculty[1]._id, role: 'Incharge' }
+          ],
+          venue: 'ABIII - C206'
+        },
+        {
+          courseCode: cseCourses[1].courseCode,
+          courseName: cseCourses[1].courseName,
+          courseType: cseCourses[1].courseType,
+          sessionType: 'Theory',
+          credits: cseCourses[1].credits,
+          faculty: [
+            { facultyId: cseFaculty[0]._id, role: 'Incharge' }
+          ],
+          venue: 'ABIII - C207'
+        },
+        {
+          courseCode: cseCourses[2].courseCode,
+          courseName: cseCourses[2].courseName,
+          courseType: cseCourses[2].courseType,
+          sessionType: 'Theory',
+          credits: cseCourses[2].credits,
+          faculty: [
+            { facultyId: cseFaculty[0]._id, role: 'Incharge' }
+          ],
+          venue: 'ABIII - C303'
+        },
+        {
+          courseCode: cseCourses[3].courseCode,
+          courseName: cseCourses[3].courseName,
+          courseType: cseCourses[3].courseType,
+          sessionType: 'Theory',
+          credits: cseCourses[3].credits,
+          faculty: [
+            { facultyId: cseFaculty[2]._id, role: 'Incharge' }
+          ],
+          venue: 'ABIII - C304'
+        },
+        {
+          courseCode: cseCourses[4].courseCode,
+          courseName: cseCourses[4].courseName,
+          courseType: cseCourses[4].courseType,
+          sessionType: 'Lab',
+          credits: cseCourses[4].credits,
+          faculty: [
+            { facultyId: cseFaculty[1]._id, role: 'Incharge' },
+            { facultyId: cseFaculty[0]._id, role: 'Assisting' }
+          ],
+          venue: 'ABIII - TF-CP LAB 2'
+        }
+      ],
+      timetableSlots: [
+        // Monday
+        { day: 'Monday', slotNumber: 1, courseCode: cseCourses[1].courseCode, courseName: cseCourses[1].courseName, sessionType: 'Theory', facultyName: cseFaculty[0].name, venue: 'ABIII - C207', slotType: 'Theory', spanSlots: 1 },
+        { day: 'Monday', slotNumber: 2, courseCode: cseCourses[0].courseCode, courseName: cseCourses[0].courseName, sessionType: 'Theory', facultyName: cseFaculty[1].name, venue: 'ABIII - C206', slotType: 'Theory', spanSlots: 1 },
+        { day: 'Monday', slotNumber: 3, courseCode: cseCourses[3].courseCode, courseName: cseCourses[3].courseName, sessionType: 'Theory', facultyName: cseFaculty[2].name, venue: 'ABIII - C304', slotType: 'Theory', spanSlots: 1 },
+        { day: 'Monday', slotNumber: 4, courseCode: cseCourses[2].courseCode, courseName: cseCourses[2].courseName, sessionType: 'Theory', facultyName: cseFaculty[0].name, venue: 'ABIII - C303', slotType: 'Theory', spanSlots: 1 },
+        
+        // Tuesday
+        { day: 'Tuesday', slotNumber: 1, courseCode: cseCourses[2].courseCode, courseName: cseCourses[2].courseName, sessionType: 'Theory', facultyName: cseFaculty[0].name, venue: 'ABIII - C303', slotType: 'Theory', spanSlots: 1 },
+        { day: 'Tuesday', slotNumber: 2, courseCode: cseCourses[3].courseCode, courseName: cseCourses[3].courseName, sessionType: 'Theory', facultyName: cseFaculty[2].name, venue: 'ABIII - C304', slotType: 'Theory', spanSlots: 1 },
+        { day: 'Tuesday', slotNumber: 3, courseCode: cseCourses[0].courseCode, courseName: cseCourses[0].courseName, sessionType: 'Theory', facultyName: cseFaculty[1].name, venue: 'ABIII - C206', slotType: 'Theory', spanSlots: 1 },
+        { day: 'Tuesday', slotNumber: 4, courseCode: cseCourses[1].courseCode, courseName: cseCourses[1].courseName, sessionType: 'Theory', facultyName: cseFaculty[0].name, venue: 'ABIII - C207', slotType: 'Theory', spanSlots: 1 },
+        // Slot 5 is lunch
+        { day: 'Tuesday', slotNumber: 6, courseCode: cseCourses[4].courseCode, courseName: cseCourses[4].courseName, sessionType: 'Lab', facultyName: cseFaculty[1].name, venue: 'ABIII - TF-CP LAB 2', slotType: 'Lab', spanSlots: 2 },
+        { day: 'Tuesday', slotNumber: 7, courseCode: cseCourses[4].courseCode, courseName: cseCourses[4].courseName, sessionType: 'Lab', facultyName: cseFaculty[1].name, venue: 'ABIII - TF-CP LAB 2', slotType: 'Lab', isSpanContinuation: true, spanStartSlot: 6 },
+        
+        // Wednesday
+        { day: 'Wednesday', slotNumber: 1, courseCode: cseCourses[0].courseCode, courseName: cseCourses[0].courseName, sessionType: 'Theory', facultyName: cseFaculty[1].name, venue: 'ABIII - C206', slotType: 'Theory', spanSlots: 1 },
+        { day: 'Wednesday', slotNumber: 2, courseCode: cseCourses[1].courseCode, courseName: cseCourses[1].courseName, sessionType: 'Theory', facultyName: cseFaculty[0].name, venue: 'ABIII - C207', slotType: 'Theory', spanSlots: 1 },
+        { day: 'Wednesday', slotNumber: 3, courseCode: cseCourses[2].courseCode, courseName: cseCourses[2].courseName, sessionType: 'Theory', facultyName: cseFaculty[0].name, venue: 'ABIII - C303', slotType: 'Theory', spanSlots: 1 },
+        { day: 'Wednesday', slotNumber: 4, courseCode: cseCourses[3].courseCode, courseName: cseCourses[3].courseName, sessionType: 'Theory', facultyName: cseFaculty[2].name, venue: 'ABIII - C304', slotType: 'Theory', spanSlots: 1 },
+        
+        // Thursday
+        { day: 'Thursday', slotNumber: 1, courseCode: cseCourses[3].courseCode, courseName: cseCourses[3].courseName, sessionType: 'Theory', facultyName: cseFaculty[2].name, venue: 'ABIII - C304', slotType: 'Theory', spanSlots: 1 },
+        { day: 'Thursday', slotNumber: 2, courseCode: cseCourses[2].courseCode, courseName: cseCourses[2].courseName, sessionType: 'Theory', facultyName: cseFaculty[0].name, venue: 'ABIII - C303', slotType: 'Theory', spanSlots: 1 },
+        { day: 'Thursday', slotNumber: 3, courseCode: cseCourses[1].courseCode, courseName: cseCourses[1].courseName, sessionType: 'Theory', facultyName: cseFaculty[0].name, venue: 'ABIII - C207', slotType: 'Theory', spanSlots: 1 },
+        { day: 'Thursday', slotNumber: 4, courseCode: cseCourses[0].courseCode, courseName: cseCourses[0].courseName, sessionType: 'Theory', facultyName: cseFaculty[1].name, venue: 'ABIII - C206', slotType: 'Theory', spanSlots: 1 },
+        
+        // Friday
+        { day: 'Friday', slotNumber: 1, courseCode: cseCourses[1].courseCode, courseName: cseCourses[1].courseName, sessionType: 'Theory', facultyName: cseFaculty[0].name, venue: 'ABIII - C207', slotType: 'Theory', spanSlots: 1 },
+        { day: 'Friday', slotNumber: 2, courseCode: cseCourses[0].courseCode, courseName: cseCourses[0].courseName, sessionType: 'Theory', facultyName: cseFaculty[1].name, venue: 'ABIII - C206', slotType: 'Theory', spanSlots: 1 },
+        { day: 'Friday', slotNumber: 3, courseCode: cseCourses[3].courseCode, courseName: cseCourses[3].courseName, sessionType: 'Theory', facultyName: cseFaculty[2].name, venue: 'ABIII - C304', slotType: 'Theory', spanSlots: 1 }
+      ],
+      classAdvisors: [
+        {
+          facultyId: cseFaculty[1]._id,
+          name: cseFaculty[1].name
+        }
+      ],
+      isActive: true
+    });
+    
+    console.log(`  ✓ CSE 2nd Year S3-B (${courseAssignmentB.courses.length} courses, ${courseAssignmentB.timetableSlots.length} slots)`);
     
     // Summary
     console.log('\n✅ Seed completed successfully!');
@@ -380,7 +538,7 @@ async function seedDatabase() {
     console.log(`  - Faculty: ${createdFaculty.length}`);
     console.log(`  - Courses: ${createdCourses.length}`);
     console.log(`  - Classrooms: ${createdClassrooms.length}`);
-    console.log(`  - Course Assignments: 1`);
+    console.log(`  - Course Assignments: 2 (CSE 2nd Year Sections A & B)`);
     console.log(`  - Admin user: ${adminUser ? 'Preserved' : 'None'}`);
     
   } catch (error) {

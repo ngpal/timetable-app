@@ -4,6 +4,7 @@ import {
     getCourseAssignment,
     createCourseAssignment,
     updateCourseAssignment,
+    updateTimetableSlot,
     updateSlot,
     deleteCourseAssignment
 } from '../controllers/courseAssignment.controller.js';
@@ -86,6 +87,22 @@ router.post('/', verifyAdmin, createCourseAssignment);
  *         description: Updated successfully
  */
 router.put('/:id', verifyAdmin, updateCourseAssignment);
+
+/**
+ * @swagger
+ * /api/timetable/{id}/slots:
+ *   put:
+ *     summary: Update a specific timetable slot
+ *     tags: [Course Assignments]
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *     responses:
+ *       200:
+ *         description: Slot updated successfully
+ */
+router.put('/:id/slots', verifyAdmin, updateTimetableSlot);
 
 /**
  * @swagger

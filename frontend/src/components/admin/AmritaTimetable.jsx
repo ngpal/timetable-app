@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { timetableService } from '../../services/timetableService';
+import { getCourseAssignment } from '../../services/courseAssignmentService';
 import './AmritaTimetable.css';
 
 const AmritaTimetable = () => {
@@ -7,26 +7,23 @@ const AmritaTimetable = () => {
     academicYear: '2025-2026',
     semester: 'Odd',
     department: 'CSE',
-    section: 'D'
+    section: 'A'
   });
   
   const [timetableData, setTimetableData] = useState(null);
   const [loading, setLoading] = useState(false);
 
-  // Amrita slot structure
+  // Slot structure - matches TimetableEditor
   const slots = [
-    { number: 1, start: '08:00', end: '08:50' },
-    { number: 2, start: '08:50', end: '09:40' },
-    { number: 3, start: '09:40', end: '10:30' },
-    { number: 4, start: '10:45', end: '11:35' },
-    { number: 5, start: '11:35', end: '12:25' },
-    { number: 6, start: '12:25', end: '13:15' },
-    { number: 7, start: '14:05', end: '14:55' },
-    { number: 8, start: '14:55', end: '15:45' },
-    { number: 9, start: '15:45', end: '16:35' },
-    { number: 10, start: '16:35', end: '17:25' },
-    { number: 11, start: '17:25', end: '18:15' },
-    { number: 12, start: '18:15', end: '19:05' }
+    { number: 1, start: '08:00', end: '09:00' },
+    { number: 2, start: '09:00', end: '10:00' },
+    { number: 3, start: '10:00', end: '11:00' },
+    { number: 4, start: '11:00', end: '12:00' },
+    { number: 5, start: '12:00', end: '13:00' }, // Lunch
+    { number: 6, start: '13:00', end: '14:00' },
+    { number: 7, start: '14:00', end: '15:00' },
+    { number: 8, start: '15:00', end: '16:00' },
+    { number: 9, start: '16:00', end: '17:00' }
   ];
 
   const days = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'];
@@ -38,59 +35,22 @@ const AmritaTimetable = () => {
   const loadTimetable = async () => {
     try {
       setLoading(true);
-      const data = await timetableService.getTimetable(
-        config.academicYear,
-        config.semester,
-        config.department,
-        config.section
-      );
+      const data = await getCourseAssignment({
+        academicYear: config.academicYear,
+        semester: config.semester,
+        department: config.department,
+        section: config.section
+      });
       setTimetableData(data);
     } catch (error) {
       console.error('Error loading timetable:', error);
+      setTimetableData(null);
     } finally {
       setLoading(false);
     }
   };
 
-  const generateSampleData = async () => {
-    if (!window.confirm('Generate sample timetable data? This will create a new timetable for CSE Dept, Section D.')) {
-      return;
-    }
-    
-    try {
-      setLoading(true);
-      const response = await fetch('http://localhost:3000/api/timetable/sample/generate', {
-        method: 'POST',
-        credentials: 'include',
-        headers: {
-          'Content-Type': 'application/json',
-        }
-      });
-      
-      if (!response.ok) {
-        throw new Error('Failed to generate sample data');
-      }
-      
-      const result = await response.json();
-      alert('Sample data generated successfully! Reloading...');
-      
-      // Update config to match sample data
-      setConfig({
-        academicYear: '2025-2026',
-        semester: 'Odd',
-        department: 'CSE',
-        section: 'D'
-      });
-      
-      // Reload timetable
-      await loadTimetable();
-    } catch (error) {
-      console.error('Error generating sample data:', error);
-      alert('Failed to generate sample data: ' + error.message);
-    } finally {
-      setLoading(false);
-    }
-  };
+
 
   const getSlotData = (day, slotNumber) => {
     if (!timetableData?.timetableSlots) return null;
@@ -115,6 +75,14 @@ const AmritaTimetable = () => {
   const renderSlotContent = (slot) => {
     if (!slot) return null;
 
+    if (slot.isSpanContinuation) {
+      return (
+        <div style={{ fontSize: '0.7rem', color: '#718096', fontStyle: 'italic', textAlign: 'center' }}>
+          ↑ Continued
+        </div>
+      );
+    }
+
     if (slot.slotType === 'Occupied') {
       return (
         <div style={{ fontSize: '0.75rem', color: '#666', fontStyle: 'italic' }}>
@@ -127,10 +95,20 @@ const AmritaTimetable = () => {
       <div>
         <div style={{ fontWeight: 'bold', fontSize: '0.85rem' }}>
           {slot.courseCode}
+          {slot.sessionType && slot.sessionType !== 'Theory' && (
+            <span style={{ color: '#805ad5', fontWeight: '600', marginLeft: '0.25rem', fontSize: '0.75rem' }}>
+              ({slot.sessionType})
+            </span>
+          )}
         </div>
         {slot.venue && (
           <div style={{ fontSize: '0.7rem', color: '#555' }}>
             {slot.venue}
+          </div>
+        )}
+        {slot.spanSlots > 1 && (
+          <div style={{ fontSize: '0.65rem', color: '#e53e3e', fontWeight: '600', marginTop: '2px' }}>
+            {slot.spanSlots} slots
           </div>
         )}
         {slot.notes && (
@@ -208,20 +186,6 @@ const AmritaTimetable = () => {
         >
           Load Timetable
         </button>
-        <button
-          onClick={generateSampleData}
-          style={{
-            padding: '0.5rem 1rem',
-            backgroundColor: '#ff9800',
-            color: 'white',
-            border: 'none',
-            borderRadius: '4px',
-            cursor: 'pointer',
-            fontWeight: 'bold'
-          }}
-        >
-          Generate Sample Data
-        </button>
       </div>
 
       {/* Header */}
@@ -248,7 +212,9 @@ const AmritaTimetable = () => {
           <div className="config-row">
             <div className="config-item">
               <label>Class Advisors:</label>
-              <span>{timetableData.classAdvisors.map(a => a.name).join(', ')}</span>
+              <span>
+                {timetableData.classAdvisors.map(a => a.facultyId?.name || a.name || 'TBD').join(', ')}
+              </span>
             </div>
             {timetableData.mailId && (
               <div className="config-item">
@@ -287,31 +253,22 @@ const AmritaTimetable = () => {
                 {slots.map(slot => {
                   const slotData = getSlotData(day, slot.number);
                   
-                  // Check if this is a lunch break slot
-                  if (slot.number === 7 && day === 'Monday') {
-                    return null; // Will be handled by rowSpan
-                  }
-                  
-                  // Lunch break between slot 6 and 7
-                  if (slot.number === 6) {
-                    return (
-                      <React.Fragment key={`${day}-${slot.number}`}>
-                        <td 
-                          className="timetable-cell"
-                          style={{ backgroundColor: getSlotColor(slotData?.slotType) }}
-                        >
-                          {renderSlotContent(slotData)}
-                        </td>
-                        {day === 'Monday' && (
+                  // Check if this is lunch break (slot 5)
+                  if (slot.number === 5) {
+                    // Lunch break handling
+                    if (day === 'Monday') {
+                      return (
+                        <React.Fragment key={`${day}-${slot.number}`}>
                           <td 
                             rowSpan={days.length} 
                             className="lunch-break-cell"
                           >
                             Lunch Break
                           </td>
-                        )}
-                      </React.Fragment>
-                    );
+                        </React.Fragment>
+                      );
+                    }
+                    return null; // Skip for other days (handled by rowSpan)
                   }
                   
                   return (
@@ -333,9 +290,9 @@ const AmritaTimetable = () => {
       {/* Course Information Tables */}
       {timetableData?.courses && (
         <div className="course-tables">
-          {/* Theory Courses */}
+          {/* Core/Theory Courses */}
           <div className="course-table-section">
-            <h3>Theory</h3>
+            <h3>Core Courses</h3>
             <table className="course-info-table">
               <thead>
                 <tr>
@@ -347,17 +304,32 @@ const AmritaTimetable = () => {
               </thead>
               <tbody>
                 {timetableData.courses
-                  .filter(c => c.courseType === 'Theory')
-                  .map((course, idx) => (
-                    <tr key={idx}>
-                      <td>{course.courseCode}</td>
-                      <td>{course.courseName}</td>
-                      <td>
-                        {course.faculty.map(f => f.facultyId?.userId || 'TBD').join(', ')}
-                      </td>
-                      <td>{course.venue}</td>
-                    </tr>
-                  ))}
+                  .filter(c => c.courseType === 'Core' || c.courseType === 'Theory')
+                  .map((course, idx) => {
+                    // Find venue from timetable slots for this course (Theory sessions)
+                    const theorySlot = timetableData.timetableSlots?.find(
+                      s => s.courseCode === course.courseCode && (!s.sessionType || s.sessionType === 'Theory')
+                    );
+                    const venue = theorySlot?.venue || course.venue || 'TBD';
+                    
+                    return (
+                      <tr key={idx}>
+                        <td>{course.courseCode}</td>
+                        <td>
+                          {course.courseName}
+                          {course.sessionType && course.sessionType !== 'Theory' && (
+                            <span style={{ color: '#805ad5', fontWeight: '600', marginLeft: '0.5rem' }}>
+                              ({course.sessionType})
+                            </span>
+                          )}
+                        </td>
+                        <td>
+                          {course.faculty.map(f => f.facultyId?.name || 'TBD').join(', ')}
+                        </td>
+                        <td>{venue}</td>
+                      </tr>
+                    );
+                  })}
               </tbody>
             </table>
           </div>
@@ -383,7 +355,7 @@ const AmritaTimetable = () => {
                         <td>{course.courseCode}</td>
                         <td>{course.courseName}</td>
                         <td>
-                          {course.faculty.map(f => f.facultyId?.userId || 'TBD').join(', ')}
+                          {course.faculty.map(f => f.facultyId?.name || 'TBD').join(', ')}
                         </td>
                         <td>{course.venue}</td>
                       </tr>
@@ -414,15 +386,28 @@ const AmritaTimetable = () => {
                       const incharge = course.faculty.find(f => f.role === 'Incharge');
                       const assisting = course.faculty.filter(f => f.role === 'Assisting');
                       
+                      // Find venue from timetable slots for this course (Lab sessions)
+                      const labSlot = timetableData.timetableSlots?.find(
+                        s => s.courseCode === course.courseCode && s.sessionType === 'Lab'
+                      );
+                      const venue = labSlot?.venue || course.venue || 'TBD';
+                      
                       return (
                         <tr key={idx}>
                           <td>{course.courseCode}</td>
-                          <td>{course.courseName}</td>
-                          <td>{incharge?.facultyId?.userId || 'TBD'}</td>
                           <td>
-                            {assisting.map(f => f.facultyId?.userId || 'TBD').join(', ')}
+                            {course.courseName}
+                            {course.sessionType && course.sessionType !== 'Lab' && (
+                              <span style={{ color: '#805ad5', fontWeight: '600', marginLeft: '0.5rem' }}>
+                                ({course.sessionType})
+                              </span>
+                            )}
                           </td>
-                          <td>{course.venue}</td>
+                          <td>{incharge?.facultyId?.name || 'TBD'}</td>
+                          <td>
+                            {assisting.map(f => f.facultyId?.name || 'TBD').join(', ') || 'N/A'}
+                          </td>
+                          <td>{venue}</td>
                         </tr>
                       );
                     })}
@@ -434,6 +419,21 @@ const AmritaTimetable = () => {
       )}
 
       {loading && <div className="loading-overlay">Loading timetable...</div>}
+      
+      {!loading && !timetableData && (
+        <div style={{
+          textAlign: 'center',
+          padding: '3rem',
+          backgroundColor: '#fff3cd',
+          border: '1px solid #ffc107',
+          borderRadius: '8px',
+          marginTop: '2rem'
+        }}>
+          <h3 style={{ color: '#856404' }}>No Timetable Found</h3>
+          <p style={{ color: '#856404' }}>No course assignment exists for this section.</p>
+          <p style={{ color: '#856404' }}>Please create a course assignment in the <strong>Course Assignments</strong> page first, then use the <strong>Timetable Editor</strong> to fill in the time slots.</p>
+        </div>
+      )}
     </div>
   );
 };

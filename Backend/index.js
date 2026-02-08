@@ -13,6 +13,7 @@ import ClassroomRoute from './routes/classroom.route.js';
 import DashboardRoute from './routes/dashboard.route.js';
 import TimetableConstraintRoute from './routes/timetableConstraint.route.js';
 import CourseAssignmentRoute from './routes/courseAssignment.route.js';
+import GeneratorRoute from './routes/generator.route.js';
 
 const PORT = process.env.PORT;
 
@@ -37,6 +38,7 @@ app.use('/api/rooms', ClassroomRoute);
 app.use('/api/dashboard', DashboardRoute);
 app.use('/api/constraints', TimetableConstraintRoute);
 app.use('/api/timetable', CourseAssignmentRoute);
+app.use('/api/generator', GeneratorRoute);
 
 mongoose.connect(process.env.MONGO_URI)
 .then(() => console.log("Mongo Db is connected!"))
