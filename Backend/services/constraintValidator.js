@@ -50,6 +50,10 @@ export function validateHardConstraints(courseAssignment, allAssignments = [], c
   const spanViolations = checkSpanSlotContinuity(slots);
   violations.push(...spanViolations);
 
+  // Check for invalid slot numbers
+  const invalidSlotViolations = checkInvalidSlots(slots);
+  violations.push(...invalidSlotViolations);
+
   return violations;
 }
 
@@ -277,6 +281,28 @@ function checkSpanSlotContinuity(slots) {
           });
         }
       }
+    }
+  });
+
+  return violations;
+}
+
+function checkInvalidSlots(slots) {
+  const violations = [];
+  const MAX_SLOTS = 8; // Should match GA configuration
+
+  slots.forEach(slot => {
+    if (slot.slotNumber > MAX_SLOTS) {
+      violations.push({
+        constraintId: 'INVALID_SLOT_TIME',
+        description: 'Class scheduled outside valid hours',
+        details: {
+          course: slot.courseName,
+          day: slot.day,
+          slotNumber: slot.slotNumber,
+          maxSlots: MAX_SLOTS
+        }
+      });
     }
   });
 

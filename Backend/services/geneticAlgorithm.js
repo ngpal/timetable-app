@@ -117,7 +117,7 @@ export class GeneticAlgorithm {
       
       sessions.forEach(session => {
         // Find random slot
-        let slot = this.getRandomSlot();
+        let slot = this.getRandomSlot(session.duration || 1);
         
         assignments.push({
             courseId: course._id,
@@ -157,9 +157,19 @@ export class GeneticAlgorithm {
     return sessions;
   }
 
-  getRandomSlot() {
+  getRandomSlot(duration = 1) {
     const day = this.days[Math.floor(Math.random() * this.days.length)];
-    const slotNumber = this.slots[Math.floor(Math.random() * this.slots.length)];
+    
+    // Filter slots that can fit the duration
+    // For a duration of 1, any slot (1-8) is fine.
+    // For a duration of 3, max start slot is 6 (6, 7, 8).
+    const maxStartSlot = this.slots.length - duration + 1;
+    const validSlots = this.slots.filter(s => s <= maxStartSlot);
+    
+    // Fallback if no valid slots (should not happen with standard durations)
+    if (validSlots.length === 0) return { day, slotNumber: 1 };
+    
+    const slotNumber = validSlots[Math.floor(Math.random() * validSlots.length)];
     return { day, slotNumber };
   }
   
@@ -245,7 +255,7 @@ export class GeneticAlgorithm {
 
     // Randomly change day/slot OR room
     if (Math.random() < 0.5) {
-        const newSlot = this.getRandomSlot();
+        const newSlot = this.getRandomSlot(gene.spanSlots || 1);
         gene.day = newSlot.day;
         gene.slotNumber = newSlot.slotNumber;
     } else {

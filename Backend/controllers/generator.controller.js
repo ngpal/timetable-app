@@ -75,7 +75,6 @@ export const generateTimetable = async (req, res) => {
 
     // Fetch Course Assignment with populated references
     const assignment = await CourseAssignment.findById(courseAssignmentId)
-      .populate('courses.faculty.facultyId')
       .populate('courses.faculty.facultyId'); 
       // Note: Logic in GA currently expects course.faculty to be a single object.
       
