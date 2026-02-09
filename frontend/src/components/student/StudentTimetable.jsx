@@ -8,7 +8,7 @@ const StudentTimetable = () => {
     return (
         <div>
             <div className="page-header">
-                <h1>Class Timetable (Semester 4)</h1>
+                <h1>Class Timetable </h1>
                 <button className="action-btn" style={{backgroundColor: '#276749'}}>Download Image</button>
             </div>
 

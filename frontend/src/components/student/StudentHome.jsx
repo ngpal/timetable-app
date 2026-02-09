@@ -8,7 +8,7 @@ const StudentHome = () => {
     return (
         <div>
             <div className="page-header">
-                <h1>{isCR ? 'Class Representative Dashboard' : 'Student Dashboard'}</h1>
+                <h1>{isCR ? 'Class Representative Dashboard' : 'Welcome'}</h1>
             </div>
 
             <div className="stats-grid">
@@ -28,26 +28,9 @@ const StudentHome = () => {
                     </div>
                 )}
             </div>
-{/* 
-            <div className="recent-activity">
-                <h3>Notices & Updates</h3>
-                {isCR && (
-                     <div className="status-item" style={{backgroundColor: '#fffaf0', padding: '1rem', borderLeft: '4px solid #d69e2e'}}>
-                        <strong>CR Notice:</strong> Please collect the assignment submissions for Data Structures by Friday.
-                    </div>
-                )}
-                <div className="status-item">
-                    <span className="status-dot warning"></span>
-                    <strong>Timetable Update:</strong> Tomorrow's 9 AM Theory class moved to 10 AM.
-                </div>
-                 <div className="status-item">
-                    <span className="status-dot healthy"></span>
-                    <strong>Exam Schedule:</strong> Mid-terms starting from next Monday.
-                </div>
-            </div>
-        </div>
-    );
-}; */}  
+{
+
+}  
         </div>
     );
 };

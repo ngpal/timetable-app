@@ -9,8 +9,6 @@ const StudentDashboard = () => {
     const [userName, setUserName] = useState('Student');
 
     useEffect(() => {
-        // In a real app, this comes from Context or global state management
-        // For this demo, we try to recover the role from the last login in localStorage
         const email = localStorage.getItem('lastLoginEmail'); // We'll need to set this in Login
         if (email) {
             const users = JSON.parse(localStorage.getItem('users') || '[]');
@@ -31,7 +29,7 @@ const StudentDashboard = () => {
 
     const menuItems = [
         { path: '/student', label: 'Dashboard' },
-        { path: '/student/timetable', label: 'My Class Timetable' },
+        { path: '/student/timetable', label: 'Class Timetable' },
         // Only show Reschedule option if user is CR
         ...(isCR ? [{ path: '/student/reschedule', label: 'Reschedule Request (CR)', isSpecial: true }] : []),
     ];
@@ -41,8 +39,6 @@ const StudentDashboard = () => {
             <aside className="student-sidebar">
                 <h2>Student Portal</h2>
                 <div style={{marginBottom: '1rem', color: '#c6f6d5'}}>
-                    <div style={{fontSize: '0.9rem'}}>Welcome,</div>
-                    <div style={{fontWeight: 'bold', fontSize: '1.1rem'}}>{userName}</div>
                     {isCR && <span className="cr-badge" style={{marginTop:'0.5rem', display:'inline-block'}}>Class Rep</span>}
                 </div>
 
