@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
-import { Outlet, Link, useNavigate, useLocation } from 'react-router-dom';
 import './student.css';
+import { Link, Outlet, useLocation, useNavigate } from 'react-router-dom';  
 
 const StudentDashboard = () => {
     const navigate = useNavigate();
@@ -38,14 +38,14 @@ const StudentDashboard = () => {
         <div className="student-container">
             <aside className="student-sidebar">
                 <h2>Student Portal</h2>
-                <div style={{marginBottom: '1rem', color: '#c6f6d5'}}>
-                    {isCR && <span className="cr-badge" style={{marginTop:'0.5rem', display:'inline-block'}}>Class Rep</span>}
+                <div style={{ marginBottom: '1rem', color: '#c6f6d5' }}>
+                    {isCR && <span className="cr-badge" style={{ marginTop: '0.5rem', display: 'inline-block' }}>Class Rep</span>}
                 </div>
 
                 <nav className="sidebar-nav">
                     {menuItems.map((item) => {
-                         const isActive = item.path === '/student' 
-                            ? location.pathname === '/student' 
+                        const isActive = item.path === '/student'
+                            ? location.pathname === '/student'
                             : location.pathname.startsWith(item.path);
 
                         return (
@@ -53,16 +53,16 @@ const StudentDashboard = () => {
                                 key={item.path}
                                 to={item.path}
                                 className={`nav-item ${isActive ? 'active' : ''}`}
-                                style={item.isSpecial ? {color: '#fbd38d', fontWeight: 'bold'} : {}}
+                                style={item.isSpecial ? { color: '#fbd38d', fontWeight: 'bold' } : {}}
                             >
                                 {item.label}
                             </Link>
                         );
                     })}
                 </nav>
-                
+
                 <div className="sidebar-footer">
-                    <button className="logout-btn" style={{backgroundColor: '#22543d'}} onClick={handleLogout}>
+                    <button className="logout-btn" style={{ backgroundColor: '#22543d' }} onClick={handleLogout}>
                         Logout
                     </button>
                 </div>
