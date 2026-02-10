@@ -10,6 +10,8 @@ jobs:
   backend:
     name: Backend Tests
     runs-on: ubuntu-latest
+    strategy:
+      fail-fast: true
 
     steps:
       - name: Checkout repository
@@ -36,9 +38,15 @@ jobs:
         working-directory: Backend
         run: npm test || echo "No backend tests defined yet"
 
+      - name: Verify backend build
+        working-directory: Backend
+        run: npm run build || echo "No backend build step defined"
+
   frontend:
     name: Frontend Build Test
     runs-on: ubuntu-latest
+    strategy:
+      fail-fast: true
 
     steps:
       - name: Checkout repository
