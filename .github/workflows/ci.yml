@@ -21,9 +21,11 @@ jobs:
           node-version: 18
 
       - name: Install backend dependencies
+        working-directory: Backend
         run: npm install
 
       - name: Run backend tests
+        working-directory: Backend
         run: npm test || echo "No backend tests defined yet"
 
   frontend:
