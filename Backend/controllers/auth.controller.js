@@ -25,9 +25,7 @@ const extractDepartment = (email) => {
 // Admin email list (Amrita Coimbatore)
 const ADMIN_EMAILS = [
   'leela592023@gmail.com',
-  'admin@cb.amrita.edu',
-  'hod_cse@cb.amrita.edu'
-  // Add more admin emails as needed
+  'p3208470@gmail.com'
 ];
 
 export const login = async (req, res) => {
