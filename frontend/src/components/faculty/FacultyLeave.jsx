@@ -11,7 +11,7 @@ const FacultyLeave = () => {
     return (
         <div>
             <div className="page-header">
-                <h1>Apply for Leave / Unavailability</h1>
+                <h1>Apply for Leave</h1>
             </div>
 
             <div className="form-card" style={{margin: '0'}}>

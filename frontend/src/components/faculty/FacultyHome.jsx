@@ -7,7 +7,7 @@ const FacultyHome = () => {
   return (
     <div>
       <div className="page-header">
-        <h1>Faculty Overview</h1>
+        <h1>Welcome</h1>
       </div>
 
       <div className="faculty-dashboard-grid">

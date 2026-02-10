@@ -24,11 +24,10 @@ const FacultyRequests = () => {
                     requests.map(req => (
                         <div key={req.id} className="request-card">
                             <div>
-                                <h4 style={{margin: '0 0 0.5rem 0'}}>{req.class} - {req.subject}</h4>
-                                <p style={{margin: 0, fontSize: '0.9rem', color: '#4a5568'}}>
+                                <h4 style={{margin: '1 1 1.3rem 0'}}>{req.class}</h4>
+                                <p style={{margin: 0, fontSize: '1.25rem', color: '#4a5568'}}>
                                     Request to move from <strong>{req.currentSlot}</strong> to <strong>{req.requestedSlot}</strong>
                                 </p>
-                                <p style={{margin: '0.2rem 0 0 0', fontSize: '0.85rem', color: '#718096'}}>Reason: {req.reason}</p>
                             </div>
                             <div className="request-actions">
                                 <button className="accept-btn" onClick={() => handleAction(req.id, 'Accept')}>Approve</button>

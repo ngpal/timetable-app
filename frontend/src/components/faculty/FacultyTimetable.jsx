@@ -8,7 +8,7 @@ const FacultyTimetable = () => {
     return (
         <div>
             <div className="page-header">
-                <h1>My Timetable & Workload</h1>
+                <h1>Timetable</h1>
                 <button className="action-btn">Download PDF</button>
             </div>
 

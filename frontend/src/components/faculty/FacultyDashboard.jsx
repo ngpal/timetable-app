@@ -11,8 +11,8 @@ const FacultyDashboard = () => {
   };
 
   const menuItems = [
-    { path: '/faculty', label: 'My Dashboard' },
-    { path: '/faculty/timetable', label: 'My Timetable' },
+    { path: '/faculty', label: 'Dashboard' },
+    { path: '/faculty/timetable', label: ' Timetable' },
     { path: '/faculty/requests', label: 'Rescheduling Requests' },
     { path: '/faculty/leave', label: 'Apply Leave' },
   ];
@@ -21,9 +21,6 @@ const FacultyDashboard = () => {
     <div className="faculty-container">
       <aside className="faculty-sidebar">
         <h2>Faculty Portal</h2>
-        <div style={{marginBottom: '1rem', fontSize: '0.9rem', color: '#bee3f8'}}>
-          Welcome, Dr. Smith
-        </div>
         <nav className="sidebar-nav">
           {menuItems.map((item) => {
             const isActive = item.path === '/faculty' 
