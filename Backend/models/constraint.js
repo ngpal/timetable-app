@@ -120,7 +120,8 @@ export function getTotalSoftConstraintWeight() {
 // Helper function to normalize soft constraint score (0-100)
 export function normalizeSoftScore(weightedScore) {
   const totalWeight = getTotalSoftConstraintWeight();
-  return (weightedScore / totalWeight) * 100;
+  // Individual scores are already 0-100, so we just divide by total weight to average them
+  return weightedScore / totalWeight;
 }
 
 export default {
