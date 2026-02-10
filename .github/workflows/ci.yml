@@ -20,6 +20,14 @@ jobs:
         with:
           node-version: 18
 
+      - name: Cache backend npm dependencies
+        uses: actions/cache@v3
+        with:
+          path: ~/.npm
+          key: ${{ runner.os }}-backend-npm-${{ hashFiles('Backend/package-lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-backend-npm-
+
       - name: Install backend dependencies
         working-directory: Backend
         run: npm install
@@ -40,6 +48,14 @@ jobs:
         uses: actions/setup-node@v3
         with:
           node-version: 18
+
+      - name: Cache frontend npm dependencies
+        uses: actions/cache@v3
+        with:
+          path: ~/.npm
+          key: ${{ runner.os }}-frontend-npm-${{ hashFiles('frontend/package-lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-frontend-npm-
 
       - name: Install frontend dependencies
         working-directory: frontend
