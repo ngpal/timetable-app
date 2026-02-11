@@ -31,15 +31,15 @@ jobs:
             ${{ runner.os }}-backend-npm-
 
       - name: Install backend dependencies
-        working-directory: Backend
+        working-directory: backend
         run: npm install
 
       - name: Run backend tests
-        working-directory: Backend
+        working-directory: backend
         run: npm test || echo "No backend tests defined yet"
 
       - name: Verify backend build
-        working-directory: Backend
+        working-directory: backend
         run: npm run build || echo "No backend build step defined"
 
   frontend:
