@@ -33,6 +33,7 @@ The core of this application is the automated scheduling engine powered by a Gen
 ---
 
 # System Architecture
+![Architecture Diagram](images/ArchitectureDiagram.png)
 
 1. **End Users**: Administrator, Faculty, Students/Class Representatives.
 2. **Frontend Layer**: Web UI and role-specific dashboards; timetable visualization (day-wise and slot-wise views); user actions such as generating, viewing, and requesting timetable changes.
