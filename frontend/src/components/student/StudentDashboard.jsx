@@ -9,7 +9,7 @@ const StudentDashboard = () => {
     const [userName, setUserName] = useState('Student');
 
     useEffect(() => {
-        const email = localStorage.getItem('lastLoginEmail'); // We'll need to set this in Login
+        const email = localStorage.getItem('lastLoginEmail');
         if (email) {
             const users = JSON.parse(localStorage.getItem('users') || '[]');
             const user = users.find(u => u.email === email);
@@ -19,6 +19,8 @@ const StudentDashboard = () => {
             }
         }
     }, []);
+
+    const lastLoginTime = localStorage.getItem('lastLoginTime');
 
     const handleLogout = () => {
         localStorage.removeItem('lastLoginEmail');
@@ -37,15 +39,15 @@ const StudentDashboard = () => {
     return (
         <div className="student-container">
             <aside className="student-sidebar">
-                <h2>Student Portal</h2>
-                <div style={{marginBottom: '1rem', color: '#c6f6d5'}}>
-                    {isCR && <span className="cr-badge" style={{marginTop:'0.5rem', display:'inline-block'}}>Class Rep</span>}
+                <h2 onClick={() => navigate('/student')} style={{ cursor: 'pointer' }}>Student Portal</h2>
+                <div style={{ marginBottom: '1rem', color: '#c6f6d5' }}>
+                    {isCR && <span className="cr-badge" style={{ marginTop: '0.5rem', display: 'inline-block' }}>Class Rep</span>}
                 </div>
 
                 <nav className="sidebar-nav">
                     {menuItems.map((item) => {
-                         const isActive = item.path === '/student' 
-                            ? location.pathname === '/student' 
+                        const isActive = item.path === '/student'
+                            ? location.pathname === '/student'
                             : location.pathname.startsWith(item.path);
 
                         return (
@@ -53,23 +55,23 @@ const StudentDashboard = () => {
                                 key={item.path}
                                 to={item.path}
                                 className={`nav-item ${isActive ? 'active' : ''}`}
-                                style={item.isSpecial ? {color: '#fbd38d', fontWeight: 'bold'} : {}}
+                                style={item.isSpecial ? { color: '#fbd38d', fontWeight: 'bold' } : {}}
                             >
                                 {item.label}
                             </Link>
                         );
                     })}
                 </nav>
-                
+
                 <div className="sidebar-footer">
-                    <button className="logout-btn" style={{backgroundColor: '#22543d'}} onClick={handleLogout}>
+                    <button className="logout-btn" onClick={handleLogout}>
                         Logout
                     </button>
                 </div>
             </aside>
 
             <main className="student-content">
-                <Outlet context={{ isCR, userRole, userName }} />
+                <Outlet context={{ isCR, userRole, userName, lastLoginTime }} />
             </main>
         </div>
     );

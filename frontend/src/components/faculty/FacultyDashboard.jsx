@@ -1,10 +1,22 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { Outlet, Link, useNavigate, useLocation } from 'react-router-dom';
 import './faculty.css';
 
 const FacultyDashboard = () => {
   const navigate = useNavigate();
   const location = useLocation();
+  const [userName, setUserName] = useState('Faculty');
+
+  useEffect(() => {
+    const email = localStorage.getItem('lastLoginEmail');
+    if (email) {
+      const users = JSON.parse(localStorage.getItem('users') || '[]');
+      const user = users.find(u => u.email === email);
+      if (user) {
+        setUserName(user.fullName);
+      }
+    }
+  }, []);
 
   const handleLogout = () => {
     navigate('/');
@@ -20,13 +32,13 @@ const FacultyDashboard = () => {
   return (
     <div className="faculty-container">
       <aside className="faculty-sidebar">
-        <h2>Faculty Portal</h2>
+        <h2 onClick={() => navigate('/faculty')} style={{ cursor: 'pointer' }}>Faculty Portal</h2>
         <nav className="sidebar-nav">
           {menuItems.map((item) => {
-            const isActive = item.path === '/faculty' 
-              ? location.pathname === '/faculty' 
+            const isActive = item.path === '/faculty'
+              ? location.pathname === '/faculty'
               : location.pathname.startsWith(item.path);
-            
+
             return (
               <Link
                 key={item.path}
@@ -46,7 +58,7 @@ const FacultyDashboard = () => {
       </aside>
 
       <main className="faculty-content">
-        <Outlet />
+        <Outlet context={{ userName }} />
       </main>
     </div>
   );
