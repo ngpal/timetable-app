@@ -32,6 +32,7 @@ const StudentDashboard = () => {
     const menuItems = [
         { path: '/student', label: 'Dashboard' },
         { path: '/student/timetable', label: 'Class Timetable' },
+        { path: '/student/all-timetables', label: 'All Class Timetables' },
         // Only show Reschedule option if user is CR
         ...(isCR ? [{ path: '/student/reschedule', label: 'Reschedule Request (CR)', isSpecial: true }] : []),
     ];

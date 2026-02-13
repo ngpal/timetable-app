@@ -15,9 +15,12 @@ import FacultyHome from './components/faculty/FacultyHome'
 import FacultyTimetable from './components/faculty/FacultyTimetable'
 import FacultyRequests from './components/faculty/FacultyRequests'
 import FacultyLeave from './components/faculty/FacultyLeave'
+import FacultySlotEnquiry from './components/faculty/FacultySlotEnquiry'
+import FacultyAllTimetables from './components/faculty/FacultyAllTimetables'
 import StudentDashboard from './components/student/StudentDashboard'
 import StudentHome from './components/student/StudentHome'
 import StudentTimetable from './components/student/StudentTimetable'
+import StudentAllTimetables from './components/student/StudentAllTimetables'
 import CRReschedule from './components/student/CRReschedule'
 import './App.css'
 
@@ -27,8 +30,8 @@ function App() {
       <Routes>
         <Route path="/" element={<Home />} />
         <Route path="/login" element={<Login />} />
-        
-        
+
+
         {/* Admin Module Routes */}
         <Route path="/admin" element={<AdminDashboard />}>
           <Route index element={<AdminHome />} />
@@ -46,12 +49,15 @@ function App() {
           <Route path="timetable" element={<FacultyTimetable />} />
           <Route path="requests" element={<FacultyRequests />} />
           <Route path="leave" element={<FacultyLeave />} />
+          <Route path="enquiry" element={<FacultySlotEnquiry />} />
+          <Route path="all-timetables" element={<FacultyAllTimetables />} />
         </Route>
 
         {/* Student Module Routes */}
         <Route path="/student" element={<StudentDashboard />}>
           <Route index element={<StudentHome />} />
           <Route path="timetable" element={<StudentTimetable />} />
+          <Route path="all-timetables" element={<StudentAllTimetables />} />
           <Route path="reschedule" element={<CRReschedule />} />
         </Route>
       </Routes>

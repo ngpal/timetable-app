@@ -1,6 +1,14 @@
-import React from 'react';
 
-const FacultyTimetable = () => {
+import React, { useState } from 'react';
+
+const FacultyAllTimetables = () => {
+    const [selectedDepartment, setSelectedDepartment] = useState('CSE');
+    const [selectedYear, setSelectedYear] = useState('Year 1');
+    const [selectedSection, setSelectedSection] = useState('A');
+
+    const departments = ['CSE', 'ECE', 'MECH', 'CIVIL', 'AIDS'];
+    const years = ['Year 1', 'Year 2', 'Year 3', 'Year 4'];
+    const sections = ['A', 'B', 'C'];
 
     const timetableStructure = [
         { type: 'slot', id: 1, time: '8am - 9am' },
@@ -19,12 +27,56 @@ const FacultyTimetable = () => {
 
     return (
         <div style={{ padding: '1rem', width: '100%', boxSizing: 'border-box' }}>
-            <div className="page-header" style={{ marginBottom: '1rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                <h2 style={{ margin: 0 }}>Timetable</h2>
-                <button className="action-btn" style={{ backgroundColor: '#276749', color: 'white', border: 'none', padding: '0.5rem 1rem', borderRadius: '4px', cursor: 'pointer' }}>Download PDF</button>
+            <div style={{ marginBottom: '1.5rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                <h2 style={{ margin: 0, color: '#2d3748' }}>All Class Timetables</h2>
+
+                <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                        <label htmlFor="deptSelect" style={{ fontWeight: '600' }}>Dept:</label>
+                        <select
+                            id="deptSelect"
+                            value={selectedDepartment}
+                            onChange={(e) => setSelectedDepartment(e.target.value)}
+                            style={{ padding: '0.5rem', borderRadius: '4px', border: '1px solid #cbd5e0' }}
+                        >
+                            {departments.map(dept => (
+                                <option key={dept} value={dept}>{dept}</option>
+                            ))}
+                        </select>
+                    </div>
+
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                        <label htmlFor="yearSelect" style={{ fontWeight: '600' }}>Year:</label>
+                        <select
+                            id="yearSelect"
+                            value={selectedYear}
+                            onChange={(e) => setSelectedYear(e.target.value)}
+                            style={{ padding: '0.5rem', borderRadius: '4px', border: '1px solid #cbd5e0' }}
+                        >
+                            {years.map(year => (
+                                <option key={year} value={year}>{year}</option>
+                            ))}
+                        </select>
+                    </div>
+
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                        <label htmlFor="sectionSelect" style={{ fontWeight: '600' }}>Section:</label>
+                        <select
+                            id="sectionSelect"
+                            value={selectedSection}
+                            onChange={(e) => setSelectedSection(e.target.value)}
+                            style={{ padding: '0.5rem', borderRadius: '4px', border: '1px solid #cbd5e0' }}
+                        >
+                            {sections.map(section => (
+                                <option key={section} value={section}>{section}</option>
+                            ))}
+                        </select>
+                    </div>
+                </div>
             </div>
 
-            <div className="timetable-view" style={{ width: '100%' }}>
+            <div className="timetable-view" style={{ width: '100%', overflowX: 'auto' }}>
+                <h3 style={{ marginBottom: '1rem', color: '#4a5568' }}>Timetable for {selectedDepartment} - {selectedYear} - Section {selectedSection}</h3>
                 <table
                     style={{
                         width: '100%',
@@ -65,7 +117,7 @@ const FacultyTimetable = () => {
                                         whiteSpace: 'nowrap'
                                     }}
                                 >
-                                    {item.type === 'break' ? item.label : `Slot ${item.id}`}
+                                    {item.type === 'break' ? item.label : `Slot ${item.id} `}
                                 </th>
                             ))}
                         </tr>
@@ -162,4 +214,4 @@ const FacultyTimetable = () => {
     );
 };
 
-export default FacultyTimetable;
+export default FacultyAllTimetables;
