@@ -26,7 +26,8 @@ const extractDepartment = (email) => {
 const ADMIN_EMAILS = [
   'leela592023@gmail.com',
   'p3208470@gmail.com',
-  'nandagopalnmenon@gmail.com'
+  'nandagopalnmenon@gmail.com',
+  'nanthakumaran120@gmail.com'
 ];
 
 export const login = async (req, res) => {
