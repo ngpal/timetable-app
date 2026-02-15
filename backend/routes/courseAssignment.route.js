@@ -8,7 +8,7 @@ import {
     updateSlot,
     deleteCourseAssignment
 } from '../controllers/courseAssignment.controller.js';
-import { verifyAdmin } from '../utils/verifyUser.js';
+import { verifyAdmin, verifyUser } from '../utils/verifyUser.js';
 
 const router = express.Router();
 
@@ -31,7 +31,7 @@ const router = express.Router();
  *       500:
  *         description: Server error
  */
-router.get('/', verifyAdmin, getAllCourseAssignments);
+router.get('/', verifyUser, getAllCourseAssignments);
 
 /**
  * @swagger
@@ -58,7 +58,7 @@ router.get('/', verifyAdmin, getAllCourseAssignments);
  *       404:
  *         description: Not found
  */
-router.get('/find', verifyAdmin, getCourseAssignment);
+router.get('/find', verifyUser, getCourseAssignment);
 
 /**
  * @swagger

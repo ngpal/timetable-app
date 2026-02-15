@@ -3,16 +3,17 @@ import React from 'react';
 const StudentTimetable = () => {
 
     const timetableStructure = [
-        { type: 'slot', id: 1, time: '8am - 9am' },
-        { type: 'slot', id: 2, time: '9am - 10am' },
-        { type: 'slot', id: 3, time: '10am - 11am' },
-        { type: 'slot', id: 4, time: '11am - 12pm' },
-        { type: 'slot', id: 5, time: '12pm - 1pm' },
-        { type: 'break', id: 6, label: 'Lunch', time: '1pm - 2pm' },
-        { type: 'slot', id: 7, time: '2pm - 3pm' },
-        { type: 'slot', id: 8, time: '3pm - 4pm' },
-        { type: 'slot', id: 9, time: '4pm - 5pm' },
-        { type: 'slot', id: 10, time: '5pm - 6pm' }
+        { type: 'slot', id: 1, label: 'Slot 1', time: '08:00 - 08:50' },
+        { type: 'slot', id: 2, label: 'Slot 2', time: '08:50 - 09:40' },
+        { type: 'slot', id: 3, label: 'Slot 3', time: '09:40 - 10:30' },
+        { type: 'slot', id: 4, label: 'Slot 4', time: '10:45 - 11:35' },
+        { type: 'slot', id: 5, label: 'Slot 5', time: '11:35 - 12:25' },
+        { type: 'slot', id: 6, label: 'Slot 6', time: '12:25 - 13:15' },
+        { type: 'lunch', id: 'lb', label: 'Lunch Break', time: '13:15 - 14:05' },
+        { type: 'slot', id: 7, label: 'Slot 7', time: '14:05 - 14:55' },
+        { type: 'slot', id: 8, label: 'Slot 8', time: '14:55 - 15:45' },
+        { type: 'slot', id: 9, label: 'Slot 9', time: '15:45 - 16:35' },
+        { type: 'slot', id: 10, label: 'Slot 10', time: '16:35 - 17:25' }
     ];
 
     const days = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'];
@@ -31,7 +32,8 @@ const StudentTimetable = () => {
                         borderCollapse: 'collapse',
                         tableLayout: 'fixed',
                         fontSize: '0.75rem',
-                        backgroundColor: '#fff'
+                        backgroundColor: '#fff',
+                        border: '2px solid #2d3748'
                     }}
                 >
                     <thead>
@@ -39,68 +41,75 @@ const StudentTimetable = () => {
                             <th
                                 rowSpan="2"
                                 style={{
-                                    backgroundColor: '#a7ebe2',
-                                    color: '#000',
-                                    border: '1px solid #cbd5e0',
+                                    backgroundColor: '#558b2f',
+                                    color: '#fff',
+                                    border: '1px solid #1b5e20',
                                     padding: '0.5rem',
-                                    width: '8%', // Slightly smaller width for the Day column
+                                    width: '100px',
                                     verticalAlign: 'middle'
                                 }}
                             >
                                 Time/Day
                             </th>
 
-                            {timetableStructure.map((item) => (
-                                <th
-                                    key={item.id}
-                                    style={{
-                                        textAlign: 'center',
-                                        padding: '0.25rem',
-                                        backgroundColor: item.type === 'break' ? '#bee3f8' : '#e2e8f0', // Light blue for break
-                                        color: '#000',
-                                        border: '1px solid #cbd5e0',
-                                        fontSize: '0.75rem',
-                                        overflow: 'hidden',
-                                        textOverflow: 'ellipsis',
-                                        whiteSpace: 'nowrap'
-                                    }}
-                                >
-                                    {item.type === 'break' ? item.label : `Slot ${item.id}`}
-                                </th>
-                            ))}
+                            {timetableStructure.map((item) => {
+                                const isLunch = item.type === 'lunch';
+                                if (item.type === 'break') return <th key={item.id} rowSpan="2" style={{ width: '20px', backgroundColor: '#fff', border: '1px solid #cbd5e0', padding: 0 }}></th>;
+
+                                return (
+                                    <th
+                                        key={item.id}
+                                        style={{
+                                            textAlign: 'center',
+                                            padding: '0.5rem',
+                                            backgroundColor: isLunch ? '#558b2f' : '#558b2f',
+                                            color: '#fff',
+                                            border: '1px solid #1b5e20',
+                                            fontSize: '0.8rem',
+                                            whiteSpace: 'nowrap',
+                                            width: isLunch ? 'auto' : 'auto'
+                                        }}
+                                    >
+                                        {item.label}
+                                    </th>
+                                );
+                            })}
                         </tr>
 
                         <tr>
-                            {timetableStructure.map((item) => (
-                                <th
-                                    key={item.id}
-                                    style={{
-                                        textAlign: 'center',
-                                        padding: '0.25rem',
-                                        fontSize: '0.7rem',
-                                        backgroundColor: item.type === 'break' ? '#bee3f8' : '#e2e8f0',
-                                        color: '#4a5568',
-                                        border: '1px solid #cbd5e0',
-                                        fontWeight: 'normal'
-                                    }}
-                                >
-                                    {item.time}
-                                </th>
-                            ))}
+                            {timetableStructure.map((item) => {
+                                if (item.type === 'break') return null;
+                                return (
+                                    <th
+                                        key={`time-${item.id}`}
+                                        style={{
+                                            textAlign: 'center',
+                                            padding: '0.25rem',
+                                            fontSize: '0.7rem',
+                                            backgroundColor: '#558b2f',
+                                            color: '#fff',
+                                            border: '1px solid #1b5e20',
+                                            fontWeight: 'normal'
+                                        }}
+                                    >
+                                        {item.time}
+                                    </th>
+                                );
+                            })}
                         </tr>
                     </thead>
 
                     <tbody>
-                        {days.map((day) => (
+                        {days.map((day, index) => (
                             <tr key={day}>
                                 <td
                                     style={{
                                         fontWeight: 'bold',
-                                        backgroundColor: '#a7ebe2',
-                                        border: '1px solid #cbd5e0',
+                                        backgroundColor: '#fff9c4',
+                                        border: '1px solid #fbc02d',
                                         padding: '0.5rem',
                                         textAlign: 'center',
-                                        color: '#2d3748'
+                                        color: '#000'
                                     }}
                                 >
                                     {day}
@@ -108,22 +117,32 @@ const StudentTimetable = () => {
 
                                 {timetableStructure.map((item) => {
                                     if (item.type === 'break') {
-                                        return (
-                                            <td
-                                                key={item.id}
-                                                style={{
-                                                    backgroundColor: '#ebf8ff',
-                                                    border: '1px solid #cbd5e0',
-                                                    textAlign: 'center',
-                                                    verticalAlign: 'middle',
-                                                    color: '#2b6cb0',
-                                                    fontWeight: 'bold',
-                                                    letterSpacing: '0.05em'
-                                                }}
-                                            >
-                                                —
-                                            </td>
-                                        );
+                                        return <td key={item.id} style={{ backgroundColor: '#fff', border: '1px solid #bdbdbd' }}></td>;
+                                    }
+
+                                    if (item.type === 'lunch') {
+                                        if (index === 0) {
+                                            return (
+                                                <td
+                                                    key={item.id}
+                                                    rowSpan={days.length}
+                                                    style={{
+                                                        backgroundColor: '#00acc1',
+                                                        border: '1px solid #00838f',
+                                                        textAlign: 'center',
+                                                        verticalAlign: 'middle',
+                                                        color: '#fff',
+                                                        fontWeight: 'bold',
+                                                        writingMode: 'vertical-lr',
+                                                        transform: 'rotate(180deg)'
+                                                    }}
+                                                >
+                                                    {item.label}
+                                                </td>
+                                            );
+                                        } else {
+                                            return null;
+                                        }
                                     }
 
                                     return (
@@ -134,7 +153,7 @@ const StudentTimetable = () => {
                                                 border: '1px solid #cbd5e0',
                                                 backgroundColor: '#fff',
                                                 padding: '0.25rem',
-                                                height: '60px', // Fixed height to ensure uniformity
+                                                height: '60px',
                                                 verticalAlign: 'middle'
                                             }}
                                         >

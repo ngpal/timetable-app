@@ -33,8 +33,6 @@ const StudentDashboard = () => {
         { path: '/student', label: 'Dashboard' },
         { path: '/student/timetable', label: 'Class Timetable' },
         { path: '/student/all-timetables', label: 'All Class Timetables' },
-        // Only show Reschedule option if user is CR
-        ...(isCR ? [{ path: '/student/reschedule', label: 'Reschedule Request (CR)', isSpecial: true }] : []),
     ];
 
     return (
@@ -56,7 +54,6 @@ const StudentDashboard = () => {
                                 key={item.path}
                                 to={item.path}
                                 className={`nav-item ${isActive ? 'active' : ''}`}
-                                style={item.isSpecial ? { color: '#fbd38d', fontWeight: 'bold' } : {}}
                             >
                                 {item.label}
                             </Link>

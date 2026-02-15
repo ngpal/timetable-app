@@ -44,11 +44,11 @@ const Login = () => {
         }
       } else {
         console.error('Login failed:', data.message);
-        alert('Login failed. Please try again.');
+        alert(`Login failed: ${data.message}`);
       }
     } catch (error) {
       console.error('Login error:', error);
-      alert('Login failed. Please try again.');
+      alert(`Login error: ${error.message}`);
 
 
 
