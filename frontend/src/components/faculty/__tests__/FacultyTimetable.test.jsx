@@ -5,7 +5,7 @@ import FacultyTimetable from '../FacultyTimetable';
 
 describe('FacultyTimetable Basic Tests', () => {
   
-  // We mock Math.random to make the generated timetable predictable
+
   beforeAll(() => {
     jest.spyOn(global.Math, 'random').mockReturnValue(0.9); // Forces a class to appear in every slot
   });
@@ -42,8 +42,7 @@ describe('FacultyTimetable Basic Tests', () => {
   test('renders course data when Math.random is high', () => {
     render(<FacultyTimetable />);
     
-    // Because we mocked Math.random to 0.9, classes should be visible
-    // We check for the room number or course code prefix
+
     expect(screen.getAllByText(/R-101/i).length).toBeGreaterThan(0);
     expect(screen.getAllByText(/CS10/i).length).toBeGreaterThan(0);
   });

@@ -5,7 +5,7 @@ import StudentTimetable from '../StudentTimetable';
 
 describe('StudentTimetable Basic Tests', () => {
   
-  // Mock Math.random to make the generated data predictable for testing
+
   beforeAll(() => {
     jest.spyOn(global.Math, 'random').mockReturnValue(0.9); // Forces classes to render in every slot
   });

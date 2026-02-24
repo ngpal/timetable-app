@@ -3,7 +3,7 @@ import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import '@testing-library/jest-dom';
 import AdminTimetable from '../AdminTimetable';
 
-// 1. Basic Service Mocks
+
 jest.mock('../../../services/constraintService', () => ({
   constraintService: {
     getActiveConstraint: jest.fn().mockResolvedValue({
@@ -23,7 +23,7 @@ jest.mock('../../../services/courseAssignmentService', () => ({
   updateCourseAssignment: jest.fn()
 }));
 
-// 2. Mock Child Component & Icons (to avoid rendering errors)
+
 jest.mock('../AmritaTimetable', () => () => <div>Timetable Display</div>);
 jest.mock('lucide-react', () => ({
   Save: () => <span>Save</span>,
@@ -36,7 +36,6 @@ describe('AdminTimetable Basic Tests', () => {
   
   test('renders the page title', async () => {
     render(<AdminTimetable />);
-    // Use findBy to wait for the "Loading..." state to finish
     const title = await screen.findByText(/Timetable Generator/i);
     expect(title).toBeInTheDocument();
   });

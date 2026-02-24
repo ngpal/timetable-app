@@ -4,7 +4,7 @@ import { MemoryRouter } from 'react-router-dom';
 import '@testing-library/jest-dom';
 import FacultyHome from '../FacultyHome';
 
-// Mock useNavigate to verify navigation behavior
+
 const mockedUsedNavigate = jest.fn();
 jest.mock('react-router-dom', () => ({
    ...jest.requireActual('react-router-dom'),
@@ -43,7 +43,7 @@ describe('FacultyHome Basic Tests', () => {
   test('navigates to requests page when pending requests card is clicked', () => {
     setup();
     
-    // Find the card by its heading and click the parent container
+
     const requestsCard = screen.getByText(/Pending Requests/i).closest('.stat-card');
     fireEvent.click(requestsCard);
     

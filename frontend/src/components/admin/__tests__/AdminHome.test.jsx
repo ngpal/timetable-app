@@ -3,7 +3,6 @@ import { MemoryRouter } from "react-router-dom";
 import AdminHome from "../AdminHome";
 import * as dashboardService from "../../../services/dashboardService";
 
-// Mock Recharts
 jest.mock("recharts", () => ({
   ResponsiveContainer: ({ children }) => <div>{children}</div>,
   BarChart: ({ children }) => <div>{children}</div>,
@@ -25,13 +24,11 @@ describe("AdminHome", () => {
     roomCount: 5,
   };
 
-  // Clear mocks after each test to prevent side effects
   afterEach(() => {
     jest.restoreAllMocks();
   });
 
   test("shows loading initially", async () => {
-    // We return a promise that doesn't resolve immediately to catch the loading state
     jest.spyOn(dashboardService, "getDashboardStats").mockReturnValue(new Promise(() => {}));
 
     render(
@@ -52,8 +49,7 @@ describe("AdminHome", () => {
       </MemoryRouter>
     );
 
-    // Wait for the data to actually appear. 
-    // This implicitly handles the 'act' because RTL's waitFor is act-wrapped.
+
     await waitFor(() => {
       expect(screen.getByText("10")).toBeInTheDocument();
       expect(screen.getByText("20")).toBeInTheDocument();

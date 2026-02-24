@@ -4,7 +4,7 @@ import { MemoryRouter, Routes, Route } from 'react-router-dom';
 import '@testing-library/jest-dom';
 import FacultyDashboard from '../FacultyDashboard';
 
-// Mock useNavigate
+
 const mockedUsedNavigate = jest.fn();
 jest.mock('react-router-dom', () => ({
    ...jest.requireActual('react-router-dom'),
@@ -32,7 +32,7 @@ describe('FacultyDashboard Basic Tests', () => {
     
     expect(screen.getByText(/Faculty Portal/i)).toBeInTheDocument();
     expect(screen.getByText('Dashboard')).toBeInTheDocument();
-    // Using getAllByText here is a safe way to handle duplicates if they exist
+
     expect(screen.getAllByText(/Timetable/i)[0]).toBeInTheDocument();
     expect(screen.getByText(/Rescheduling Requests/i)).toBeInTheDocument();
     expect(screen.getByText(/Apply Leave/i)).toBeInTheDocument();
@@ -41,8 +41,7 @@ describe('FacultyDashboard Basic Tests', () => {
   test('highlights the active link based on route', () => {
     renderDashboard('/faculty/timetable');
     
-    // We use getByRole('link') to specifically find the sidebar anchor tag
-    // and ignore the "Timetable Page Content" div
+
     const timetableLink = screen.getByRole('link', { name: /Timetable/i });
     const dashboardLink = screen.getByRole('link', { name: /Dashboard/i });
 
@@ -61,7 +60,7 @@ describe('FacultyDashboard Basic Tests', () => {
 
   test('renders the Outlet content', () => {
     renderDashboard('/faculty');
-    // Verifies that the nested child route is visible
+
     expect(screen.getByText('Dashboard Page Content')).toBeInTheDocument();
   });
 

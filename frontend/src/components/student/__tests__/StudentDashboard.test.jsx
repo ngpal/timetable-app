@@ -4,7 +4,7 @@ import { MemoryRouter, Routes, Route } from 'react-router-dom';
 import '@testing-library/jest-dom';
 import StudentDashboard from '../StudentDashboard';
 
-// Mock useNavigate
+
 const mockedUsedNavigate = jest.fn();
 jest.mock('react-router-dom', () => ({
   ...jest.requireActual('react-router-dom'),
@@ -22,7 +22,7 @@ describe('StudentDashboard Basic Tests', () => {
     return render(
       <MemoryRouter initialEntries={[initialPath]}>
         <Routes>
-          {/* THE FIX: Added children routes so they match the initialPath */}
+          {/*Added children routes so they match the initialPath */}
           <Route path="/student" element={<StudentDashboard />}>
             <Route index element={<div>Dashboard Page</div>} />
             <Route path="timetable" element={<div>Timetable Page</div>} />
@@ -46,7 +46,7 @@ describe('StudentDashboard Basic Tests', () => {
     expect(screen.getByText('Dashboard')).toBeInTheDocument();
     expect(screen.getByText(/Class Timetable/i)).toBeInTheDocument();
     
-    // Reschedule link should not be visible for normal student
+
     expect(screen.queryByText(/Reschedule Request/i)).not.toBeInTheDocument();
   });
 
@@ -68,7 +68,7 @@ describe('StudentDashboard Basic Tests', () => {
         { email: 'student@test.com', role: 'student', fullName: 'John Doe' }
     ]));
 
-    // This now works because the /student/timetable route is defined in renderDashboard
+
     renderDashboard('/student/timetable');
     
     const timetableLink = screen.getByRole('link', { name: /Class Timetable/i });

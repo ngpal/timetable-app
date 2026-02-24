@@ -6,7 +6,6 @@ import FacultyLeave from '../FacultyLeave';
 describe('FacultyLeave Basic Tests', () => {
   
   beforeEach(() => {
-    // Mock alert before each test to track calls
     window.alert = jest.fn();
   });
 
@@ -30,22 +29,21 @@ describe('FacultyLeave Basic Tests', () => {
   test('triggers alert on form submission', () => {
     render(<FacultyLeave />);
     
-    // 1. Fill in the required date inputs to bypass browser validation
     const dateInputs = screen.getAllByRole('textbox', { hidden: true }).filter(
       input => input.type === 'date'
     );
     
-    // Fallback search if role matching fails for date types
+
     const genericInputs = document.querySelectorAll('input[type="date"]');
     
     fireEvent.change(genericInputs[0], { target: { value: '2026-03-01' } });
     fireEvent.change(genericInputs[1], { target: { value: '2026-03-05' } });
 
-    // 2. Click the submit button
+
     const submitBtn = screen.getByRole('button', { name: /Submit Application/i });
     fireEvent.click(submitBtn);
     
-    // 3. Verify alert was called
+
     expect(window.alert).toHaveBeenCalledWith('Leave Application Submitted to Admin for Approval.');
   });
 

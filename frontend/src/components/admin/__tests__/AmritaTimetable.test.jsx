@@ -3,7 +3,7 @@ import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import '@testing-library/jest-dom';
 import AmritaTimetable from '../AmritaTimetable';
 
-// 1. Mock the Service Path
+
 jest.mock('../../../services/courseAssignmentService', () => ({
   getCourseAssignment: jest.fn()
 }));
@@ -34,7 +34,7 @@ describe('AmritaTimetable Basic Tests', () => {
     
     expect(screen.getByText(/GENERATED PREVIEW/i)).toBeInTheDocument();
     
-    // Use getAllByText because these appear in BOTH the grid and the bottom table
+
     const courseCodes = screen.getAllByText('21CS301');
     const venues = screen.getAllByText('A301');
 
@@ -54,7 +54,7 @@ describe('AmritaTimetable Basic Tests', () => {
     
     await waitFor(() => {
       expect(getCourseAssignment).toHaveBeenCalled();
-      // Verify at least one instance exists using getAllByText
+
       expect(screen.getAllByText('21CS301')[0]).toBeInTheDocument();
     });
   });
@@ -65,7 +65,7 @@ describe('AmritaTimetable Basic Tests', () => {
     const lunchCell = screen.getByText(/Lunch Break/i);
     expect(lunchCell).toBeInTheDocument();
     
-    // rowSpan is treated as a property in JSDOM
+
     expect(lunchCell.rowSpan).toBe(5);
   });
 
@@ -84,7 +84,7 @@ describe('AmritaTimetable Basic Tests', () => {
     
     fireEvent.click(screen.getByText(/Load Timetable/i));
     
-    // findByText handles the transition from "loading" to "no data"
+
     expect(await screen.findByText(/No Timetable Found/i)).toBeInTheDocument();
   });
 });

@@ -4,7 +4,7 @@ import { MemoryRouter, useOutletContext } from 'react-router-dom';
 import '@testing-library/jest-dom';
 import StudentHome from '../StudentHome';
 
-// 1. Mock the react-router-dom hooks
+
 const mockedUsedNavigate = jest.fn();
 jest.mock('react-router-dom', () => ({
   ...jest.requireActual('react-router-dom'),

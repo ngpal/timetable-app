@@ -4,7 +4,7 @@ import { useOutletContext } from 'react-router-dom';
 import '@testing-library/jest-dom';
 import CRReschedule from '../CRReschedule';
 
-// Mock the react-router-dom hook
+
 jest.mock('react-router-dom', () => ({
   ...jest.requireActual('react-router-dom'),
   useOutletContext: jest.fn(),
@@ -28,7 +28,7 @@ describe('CRReschedule Basic Tests', () => {
     render(<CRReschedule />);
     
     expect(screen.getByText(/Request Class Rescheduling/i)).toBeInTheDocument();
-    // Use getByText since getByLabelText is failing due to missing 'for' attribute
+
     expect(screen.getByText(/Subject \/ Course/i)).toBeInTheDocument();
   });
 
@@ -36,7 +36,7 @@ describe('CRReschedule Basic Tests', () => {
     useOutletContext.mockReturnValue({ isCR: true });
     render(<CRReschedule />);
     
-    // Select the first 'select' element in the document
+
     const select = screen.getByDisplayValue(/Select Course/i);
     fireEvent.change(select, { target: { value: 'CS201' } });
     
@@ -47,20 +47,20 @@ describe('CRReschedule Basic Tests', () => {
     useOutletContext.mockReturnValue({ isCR: true });
     render(<CRReschedule />);
     
-    // 1. Fill Course (using display value)
+
     const courseSelect = screen.getByDisplayValue(/Select Course/i);
     fireEvent.change(courseSelect, { target: { value: 'CS201' } });
     
-    // 2. Fill Dates
+
     const dateInputs = document.querySelectorAll('input[type="date"]');
     fireEvent.change(dateInputs[0], { target: { value: '2026-03-10' } });
     fireEvent.change(dateInputs[1], { target: { value: '2026-03-11' } });
     
-    // 3. Fill Reason
+
     const reasonText = screen.getByPlaceholderText(/Guest lecture clash/i);
     fireEvent.change(reasonText, { target: { value: 'Holiday' } });
 
-    // 4. Submit
+
     const submitBtn = screen.getByRole('button', { name: /Send Request/i });
     fireEvent.click(submitBtn);
     
