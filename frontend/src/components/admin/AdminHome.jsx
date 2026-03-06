@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { getDashboardStats } from '../../services/dashboardService';
-import { BarChart, Bar, PieChart, Pie, Cell, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
+import { getAllCourses } from '../../services/courseService';
+import { PieChart, Pie, BarChart, Bar, Cell, Tooltip, Legend, ResponsiveContainer, XAxis, YAxis, CartesianGrid } from 'recharts';
 
 const AdminHome = () => {
   const navigate = useNavigate();
@@ -12,7 +13,19 @@ const AdminHome = () => {
   ]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [chartData, setChartData] = useState([]);
+  const [courseTypeData, setCourseTypeData] = useState([]);
+  const [departmentData, setDepartmentData] = useState([]);
+
+  const COLOR_PALETTE = [
+    '#4299e1', 
+    '#48bb78', 
+    '#9f7aea', 
+    '#ed8936', 
+    '#f56565', 
+    '#38b2ac', 
+    '#ed64a6', 
+    '#ecc94b', 
+  ];
 
   useEffect(() => {
     fetchStats();
@@ -24,27 +37,54 @@ const AdminHome = () => {
     try {
       const data = await getDashboardStats();
       
-      // Update stats with real data from backend
       setStats([
-        { title: 'Total Faculty', value: String(data.facultyCount), subtitle: 'Active Professors & Lecturers', link: '/admin/faculty', color: '#4299e1' },
-        { title: 'Total Courses', value: String(data.courseCount), subtitle: 'Theory & Labs Offered', link: '/admin/courses', color: '#48bb78' },
-        { title: 'Total Rooms', value: String(data.roomCount), subtitle: 'Classrooms & Labs', link: '/admin/rooms', color: '#ed8936' },
+        { title: 'Total Faculty', value: String(data.facultyCount), subtitle: 'Active Professors & Lecturers', link: '/admin/faculty', color: '#1E40AF' },
+        { title: 'Total Courses', value: String(data.courseCount), subtitle: 'Theory & Labs Offered', link: '/admin/courses', color: '#047857' },
+        { title: 'Total Rooms', value: String(data.roomCount), subtitle: 'Classrooms & Labs', link: '/admin/rooms', color: '#B45309' },
       ]);
 
-      // Prepare chart data
-      setChartData([
-        { name: 'Faculty', count: data.facultyCount, color: '#4299e1' },
-        { name: 'Courses', count: data.courseCount, color: '#48bb78' },
-        { name: 'Rooms', count: data.roomCount, color: '#ed8936' },
-      ]);
+      // Fetch course breakdown
+      const courses = await getAllCourses();
+
+      // Group courses by type dynamically
+      const courseTypeMap = {};
+      courses.forEach(course => {
+        const type = course.courseType || 'Other';
+        courseTypeMap[type] = (courseTypeMap[type] || 0) + 1;
+      });
+
+      // Convert to array format for pie chart
+      const courseData = Object.entries(courseTypeMap).map(([name, value], index) => ({
+        name,
+        value,
+        color: COLOR_PALETTE[index % COLOR_PALETTE.length]
+      }));
+
+      setCourseTypeData(courseData);
+
+      // Group courses by department
+      const departmentMap = {};
+      courses.forEach(course => {
+        const dept = course.department || 'Not Assigned';
+        departmentMap[dept] = (departmentMap[dept] || 0) + 1;
+      });
+
+      // Convert to array format for bar chart
+      const deptData = Object.entries(departmentMap)
+        .map(([name, value], index) => ({ 
+          name, 
+          value,
+          fill: COLOR_PALETTE[index % COLOR_PALETTE.length]
+        }))
+        .sort((a, b) => b.value - a.value); // Sort by count descending
+
+      setDepartmentData(deptData);
     } catch (err) {
       setError(err.message || 'Failed to fetch dashboard statistics');
     } finally {
       setLoading(false);
     }
   };
-
-  const COLORS = ['#4299e1', '#48bb78', '#ed8936'];
 
   return (
     <div>
@@ -86,65 +126,86 @@ const AdminHome = () => {
             ))}
           </div>
 
-          {/* Charts Section */}
+          {/* Analytics Grid - Charts Side by Side */}
           <div style={{ 
-            marginTop: '2rem', 
-            display: 'grid', 
-            gridTemplateColumns: 'repeat(auto-fit, minmax(400px, 1fr))', 
-            gap: '2rem' 
+            marginTop: '2rem',
+            display: 'grid',
+            gridTemplateColumns: 'repeat(auto-fit, minmax(450px, 1fr))',
+            gap: '2rem'
           }}>
-            {/* Bar Chart */}
-            <div style={{ 
-              backgroundColor: 'white', 
-              padding: '1.5rem', 
-              borderRadius: '12px', 
-              boxShadow: '0 2px 8px rgba(0,0,0,0.1)' 
-            }}>
-              <h3 style={{ marginBottom: '1rem', color: '#2d3748' }}>Resource Distribution</h3>
-              <ResponsiveContainer width="100%" height={300}>
-                <BarChart data={chartData}>
-                  <CartesianGrid strokeDasharray="3 3" />
-                  <XAxis dataKey="name" />
-                  <YAxis />
-                  <Tooltip />
-                  <Legend />
-                  <Bar dataKey="count" fill="#4299e1" radius={[8, 8, 0, 0]}>
-                    {chartData.map((entry, index) => (
-                      <Cell key={`cell-${index}`} fill={entry.color} />
-                    ))}
-                  </Bar>
-                </BarChart>
-              </ResponsiveContainer>
+            {/* Course Type Distribution - Pie Chart */}
+            <div>
+              <h2 style={{ marginBottom: '1rem', color: '#2d3748', fontSize: '1.25rem', fontWeight: '600' }}>Course Type Distribution</h2>
+              <div style={{ 
+                backgroundColor: 'white', 
+                padding: '1.5rem', 
+                borderRadius: '12px', 
+                boxShadow: '0 2px 8px rgba(0,0,0,0.1)' 
+              }}>
+                <ResponsiveContainer width="100%" height={300}>
+                  <PieChart>
+                    <Pie
+                      data={courseTypeData}
+                      cx="50%"
+                      cy="50%"
+                      labelLine={false}
+                      label={({ name, value }) => `${name}: ${value}`}
+                      outerRadius={90}
+                      fill="#8884d8"
+                      dataKey="value"
+                    >
+                      {courseTypeData.map((entry, index) => (
+                        <Cell key={`cell-${index}`} fill={entry.color} />
+                      ))}
+                    </Pie>
+                    <Tooltip />
+                    <Legend />
+                  </PieChart>
+                </ResponsiveContainer>
+              </div>
             </div>
 
-            {/* Pie Chart */}
-            <div style={{ 
-              backgroundColor: 'white', 
-              padding: '1.5rem', 
-              borderRadius: '12px', 
-              boxShadow: '0 2px 8px rgba(0,0,0,0.1)' 
-            }}>
-              <h3 style={{ marginBottom: '1rem', color: '#2d3748' }}>Resource Breakdown</h3>
-              <ResponsiveContainer width="100%" height={300}>
-                <PieChart>
-                  <Pie
-                    data={chartData}
-                    cx="50%"
-                    cy="50%"
-                    labelLine={false}
-                    label={({ name, percent }) => `${name}: ${(percent * 100).toFixed(0)}%`}
-                    outerRadius={100}
-                    fill="#8884d8"
-                    dataKey="count"
-                  >
-                    {chartData.map((entry, index) => (
-                      <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
-                    ))}
-                  </Pie>
-                  <Tooltip />
-                  <Legend />
-                </PieChart>
-              </ResponsiveContainer>
+            {/* Courses per Department - Bar Chart */}
+            <div>
+              <h2 style={{ marginBottom: '1rem', color: '#2d3748', fontSize: '1.25rem', fontWeight: '600' }}>Courses per Department</h2>
+              <div style={{ 
+                backgroundColor: 'white', 
+                padding: '1.5rem', 
+                borderRadius: '12px', 
+                boxShadow: '0 2px 8px rgba(0,0,0,0.1)' 
+              }}>
+                <ResponsiveContainer width="100%" height={350}>
+                  <BarChart data={departmentData}>
+                    <CartesianGrid strokeDasharray="3 3" stroke="#e2e8f0" />
+                    <XAxis 
+                      dataKey="name" 
+                      angle={-30}
+                      textAnchor="end"
+                      height={100}
+                      interval={0}
+                      style={{ fontSize: '0.9rem', fontWeight: '500' }}
+                    />
+                    <YAxis style={{ fontSize: '0.85rem' }} />
+                    <Tooltip 
+                      contentStyle={{ 
+                        backgroundColor: 'white', 
+                        border: '1px solid #e2e8f0',
+                        borderRadius: '8px' 
+                      }}
+                    />
+                    <Legend />
+                    <Bar 
+                      dataKey="value" 
+                      name="Courses" 
+                      radius={[8, 8, 0, 0]}
+                    >
+                      {departmentData.map((entry, index) => (
+                        <Cell key={`cell-${index}`} fill={entry.fill} />
+                      ))}
+                    </Bar>
+                  </BarChart>
+                </ResponsiveContainer>
+              </div>
             </div>
           </div>
         </>
