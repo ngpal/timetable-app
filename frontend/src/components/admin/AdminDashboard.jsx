@@ -23,7 +23,7 @@ const AdminDashboard = () => {
   return (
     <div className="admin-container">
       <aside className="admin-sidebar">
-        <h2>EDU Portal</h2>
+        <h2>Admin Console</h2>
         <nav className="sidebar-nav">
           {menuItems.map((item) => {
           // Exact path matching to prevent multiple active states

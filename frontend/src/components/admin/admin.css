@@ -8,32 +8,16 @@
 
 .admin-sidebar {
   width: 260px;
-  background-color: #1e293b;
+  background-color: #1a202c;
   color: white;
   display: flex;
   flex-direction: column;
-  padding: 1.5rem 1rem;
+  padding: 1rem;
   box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
   position: fixed;   
   top: 0;
   left: 0;
   height: 100vh;
-}
-
-.sidebar-brand {
-  font-size: 1.5rem;
-  font-weight: 700;
-  margin-bottom: 1.5rem;
-  padding-bottom: 0;
-  letter-spacing: 0.5px;
-}
-
-.brand-edu {
-  color: #3b82f6;
-}
-
-.brand-portal {
-  color: white;
 }
 
 .admin-sidebar h2 {
@@ -47,51 +31,45 @@
 .sidebar-nav {
   display: flex;
   flex-direction: column;
-  gap: 1rem;
+  gap: 0.5rem;
   flex: 1;
-  margin-top: 1.5rem;
 }
 
 .nav-item {
   display: block;
-  padding: 1rem 1rem;
-  color: #94a3b8;
+  padding: 0.8rem 1rem;
+  color: #cbd5e0;
   text-decoration: none;
-  border-radius: 8px;
+  border-radius: 6px;
   transition: all 0.2s;
-  font-size: 1rem;
 }
 
-.nav-item:hover {
-  background-color: #334155;
-  color: white;
-}
-
+.nav-item:hover,
 .nav-item.active {
-  background-color: #475569;
+  background-color: #2d3748;
   color: white;
+  transform: translateX(5px);
 }
 
 .sidebar-footer {
   margin-top: auto;
   padding-top: 1rem;
+  border-top: 1px solid #2d3748;
 }
 
 .logout-btn {
   width: 100%;
-  background-color: #f1f5f9;
+  background-color: #e53e3e;
   border: none;
-  padding: 0.9rem 1rem;
-  color: #1e293b;
-  border-radius: 8px;
+  padding: 0.8rem;
+  color: white;
+  border-radius: 6px;
   cursor: pointer;
-  font-weight: 500;
-  font-size: 1rem;
-  transition: all 0.2s;
+  font-weight: bold;
 }
 
 .logout-btn:hover {
-  background-color: #e2e8f0;
+  background-color: #c53030;
 }
 
 .admin-content {
@@ -103,32 +81,28 @@
 
 .page-header {
   margin-bottom: 2rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
 }
 
 .page-header h1 {
   font-size: 2rem;
   color: #2d3748;
-  margin: 0;
-  font-weight: 700;
 }
 
 .action-btn {
   background-color: #3182ce;
   color: white;
   border: none;
-  padding: 0.7rem 1.4rem;
-  border-radius: 8px;
+  padding: 0.6rem 1.2rem;
+  border-radius: 6px;
   cursor: pointer;
   font-size: 1rem;
-  font-weight: 500;
-  transition: all 0.2s;
-  box-shadow: 0 2px 4px rgba(49, 130, 206, 0.3);
 }
 
 .action-btn:hover {
   background-color: #2b6cb0;
-  transform: translateY(-1px);
-  box-shadow: 0 4px 8px rgba(49, 130, 206, 0.4);
 }
 
 /* Table Styles from scratch */
