@@ -38,10 +38,16 @@ export const deleteCourseAssignment = async (id) => {
 
 // Update a specific timetable slot
 export const updateSlot = async (assignmentId, day, slotNumber, slotData) => {
-  const response = await axiosInstance.put(`/${assignmentId}/slots`, {
-    day,
-    slotNumber,
-    slotData
-  });
-  return response.data;
+    const response = await axiosInstance.put(`/${assignmentId}/slots`, {
+        day,
+        slotNumber,
+        slotData
+    });
+    return response.data;
+};
+
+// Get timetable aggregated for a specific faculty
+export const getFacultyTimetable = async (facultyId) => {
+    const response = await axiosInstance.get('/faculty-timetable', { params: { facultyId } });
+    return response.data;
 };

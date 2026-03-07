@@ -6,7 +6,8 @@ import {
     updateCourseAssignment,
     updateTimetableSlot,
     updateSlot,
-    deleteCourseAssignment
+    deleteCourseAssignment,
+    getFacultyTimetable
 } from '../controllers/courseAssignment.controller.js';
 import { verifyAdmin } from '../utils/verifyUser.js';
 
@@ -59,6 +60,7 @@ router.get('/', verifyAdmin, getAllCourseAssignments);
  *         description: Not found
  */
 router.get('/find', verifyAdmin, getCourseAssignment);
+router.get('/faculty-timetable', verifyAdmin, getFacultyTimetable);
 
 /**
  * @swagger
