@@ -7,12 +7,12 @@ import FacultyDashboard from '../FacultyDashboard';
 
 const mockedUsedNavigate = jest.fn();
 jest.mock('react-router-dom', () => ({
-   ...jest.requireActual('react-router-dom'),
+  ...jest.requireActual('react-router-dom'),
   useNavigate: () => mockedUsedNavigate,
 }));
 
 describe('FacultyDashboard Basic Tests', () => {
-  
+
   const renderDashboard = (initialPath = '/faculty') => {
     return render(
       <MemoryRouter initialEntries={[initialPath]}>
@@ -29,8 +29,8 @@ describe('FacultyDashboard Basic Tests', () => {
 
   test('renders sidebar navigation items', () => {
     renderDashboard();
-    
-    expect(screen.getByText(/Faculty Portal/i)).toBeInTheDocument();
+
+    expect(screen.getByRole('heading', { name: /Edu(\s*)Portal/i })).toBeInTheDocument();
     expect(screen.getByText('Dashboard')).toBeInTheDocument();
 
     expect(screen.getAllByText(/Timetable/i)[0]).toBeInTheDocument();
@@ -40,9 +40,9 @@ describe('FacultyDashboard Basic Tests', () => {
 
   test('highlights the active link based on route', () => {
     renderDashboard('/faculty/timetable');
-    
 
-    const timetableLink = screen.getByRole('link', { name: /Timetable/i });
+
+    const timetableLink = screen.getByRole('link', { name: 'Timetable' });
     const dashboardLink = screen.getByRole('link', { name: /Dashboard/i });
 
     expect(timetableLink).toHaveClass('active');
@@ -51,10 +51,10 @@ describe('FacultyDashboard Basic Tests', () => {
 
   test('navigates to login page on logout click', () => {
     renderDashboard();
-    
+
     const logoutBtn = screen.getByRole('button', { name: /Logout/i });
     fireEvent.click(logoutBtn);
-    
+
     expect(mockedUsedNavigate).toHaveBeenCalledWith('/');
   });
 

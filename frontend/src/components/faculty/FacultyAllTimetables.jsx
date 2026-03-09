@@ -98,7 +98,7 @@ const FacultyAllTimetables = () => {
     useEffect(() => {
         const fetchTimetable = async () => {
             try {
-                const response = await axios.get('/api/timetable/find', {
+                const response = await axios.get('/api/course-assignments/find', {
                     params: {
                         department: selectedDepartment,
                         semester: selectedSemester,

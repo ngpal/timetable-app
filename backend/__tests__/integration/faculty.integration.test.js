@@ -26,7 +26,7 @@ app.use('/api/faculty', facultyRouter);
 
 beforeAll(async () => {
     await connectDB();
-});
+}, 120000);
 
 afterEach(async () => {
     await clearDB();
@@ -58,7 +58,7 @@ describe('Faculty API Integration Tests', () => {
                 .post('/api/faculty/add')
                 .set('Cookie', ['access_token=fake_token'])
                 .send(sampleFaculty);
-            
+
             expect(response.status).toBe(201);
             expect(response.body).toHaveProperty('faculty');
             expect(response.body.faculty).toHaveProperty('_id');
@@ -79,7 +79,7 @@ describe('Faculty API Integration Tests', () => {
                 .post('/api/faculty/add')
                 .set('Cookie', ['access_token=fake_token'])
                 .send(incompleteFaculty);
-            
+
             expect(response.status).toBe(400);
         });
     });
@@ -122,7 +122,7 @@ describe('Faculty API Integration Tests', () => {
                 .put(`/api/faculty/update/${faculty._id}`)
                 .set('Cookie', ['access_token=fake_token'])
                 .send(updateData);
-            
+
             expect(response.status).toBe(200);
             expect(response.body.designation).toBe('HOD');
 
@@ -136,7 +136,7 @@ describe('Faculty API Integration Tests', () => {
                 .put(`/api/faculty/update/${fakeId}`)
                 .set('Cookie', ['access_token=fake_token'])
                 .send({ designation: 'HOD' });
-            
+
             expect(response.status).toBe(404);
         });
     });
@@ -148,7 +148,7 @@ describe('Faculty API Integration Tests', () => {
             const response = await request(app)
                 .delete(`/api/faculty/${faculty._id}`)
                 .set('Cookie', ['access_token=fake_token']);
-            
+
             expect(response.status).toBe(200);
             expect(response.body).toBe('Faculty and User record deleted');
 

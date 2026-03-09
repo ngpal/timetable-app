@@ -108,7 +108,7 @@ const StudentAllTimetables = () => {
         const fetchTimetable = async () => {
             setIsLoading(true);
             try {
-                const response = await axios.get('/api/timetable/find', {
+                const response = await axios.get('/api/course-assignments/find', {
                     params: { department: selectedDepartment, semester: selectedSemester, section: selectedSection, academicYear: selectedAcademicYear },
                     withCredentials: true
                 });

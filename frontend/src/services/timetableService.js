@@ -4,18 +4,18 @@ export const timetableService = {
     // Get all timetables
     getAllTimetables: async () => {
         try {
-            const response = await fetch(`${API_URL}/api/timetable`, {
+            const response = await fetch(`${API_URL}/api/course-assignments`, {
                 method: 'GET',
                 credentials: 'include',
                 headers: {
                     'Content-Type': 'application/json',
                 }
             });
-            
+
             if (!response.ok) {
                 throw new Error('Failed to fetch timetables');
             }
-            
+
             return await response.json();
         } catch (error) {
             console.error('Error fetching timetables:', error);
@@ -32,22 +32,22 @@ export const timetableService = {
                 department,
                 section
             });
-            
-            const response = await fetch(`${API_URL}/api/timetable/find?${params}`, {
+
+            const response = await fetch(`${API_URL}/api/course-assignments/find?${params}`, {
                 method: 'GET',
                 credentials: 'include',
                 headers: {
                     'Content-Type': 'application/json',
                 }
             });
-            
+
             if (!response.ok) {
                 if (response.status === 404) {
                     return null;
                 }
                 throw new Error('Failed to fetch timetable');
             }
-            
+
             return await response.json();
         } catch (error) {
             console.error('Error fetching timetable:', error);
@@ -58,7 +58,7 @@ export const timetableService = {
     // Create new timetable
     createTimetable: async (timetableData) => {
         try {
-            const response = await fetch(`${API_URL}/api/timetable`, {
+            const response = await fetch(`${API_URL}/api/course-assignments`, {
                 method: 'POST',
                 credentials: 'include',
                 headers: {
@@ -66,11 +66,11 @@ export const timetableService = {
                 },
                 body: JSON.stringify(timetableData)
             });
-            
+
             if (!response.ok) {
                 throw new Error('Failed to create timetable');
             }
-            
+
             return await response.json();
         } catch (error) {
             console.error('Error creating timetable:', error);
@@ -81,7 +81,7 @@ export const timetableService = {
     // Update timetable
     updateTimetable: async (id, timetableData) => {
         try {
-            const response = await fetch(`${API_URL}/api/timetable/${id}`, {
+            const response = await fetch(`${API_URL}/api/course-assignments/${id}`, {
                 method: 'PUT',
                 credentials: 'include',
                 headers: {
@@ -89,11 +89,11 @@ export const timetableService = {
                 },
                 body: JSON.stringify(timetableData)
             });
-            
+
             if (!response.ok) {
                 throw new Error('Failed to update timetable');
             }
-            
+
             return await response.json();
         } catch (error) {
             console.error('Error updating timetable:', error);
@@ -104,7 +104,7 @@ export const timetableService = {
     // Update specific slot
     updateSlot: async (id, day, slotNumber, slotData) => {
         try {
-            const response = await fetch(`${API_URL}/api/timetable/${id}/slot`, {
+            const response = await fetch(`${API_URL}/api/course-assignments/${id}/slot`, {
                 method: 'PUT',
                 credentials: 'include',
                 headers: {
@@ -112,11 +112,11 @@ export const timetableService = {
                 },
                 body: JSON.stringify({ day, slotNumber, slotData })
             });
-            
+
             if (!response.ok) {
                 throw new Error('Failed to update slot');
             }
-            
+
             return await response.json();
         } catch (error) {
             console.error('Error updating slot:', error);
@@ -127,18 +127,18 @@ export const timetableService = {
     // Delete timetable
     deleteTimetable: async (id) => {
         try {
-            const response = await fetch(`${API_URL}/api/timetable/${id}`, {
+            const response = await fetch(`${API_URL}/api/course-assignments/${id}`, {
                 method: 'DELETE',
                 credentials: 'include',
                 headers: {
                     'Content-Type': 'application/json',
                 }
             });
-            
+
             if (!response.ok) {
                 throw new Error('Failed to delete timetable');
             }
-            
+
             return await response.json();
         } catch (error) {
             console.error('Error deleting timetable:', error);

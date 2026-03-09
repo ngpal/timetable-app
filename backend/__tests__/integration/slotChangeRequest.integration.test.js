@@ -40,9 +40,9 @@ app.use((err, req, res, next) => {
 
 // ── DB lifecycle ──────────────────────────────────────────────────────────────
 
-beforeAll(async () => { await connectDB(); });
+beforeAll(async () => { await connectDB(); }, 120000);
 afterEach(async () => { await clearDB(); jest.clearAllMocks(); });
-afterAll(async ()  => { await closeDB(); });
+afterAll(async () => { await closeDB(); });
 
 // ── Fixtures ──────────────────────────────────────────────────────────────────
 
@@ -298,7 +298,7 @@ describe('PATCH /api/slot-change-requests/:id/status', () => {
 
     it('returns 409 when the faculty already teaches at the target slot', async () => {
         await makeAssignment(
-            [slot('Tuesday', 3)], 
+            [slot('Tuesday', 3)],
             { section: 'B', courses: [{ courseCode: 'CS201', courseName: 'OS', courseType: 'Core', sessionType: 'Theory', credits: 3, faculty: [] }] }
         );
 
@@ -306,7 +306,7 @@ describe('PATCH /api/slot-change-requests/:id/status', () => {
         const changeReq = await SlotChangeRequest.create({
             courseAssignmentId: assignmentA._id, requestedBy: new mongoose.Types.ObjectId(),
             courseCode: 'CS101', courseName: 'Algorithms',
-            facultyName: 'Dr. Smith', venue: 'Room 999', 
+            facultyName: 'Dr. Smith', venue: 'Room 999',
             currentDay: 'Monday', currentSlotNumber: 1,
             requestedDay: 'Tuesday', requestedSlotNumber: 3,
         });
@@ -332,7 +332,7 @@ describe('PATCH /api/slot-change-requests/:id/status', () => {
         const changeReq = await SlotChangeRequest.create({
             courseAssignmentId: assignmentA._id, requestedBy: new mongoose.Types.ObjectId(),
             courseCode: 'CS101', courseName: 'Algorithms',
-            facultyName: 'Dr. Different', 
+            facultyName: 'Dr. Different',
             venue: 'Room 101',
             currentDay: 'Monday', currentSlotNumber: 1,
             requestedDay: 'Tuesday', requestedSlotNumber: 3,

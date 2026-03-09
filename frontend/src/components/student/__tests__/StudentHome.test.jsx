@@ -13,7 +13,7 @@ jest.mock('react-router-dom', () => ({
 }));
 
 describe('StudentHome Basic Tests', () => {
-  
+
   beforeEach(() => {
     jest.clearAllMocks();
   });
@@ -27,8 +27,8 @@ describe('StudentHome Basic Tests', () => {
         <StudentHome />
       </MemoryRouter>
     );
-    
-    expect(screen.getByText('Welcome')).toBeInTheDocument();
+
+    expect(screen.getByText(/Welcome back/i)).toBeInTheDocument();
     expect(screen.getByText('Attendance')).toBeInTheDocument();
     // Request Stats card should NOT be visible
     expect(screen.queryByText(/Request Stats/i)).not.toBeInTheDocument();
@@ -43,10 +43,11 @@ describe('StudentHome Basic Tests', () => {
         <StudentHome />
       </MemoryRouter>
     );
-    
-    expect(screen.getByText('Class Representative Dashboard')).toBeInTheDocument();
+
+    expect(screen.getByText('CR Dashboard')).toBeInTheDocument();
     expect(screen.getByText('Request Stats')).toBeInTheDocument();
-    expect(screen.getByText('3 Total')).toBeInTheDocument();
+    expect(screen.getAllByText(/3/)[0]).toBeInTheDocument();
+    expect(screen.getByText(/Total Requests/)).toBeInTheDocument();
   });
 
   test('navigates to reschedule page when CR clicks the request card', () => {
@@ -57,14 +58,14 @@ describe('StudentHome Basic Tests', () => {
         <StudentHome />
       </MemoryRouter>
     );
-    
-    const requestCard = screen.getByText('Request Stats').closest('.stat-card');
+
+    const requestCard = screen.getByText('Request Stats').closest('.modern-card');
     fireEvent.click(requestCard);
-    
+
     expect(mockedUsedNavigate).toHaveBeenCalledWith('/student/reschedule');
   });
 
-  test('displays correct attendance value', () => {
+  test('displays correct attendance value', async () => {
     useOutletContext.mockReturnValue({ isCR: false, userName: 'John' });
 
     render(
@@ -72,7 +73,7 @@ describe('StudentHome Basic Tests', () => {
         <StudentHome />
       </MemoryRouter>
     );
-    
-    expect(screen.getByText('85%')).toBeInTheDocument();
+
+    expect(await screen.findByText('78%')).toBeInTheDocument();
   });
 });

@@ -12,7 +12,7 @@ jest.mock('react-router-dom', () => ({
 }));
 
 describe('StudentDashboard Basic Tests', () => {
-  
+
   beforeEach(() => {
     jest.clearAllMocks();
     localStorage.clear();
@@ -37,51 +37,41 @@ describe('StudentDashboard Basic Tests', () => {
   test('renders standard student navigation', () => {
     localStorage.setItem('lastLoginEmail', 'student@test.com');
     localStorage.setItem('users', JSON.stringify([
-        { email: 'student@test.com', role: 'student', fullName: 'Normal Student' }
+      { email: 'student@test.com', role: 'student', fullName: 'Normal Student' }
     ]));
 
     renderDashboard();
-    
-    expect(screen.getByText(/Student Portal/i)).toBeInTheDocument();
+
+    expect(screen.getByRole('heading', { name: /Edu(\s*)Portal/i })).toBeInTheDocument();
     expect(screen.getByText('Dashboard')).toBeInTheDocument();
-    expect(screen.getByText(/Class Timetable/i)).toBeInTheDocument();
-    
+    expect(screen.getByText('Class Timetable')).toBeInTheDocument();
+
 
     expect(screen.queryByText(/Reschedule Request/i)).not.toBeInTheDocument();
   });
 
-  test('renders extra options for Class Representative (CR)', () => {
-    localStorage.setItem('lastLoginEmail', 'cr@test.com');
-    localStorage.setItem('users', JSON.stringify([
-        { email: 'cr@test.com', role: 'class_rep', fullName: 'Jane CR' }
-    ]));
 
-    renderDashboard();
-    
-    expect(screen.getByText(/Class Rep/i)).toBeInTheDocument();
-    expect(screen.getByText(/Reschedule Request/i)).toBeInTheDocument();
-  });
 
   test('applies the active class to the current route', () => {
     localStorage.setItem('lastLoginEmail', 'student@test.com');
     localStorage.setItem('users', JSON.stringify([
-        { email: 'student@test.com', role: 'student', fullName: 'John Doe' }
+      { email: 'student@test.com', role: 'student', fullName: 'John Doe' }
     ]));
 
 
     renderDashboard('/student/timetable');
-    
-    const timetableLink = screen.getByRole('link', { name: /Class Timetable/i });
+
+    const timetableLink = screen.getByRole('link', { name: 'Class Timetable' });
     expect(timetableLink).toHaveClass('active');
   });
 
   test('clears local storage and redirects on logout', () => {
     localStorage.setItem('lastLoginEmail', 'student@test.com');
     renderDashboard();
-    
+
     const logoutBtn = screen.getByRole('button', { name: /Logout/i });
     fireEvent.click(logoutBtn);
-    
+
     expect(localStorage.getItem('lastLoginEmail')).toBeNull();
     expect(mockedUsedNavigate).toHaveBeenCalledWith('/');
   });

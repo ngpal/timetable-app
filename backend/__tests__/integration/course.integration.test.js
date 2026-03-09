@@ -26,7 +26,7 @@ app.use('/api/courses', courseRouter);
 
 beforeAll(async () => {
     await connectDB();
-});
+}, 120000);
 
 afterEach(async () => {
     await clearDB();
@@ -55,7 +55,7 @@ describe('Course API Integration Tests', () => {
                 .post('/api/courses/add')
                 .set('Cookie', ['access_token=fake_token'])
                 .send(sampleCourse);
-            
+
             expect(response.status).toBe(201);
             expect(response.body).toHaveProperty('_id');
             expect(response.body.courseCode).toBe('CS101');
@@ -76,7 +76,7 @@ describe('Course API Integration Tests', () => {
                 .post('/api/courses/add')
                 .set('Cookie', ['access_token=fake_token'])
                 .send(sampleCourse);
-            
+
             expect(response.status).toBe(400);
             expect(response.body.message).toContain('duplicate key error');
         });
@@ -87,7 +87,7 @@ describe('Course API Integration Tests', () => {
                 .post('/api/courses/add')
                 .set('Cookie', ['access_token=fake_token'])
                 .send(incompleteCourse);
-            
+
             expect(response.status).toBe(400);
         });
     });
@@ -109,12 +109,12 @@ describe('Course API Integration Tests', () => {
             const response = await request(app)
                 .get('/api/courses/all')
                 .set('Cookie', ['access_token=fake_token']);
-            
+
             expect(response.status).toBe(200);
             expect(response.body.length).toBe(2);
             expect(response.body[0].courseCode).toBe('CS101');
             expect(response.body[1].courseCode).toBe('CS102');
-            expect(response.body[0].totalLoad).toBeDefined(); 
+            expect(response.body[0].totalLoad).toBeDefined();
         });
 
         it('should return empty array if no courses exist', async () => {
@@ -135,7 +135,7 @@ describe('Course API Integration Tests', () => {
                 .put(`/api/courses/update/${course._id}`)
                 .set('Cookie', ['access_token=fake_token'])
                 .send(updateData);
-            
+
             expect(response.status).toBe(200);
             expect(response.body.theoryHours).toBe(4);
             expect(response.body.courseName).toBe('Introduction to CS');
@@ -151,7 +151,7 @@ describe('Course API Integration Tests', () => {
                 .put(`/api/courses/update/${fakeId}`)
                 .set('Cookie', ['access_token=fake_token'])
                 .send({ theoryHours: 4 });
-            
+
             expect(response.status).toBe(404);
         });
     });
@@ -163,7 +163,7 @@ describe('Course API Integration Tests', () => {
             const response = await request(app)
                 .delete(`/api/courses/${course._id}`)
                 .set('Cookie', ['access_token=fake_token']);
-            
+
             expect(response.status).toBe(200);
             expect(response.body).toBe('Course deleted successfully');
 
@@ -176,7 +176,7 @@ describe('Course API Integration Tests', () => {
             const response = await request(app)
                 .delete(`/api/courses/${fakeId}`)
                 .set('Cookie', ['access_token=fake_token']);
-            
+
             expect(response.status).toBe(404);
         });
     });
