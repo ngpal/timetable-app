@@ -465,10 +465,90 @@ export function calculateFacultyWorkload(slots, facultyName) {
     .reduce((total, slot) => total + (slot.spanSlots || 1), 0);
 }
 
+/**
+ * Validates constraints for a single slot change request.
+ * Checks for faculty, room, and section conflicts.
+ * 
+ * @param {Object} changeRequest - The request document details
+ * @returns {Promise<{valid: boolean, conflicts: Array}>}
+ */
+export async function validateSlotChangeConstraints(changeRequest) {
+    const conflicts = [];
+    const { 
+        courseAssignmentId, 
+        facultyName, 
+        venue, 
+        requestedDay, 
+        requestedSlotNumber,
+        currentDay,
+        currentSlotNumber
+    } = changeRequest;
+
+    // Use dynamic loading to avoid circular dependency
+    const models = await import('../models/courseAssignment.js');
+    const CourseAssignment = models.default;
+
+    const allAssignments = await CourseAssignment.find({ isActive: true });
+    
+    // Find the specific assignment that owns this slot
+    const targetAssignment = allAssignments.find(a => a._id.toString() === courseAssignmentId.toString());
+
+    if (!targetAssignment) {
+        return { valid: false, conflicts: [{ type: 'NOT_FOUND', message: 'CourseAssignment not found' }] };
+    }
+
+    // Check all assignments for conflicts
+    for (const assignment of allAssignments) {
+        for (const slot of assignment.timetableSlots) {
+            // Skip the EXACT slot we are trying to move to avoid false positive
+            // Check if this slot belongs to the assignment being moved and is the original slot
+            const isOriginalSlot = assignment._id.toString() === courseAssignmentId.toString() &&
+                                   slot.day === currentDay &&
+                                   slot.slotNumber === currentSlotNumber;
+            
+            if (isOriginalSlot) continue;
+
+            // Does this existing slot conflict with the requested destination?
+            if (slot.day === requestedDay && slot.slotNumber === requestedSlotNumber) {
+                
+                // 1. Faculty Conflict
+                if (slot.facultyName === facultyName) {
+                    conflicts.push({
+                        type: 'FACULTY_CONFLICT',
+                        message: `Faculty ${facultyName} is already assigned to ${slot.courseCode} in ${slot.venue} at this time.`
+                    });
+                }
+
+                // 2. Room Conflict
+                if (slot.venue === venue) {
+                    conflicts.push({
+                        type: 'ROOM_CONFLICT',
+                        message: `Room ${venue} is already occupied by ${slot.courseCode} (${slot.facultyName}) at this time.`
+                    });
+                }
+
+                // 3. Section Conflict (only within the same assignment / student group)
+                if (assignment._id.toString() === courseAssignmentId.toString()) {
+                    conflicts.push({
+                        type: 'SECTION_CONFLICT',
+                        message: `The student section already has a class (${slot.courseCode}) at this time.`
+                    });
+                }
+            }
+        }
+    }
+
+    return {
+        valid: conflicts.length === 0,
+        conflicts
+    };
+}
+
 export default {
   validateHardConstraints,
   calculateSoftConstraintScore,
   hasFacultyConflict,
   hasRoomConflict,
-  calculateFacultyWorkload
+  calculateFacultyWorkload,
+  validateSlotChangeConstraints
 };

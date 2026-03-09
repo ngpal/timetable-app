@@ -13,6 +13,7 @@ import ClassroomRoute from './routes/classroom.route.js';
 import DashboardRoute from './routes/dashboard.route.js';
 import TimetableConstraintRoute from './routes/timetableConstraint.route.js';
 import CourseAssignmentRoute from './routes/courseAssignment.route.js';
+import SlotChangeRequestRoute from './routes/slotChangeRequest.route.js';
 import GeneratorRoute from './routes/generator.route.js';
 
 const PORT = process.env.PORT;
@@ -37,8 +38,19 @@ app.use('/api/courses', CourseRoute);
 app.use('/api/rooms', ClassroomRoute);
 app.use('/api/dashboard', DashboardRoute);
 app.use('/api/constraints', TimetableConstraintRoute);
-app.use('/api/timetable', CourseAssignmentRoute);
+app.use("/api/course-assignments", CourseAssignmentRoute);
+app.use('/api/slot-change-requests', SlotChangeRequestRoute);
 app.use('/api/generator', GeneratorRoute);
+
+app.use((err, req, res, next) => {
+    const statusCode = err.statusCode || 500;
+    const message = err.message || 'Internal Server Error';
+    return res.status(statusCode).json({
+        success: false,
+        statusCode,
+        message,
+    });
+});
 
 mongoose.connect(process.env.MONGO_URI)
 .then(() => console.log("Mongo Db is connected!"))
