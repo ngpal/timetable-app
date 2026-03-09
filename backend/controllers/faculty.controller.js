@@ -61,10 +61,11 @@ export const addFaculty = async (req, res) => {
 export const deleteFaculty = async (req, res) => {
     try {
         const facultyRecord = await Faculty.findById(req.params.id);
-        if (facultyRecord) {
-            await User.findByIdAndDelete(facultyRecord.userId);
-            await Faculty.findByIdAndDelete(req.params.id);
+        if (!facultyRecord) {
+            return res.status(404).json({ message: "Faculty not found" });
         }
+        await User.findByIdAndDelete(facultyRecord.userId);
+        await Faculty.findByIdAndDelete(req.params.id);
         res.status(200).json("Faculty and User record deleted");
     } catch (error) {
         res.status(500).json({ message: "Delete failed" });
