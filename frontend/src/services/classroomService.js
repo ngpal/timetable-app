@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-const API_BASE_URL = `${process.env.VITE_API_URL || 'http://localhost:3000'}/api/rooms`;
+const API_BASE_URL = `${process.env.VITE_API_URL || ''}/api/rooms`;
 
 // Configure axios defaults
 const axiosInstance = axios.create({

@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-const API_URL = `${process.env.VITE_API_URL || 'http://localhost:3000'}/api/generator`;
+const API_URL = `${process.env.VITE_API_URL || ''}/api/generator`;
 
 // Validate a timetable against constraints
 export const validateTimetable = async (courseAssignmentId) => {

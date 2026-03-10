@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-const API_URL = `${process.env.VITE_API_URL || 'http://localhost:3000'}/api/leave-requests`;
+const API_URL = `${process.env.VITE_API_URL || ''}/api/leave-requests`;
 
 // Create a new leave request
 export const createLeaveRequest = async (leaveData) => {
