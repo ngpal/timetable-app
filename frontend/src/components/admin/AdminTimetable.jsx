@@ -277,8 +277,11 @@ const AdminTimetable = () => {
                   value={config.academicYear}
                   onChange={(e) => setConfig({...config, academicYear: e.target.value})}
                 >
+                  <option>2026-2027</option>
                   <option>2025-2026</option>
                   <option>2024-2025</option>
+                  <option>2023-2024</option>
+                  <option>2022-2023</option>
                 </select>
             </div>
             <div style={{flex: 1, minWidth: '150px'}}>

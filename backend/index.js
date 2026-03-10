@@ -40,7 +40,7 @@ app.use('/api/courses', CourseRoute);
 app.use('/api/rooms', ClassroomRoute);
 app.use('/api/dashboard', DashboardRoute);
 app.use('/api/constraints', TimetableConstraintRoute);
-app.use("/api/course-assignments", CourseAssignmentRoute);
+app.use("/api/timetable", CourseAssignmentRoute);
 app.use('/api/slot-change-requests', SlotChangeRequestRoute);
 app.use('/api/generator', GeneratorRoute);
 app.use('/api/requests', RequestRoute);

@@ -82,10 +82,10 @@
 .form-group textarea {
   width: 100%;
   padding: 0.85rem;
-  border: 1px solid var(--border);
+  border: 1px solid #D1D5DB;
   border-radius: 6px;
   font-size: 1.1rem;
-  background-color: var(--bg);
+  background-color: #F9FAFB;
   color: var(--text-main);
   transition: all 0.2s;
   font-family: inherit;
@@ -94,10 +94,10 @@
 .form-group input:focus,
 .form-group select:focus,
 .form-group textarea:focus {
-  border-color: var(--primary);
+  border-color: #2563EB;
   outline: none;
   background-color: white;
-  box-shadow: 0 0 0 3px rgba(49, 130, 206, 0.15);
+  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.15);
 }
 
 /* Buttons */

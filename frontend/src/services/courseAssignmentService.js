@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-const API_URL = 'http://localhost:3000/api/course-assignments';
+const API_URL = 'http://localhost:3000/api/timetable';
 
 // Configure axios instance with credentials
 const axiosInstance = axios.create({

@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { Outlet, Link, useNavigate, useLocation } from 'react-router-dom';
-import { LayoutDashboard, Calendar, List, Moon, Sun, LogOut } from 'lucide-react';
+import { LayoutDashboard, Calendar, List, Moon, Sun, LogOut, Clock } from 'lucide-react';
 import './student.css';
 
 const StudentDashboard = () => {
@@ -44,6 +44,8 @@ const StudentDashboard = () => {
         { path: '/student', label: 'Dashboard', icon: <LayoutDashboard size={20} /> },
         { path: '/student/timetable', label: 'Class Timetable', icon: <Calendar size={20} /> },
         { path: '/student/all-timetables', label: 'All Class Timetables', icon: <List size={20} /> },
+        { path: '/student/reschedule', label: 'Request Reschedule', icon: <Clock size={20} /> },
+        { path: '/student/request-history', label: 'Request History', icon: <List size={20} /> },
     ];
 
     return (

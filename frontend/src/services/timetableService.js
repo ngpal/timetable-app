@@ -4,7 +4,7 @@ export const timetableService = {
     // Get all timetables
     getAllTimetables: async () => {
         try {
-            const response = await fetch(`${API_URL}/api/course-assignments`, {
+            const response = await fetch(`${API_URL}/api/timetable`, {
                 method: 'GET',
                 credentials: 'include',
                 headers: {
@@ -33,7 +33,7 @@ export const timetableService = {
                 section
             });
 
-            const response = await fetch(`${API_URL}/api/course-assignments/find?${params}`, {
+            const response = await fetch(`${API_URL}/api/timetable/find?${params}`, {
                 method: 'GET',
                 credentials: 'include',
                 headers: {
@@ -58,7 +58,7 @@ export const timetableService = {
     // Create new timetable
     createTimetable: async (timetableData) => {
         try {
-            const response = await fetch(`${API_URL}/api/course-assignments`, {
+            const response = await fetch(`${API_URL}/api/timetable`, {
                 method: 'POST',
                 credentials: 'include',
                 headers: {
@@ -81,7 +81,7 @@ export const timetableService = {
     // Update timetable
     updateTimetable: async (id, timetableData) => {
         try {
-            const response = await fetch(`${API_URL}/api/course-assignments/${id}`, {
+            const response = await fetch(`${API_URL}/api/timetable/${id}`, {
                 method: 'PUT',
                 credentials: 'include',
                 headers: {
@@ -104,7 +104,7 @@ export const timetableService = {
     // Update specific slot
     updateSlot: async (id, day, slotNumber, slotData) => {
         try {
-            const response = await fetch(`${API_URL}/api/course-assignments/${id}/slot`, {
+            const response = await fetch(`${API_URL}/api/timetable/${id}/slot`, {
                 method: 'PUT',
                 credentials: 'include',
                 headers: {
@@ -149,7 +149,7 @@ export const timetableService = {
     // Delete timetable
     deleteTimetable: async (id) => {
         try {
-            const response = await fetch(`${API_URL}/api/course-assignments/${id}`, {
+            const response = await fetch(`${API_URL}/api/timetable/${id}`, {
                 method: 'DELETE',
                 credentials: 'include',
                 headers: {

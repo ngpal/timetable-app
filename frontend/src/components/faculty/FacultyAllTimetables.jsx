@@ -6,13 +6,13 @@ const FacultyAllTimetables = () => {
     const [selectedDepartment, setSelectedDepartment] = useState('CSE');
     const [selectedSemester, setSelectedSemester] = useState('3');
     const [selectedSection, setSelectedSection] = useState('A');
-    const [selectedAcademicYear, setSelectedAcademicYear] = useState('2024-2025');
+    const [selectedAcademicYear, setSelectedAcademicYear] = useState('2025-2026');
     const [timetableData, setTimetableData] = useState(null);
 
     const departments = ['CSE', 'ECE', 'MECH', 'CIVIL', 'AIDS'];
     const semesters = ['1', '2', '3', '4', '5', '6', '7', '8'];
-    const sections = ['A', 'B', 'C'];
-    const academicYears = ['2024-2025', '2023-2024'];
+    const sections = ['A', 'B', 'C', 'D'];
+    const academicYears = ['2026-2027', '2025-2026', '2024-2025', '2023-2024', '2022-2023'];
 
     const slots = [
         { number: 1, start: '08:00', end: '09:00' },
@@ -98,10 +98,12 @@ const FacultyAllTimetables = () => {
     useEffect(() => {
         const fetchTimetable = async () => {
             try {
-                const response = await axios.get('/api/course-assignments/find', {
+                // Convert semester number to Odd/Even
+                const semesterType = parseInt(selectedSemester) % 2 !== 0 ? 'Odd' : 'Even';
+                const response = await axios.get('/api/timetable/find', {
                     params: {
                         department: selectedDepartment,
-                        semester: selectedSemester,
+                        semester: semesterType,
                         section: selectedSection,
                         academicYear: selectedAcademicYear
                     },

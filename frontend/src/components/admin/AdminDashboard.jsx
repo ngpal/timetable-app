@@ -20,6 +20,7 @@ const AdminDashboard = () => {
     { path: '/admin/faculty-timetable', label: 'Faculty Timetable' },
     { path: '/admin/amrita-timetable', label: 'View Timetable' },
     { path: '/admin/timetable', label: 'Constraints & Settings' },
+    { path: '/admin/rescheduling-requests', label: 'Rescheduling Requests' },
   ];
 
   return (
@@ -37,7 +38,22 @@ const AdminDashboard = () => {
                 to={item.path}
                 className={`nav-item ${isActive ? 'active' : ''}`}
               >
-                {item.label}
+                <span>{item.label}</span>
+                {item.badge > 0 && (
+                  <span style={{
+                    marginLeft: 'auto',
+                    background: '#ef4444',
+                    color: '#fff',
+                    padding: '0.125rem 0.5rem',
+                    borderRadius: '12px',
+                    fontSize: '0.75rem',
+                    fontWeight: 700,
+                    minWidth: '20px',
+                    textAlign: 'center'
+                  }}>
+                    {item.badge}
+                  </span>
+                )}
               </Link>
             );
           })}

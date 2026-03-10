@@ -8,12 +8,17 @@ import { findAvailableClassroom } from '../services/classroomService.js';
 import { errorHandler } from '../utils/error.js';
 
 /**
- * Create a new slot change request (CR -> Faculty)
+ * Create a new slot change request (CR -> Faculty -> Admin)
+ * 3-Step Approval Chain:
+ * 1. Request (CR): CR submits → Status: Pending_Faculty
+ * 2. Endorsement (Faculty): Faculty reviews and forwards → Status: Pending_Admin
+ * 3. Finalization (Admin): Admin approves and assigns classroom → Status: Approved
  */
 export const createRequest = async (req, res, next) => {
     try {
-        if (req.user.role === 'Student' && !req.user.isCR) {
-            return next(errorHandler(403, 'Only Class Representatives or Faculty can request slot changes'));
+        // Only Class Representatives (CRs) can submit slot change requests
+        if (req.user.role !== 'Student' || !req.user.isCR) {
+            return next(errorHandler(403, 'Only Class Representatives can submit slot change requests'));
         }
 
         const {
@@ -52,6 +57,7 @@ export const createRequest = async (req, res, next) => {
         const facultyMember = courseInfo?.faculty.find(f => f.role === 'Incharge') || courseInfo?.faculty[0];
         const facultyId = facultyMember?.facultyId;
 
+        // Step 1: All requests start at Pending_Faculty (awaiting faculty endorsement)
         const newRequest = new SlotChangeRequest({
             courseAssignmentId,
             requestedBy: req.user.id,
@@ -65,14 +71,12 @@ export const createRequest = async (req, res, next) => {
             requestedDay,
             requestedSlotNumber,
             reason,
-            status: req.user.role === 'Faculty' ? 'Pending_Admin' : 'Pending_Faculty'
+            status: 'Pending_Faculty'
         });
 
         await newRequest.save();
         res.status(201).json({
-            message: req.user.role === 'Faculty' 
-                ? 'Slot change request submitted to Admin' 
-                : 'Slot change request submitted to Faculty',
+            message: 'Slot change request submitted to Faculty for endorsement',
             request: newRequest
         });
     } catch (error) {
@@ -107,7 +111,8 @@ export const getAllRequests = async (req, res, next) => {
 };
 
 /**
- * Faculty Approval Step (Moves to Pending_Admin)
+ * Step 2: Faculty Endorsement (Pending_Faculty → Pending_Admin or Rejected)
+ * Faculty reviews the CR's request and forwards to Admin or rejects
  */
 export const approveByFaculty = async (req, res, next) => {
     try {
@@ -128,12 +133,12 @@ export const approveByFaculty = async (req, res, next) => {
             return res.status(200).json({ message: 'Request rejected by faculty', request });
         }
 
-        // Move to Admin step
+        // Step 2: Move to Admin step for finalization
         request.status = 'Pending_Admin';
         await request.save();
 
         res.status(200).json({ 
-            message: 'Faculty approved. Request forwarded to Admin.', 
+            message: 'Faculty endorsed. Request forwarded to Admin for finalization.', 
             request 
         });
     } catch (error) {
@@ -142,7 +147,9 @@ export const approveByFaculty = async (req, res, next) => {
 };
 
 /**
- * Admin Approval Step (Triggers auto-classroom and updates timetable)
+ * Step 3: Admin Finalization (Pending_Admin → Approved or Rejected)
+ * Admin approves the final move and system automatically assigns an available classroom
+ * that fits the session type and capacity. Updates timetable and notifies students.
  */
 export const approveByAdmin = async (req, res, next) => {
     try {
@@ -153,7 +160,7 @@ export const approveByAdmin = async (req, res, next) => {
         if (!requestDoc) return next(errorHandler(404, 'Request not found'));
 
         if (requestDoc.status !== 'Pending_Admin') {
-            return next(errorHandler(400, 'Request must be approved by faculty first or is already finalized'));
+            return next(errorHandler(400, 'Request must be endorsed by faculty first or is already finalized'));
         }
 
         if (status === 'Rejected') {
@@ -163,7 +170,7 @@ export const approveByAdmin = async (req, res, next) => {
             return res.status(200).json({ message: 'Request rejected by Admin', request: requestDoc });
         }
 
-        // Automatic Classroom Assignment
+        // Step 3: Automatic Classroom Assignment based on session type and capacity
         const venue = await findAvailableClassroom(
             requestDoc.requestedDay, 
             requestDoc.requestedSlotNumber,

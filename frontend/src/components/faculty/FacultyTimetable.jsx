@@ -1,14 +1,72 @@
 import React, { useState, useEffect } from 'react';
-import { Download, Maximize2, Minimize2, Clock, MapPin, Users } from 'lucide-react';
+import { Download, Loader2, AlertCircle } from 'lucide-react';
 import '../admin/AmritaTimetable.css';
 
 const FacultyTimetable = () => {
     const [currentTime, setCurrentTime] = useState(new Date());
+    const [loading, setLoading] = useState(true);
+    const [timetableData, setTimetableData] = useState(null);
+    const [facultyDetails, setFacultyDetails] = useState(null);
+    const [error, setError] = useState(null);
 
     useEffect(() => {
         const timer = setInterval(() => setCurrentTime(new Date()), 60000);
         return () => clearInterval(timer);
     }, []);
+
+    useEffect(() => {
+        fetchMyTimetable();
+    }, []);
+
+    const fetchMyTimetable = async () => {
+        try {
+            setLoading(true);
+            setError(null);
+            const response = await fetch('/api/timetable/my-timetable', {
+                credentials: 'include'
+            });
+            const data = await response.json();
+            
+            if (data.success) {
+                setFacultyDetails({
+                    name: data.facultyName,
+                    department: data.department,
+                    designation: data.designation,
+                    email: data.email
+                });
+                setTimetableData({
+                    slots: data.slots || [],
+                    courses: data.courses || []
+                });
+            } else {
+                setError(data.message || 'Failed to load timetable');
+            }
+        } catch (err) {
+            console.error('Error fetching timetable:', err);
+            setError('Failed to load timetable. Please try again.');
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    const getDepartmentAbbreviation = (dept) => {
+        if (!dept) return '';
+        const abbrev = {
+            'Computer Science and Engineering': 'CSE',
+            'Computer Science': 'CSE',
+            'Electronics and Communication Engineering': 'ECE',
+            'Electronics': 'ECE',
+            'Mechanical Engineering': 'MECH',
+            'Civil Engineering': 'CIVIL',
+            'Electrical and Electronics Engineering': 'EEE',
+            'Information Technology': 'IT',
+            'Mathematics': 'MATH',
+            'Physics': 'PHY',
+            'Chemistry': 'CHEM',
+            'General': 'GEN'
+        };
+        return abbrev[dept] || dept;
+    };
 
     const slots = [
         { number: 1, start: '08:00', end: '09:00' },
@@ -24,27 +82,8 @@ const FacultyTimetable = () => {
 
     const days = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'];
 
-    const facultyDetails = {
-        name: 'Dr. Priya Sharma',
-        department: 'Computer Science and Engineering',
-        designation: 'Assistant Professor'
-    };
-
-    const timetableData = {
-        slots: [
-            { day: 'Monday', slotNumber: 1, courseCode: '23CSE312-S5', sessionType: 'Theory', venue: 'ABIII - D103', department: 'CSE', section: 'A' },
-            { day: 'Monday', slotNumber: 2, courseCode: '23CSE313-S5', sessionType: 'Lab', venue: 'ABIII - CP LAB 1', department: 'CSE', section: 'B', spanSlots: 2 },
-            { day: 'Monday', slotNumber: 3, isSpanContinuation: true },
-            { day: 'Tuesday', slotNumber: 2, courseCode: '23CSE313-S5', sessionType: 'Lab', venue: 'ABIII - CP LAB 1', department: 'CSE', section: 'A', spanSlots: 2 },
-            { day: 'Tuesday', slotNumber: 3, isSpanContinuation: true },
-            { day: 'Tuesday', slotNumber: 7, courseCode: '23CSE313-S5', sessionType: 'Theory', venue: 'ABIII - CP LAB 1', department: 'CSE', section: 'A' },
-            { day: 'Thursday', slotNumber: 2, courseCode: '23CSE312-S5', sessionType: 'Theory', venue: 'ABIII - D103', department: 'CSE', section: 'B' },
-            { day: 'Thursday', slotNumber: 8, courseCode: '23CSE312-S5', sessionType: 'Theory', venue: 'ABIII - D103', department: 'CSE', section: 'A' },
-            { day: 'Friday', slotNumber: 4, courseCode: '23CSE312-S5', sessionType: 'Theory', venue: 'ABIII - D102', department: 'CSE', section: 'C' }
-        ]
-    };
-
     const getSlotData = (day, slotNumber) => {
+        if (!timetableData || !timetableData.slots) return null;
         return timetableData.slots.find(
             s => s.day === day && s.slotNumber === slotNumber && !s.isSpanContinuation
         ) || null;
@@ -64,30 +103,77 @@ const FacultyTimetable = () => {
     };
 
     // Prepare courses summary split by Theory and Lab
-    const theoryCourses = {};
-    const labCourses = {};
-
-    timetableData.slots.forEach(s => {
-        if (!s.isSpanContinuation) {
-            const key = `${s.courseCode}-${s.department}-${s.section}`;
-            const targetMap = s.sessionType === 'Lab' ? labCourses : theoryCourses;
-
-            if (!targetMap[key]) {
-                targetMap[key] = {
-                    courseCode: s.courseCode,
-                    department: s.department,
-                    section: s.section,
-                    sessionType: s.sessionType || 'Theory',
-                    venue: s.venue,
-                    sessions: 0
-                };
-            }
-            targetMap[key].sessions += 1;
+    const getCoursesSummary = () => {
+        if (!timetableData || !timetableData.slots) {
+            return { theoryList: [], labList: [] };
         }
-    });
 
-    const theoryList = Object.values(theoryCourses);
-    const labList = Object.values(labCourses);
+        const theoryCourses = {};
+        const labCourses = {};
+
+        timetableData.slots.forEach(s => {
+            if (!s.isSpanContinuation) {
+                const key = `${s.courseCode}-${s.department}-${s.section}`;
+                const targetMap = s.sessionType === 'Lab' ? labCourses : theoryCourses;
+
+                if (!targetMap[key]) {
+                    targetMap[key] = {
+                        courseCode: s.courseCode,
+                        department: s.department,
+                        section: s.section,
+                        sessionType: s.sessionType || 'Theory',
+                        venue: s.venue,
+                        sessions: 0
+                    };
+                }
+                targetMap[key].sessions += 1;
+            }
+        });
+
+        return {
+            theoryList: Object.values(theoryCourses),
+            labList: Object.values(labCourses)
+        };
+    };
+
+    const { theoryList, labList } = getCoursesSummary();
+
+    if (loading) {
+        return (
+            <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', height: '60vh', gap: '1rem' }}>
+                <Loader2 className="animate-spin" size={48} color="var(--primary)" />
+                <p style={{ color: 'var(--text-muted)' }}>Loading your timetable...</p>
+            </div>
+        );
+    }
+
+    if (error) {
+        return (
+            <div style={{ padding: '2rem' }}>
+                <div style={{ background: 'var(--danger-light)', border: '1px solid var(--danger)', padding: '1.5rem', borderRadius: 'var(--radius-lg)', display: 'flex', alignItems: 'center', gap: '1rem', color: 'var(--danger)' }}>
+                    <AlertCircle size={32} />
+                    <div>
+                        <h3 style={{ margin: 0 }}>Error Loading Timetable</h3>
+                        <p style={{ margin: '0.25rem 0 0 0' }}>{error}</p>
+                    </div>
+                </div>
+            </div>
+        );
+    }
+
+    if (!facultyDetails) {
+        return (
+            <div style={{ padding: '2rem' }}>
+                <div style={{ background: 'var(--warning-light)', border: '1px solid var(--warning)', padding: '1.5rem', borderRadius: 'var(--radius-lg)', display: 'flex', alignItems: 'center', gap: '1rem' }}>
+                    <AlertCircle size={32} color="var(--warning)" />
+                    <div>
+                        <h3 style={{ margin: 0 }}>No Faculty Profile Found</h3>
+                        <p style={{ margin: '0.25rem 0 0 0' }}>Please contact admin to set up your faculty profile.</p>
+                    </div>
+                </div>
+            </div>
+        );
+    }
 
     return (
         <div className="dashboard-fade-in amrita-timetable-container" style={{ width: '100%', paddingBottom: '2rem' }}>
@@ -120,7 +206,7 @@ const FacultyTimetable = () => {
                     </div>
                     <div className="config-item">
                         <label>Department:</label>
-                        <span>{facultyDetails.department}</span>
+                        <span>{getDepartmentAbbreviation(facultyDetails.department)}</span>
                     </div>
                     <div className="config-item">
                         <label>Designation:</label>

@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Download, Maximize2, Minimize2, Clock, MapPin, Users, AlertCircle, Loader2 } from 'lucide-react';
+import { Download, Maximize2, Minimize2, Clock, MapPin, Users, AlertCircle, Loader2, RefreshCw } from 'lucide-react';
 import { timetableService } from '../../services/timetableService';
 import '../admin/AmritaTimetable.css';
 
@@ -140,6 +140,14 @@ const StudentTimetable = () => {
                 </div>
                 <div style={{ display: 'flex', gap: '0.75rem' }}>
                     <button
+                        onClick={fetchTimetable}
+                        disabled={loading}
+                        style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', backgroundColor: '#10b981', color: 'white', border: 'none', padding: '0.5rem 1rem', borderRadius: 'var(--radius-md)', cursor: loading ? 'not-allowed' : 'pointer', fontWeight: 500, transition: 'var(--transition)', boxShadow: 'var(--shadow-sm)', opacity: loading ? 0.6 : 1 }}
+                    >
+                        <RefreshCw size={16} className={loading ? 'animate-spin' : ''} />
+                        Refresh
+                    </button>
+                    <button
                         style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', backgroundColor: 'var(--primary)', color: 'white', border: 'none', padding: '0.5rem 1rem', borderRadius: 'var(--radius-md)', cursor: 'pointer', fontWeight: 500, transition: 'var(--transition)', boxShadow: 'var(--shadow-sm)' }}
                     >
                         <Download size={16} />
@@ -275,7 +283,7 @@ const StudentTimetable = () => {
                                                     )}
                                                 </td>
                                                 <td>
-                                                    {course.faculty.map(f => f.name || 'TBD').join(', ')}
+                                                    {course.faculty?.map(f => f.facultyId?.name || f.name || 'TBD').join(', ') || 'TBD'}
                                                 </td>
                                                 <td>{venue}</td>
                                             </tr>
@@ -322,9 +330,9 @@ const StudentTimetable = () => {
                                                             </span>
                                                         )}
                                                     </td>
-                                                    <td>{incharge?.name || 'TBD'}</td>
+                                                    <td>{incharge?.facultyId?.name || incharge?.name || 'TBD'}</td>
                                                     <td>
-                                                        {assisting.length > 0 ? assisting.map(f => f.name || 'TBD').join(', ') : 'N/A'}
+                                                        {assisting.length > 0 ? assisting.map(f => f.facultyId?.name || f.name || 'TBD').join(', ') : 'N/A'}
                                                     </td>
                                                     <td>{venue}</td>
                                                 </tr>

@@ -6,9 +6,9 @@
   font-weight: 400;
 
   /* Institutional Theme Colors */
-  --primary: #2563eb;
-  /* Subdued blue */
-  --primary-hover: #1d4ed8;
+  --primary: #2563EB;
+  /* Modern Blue */
+  --primary-hover: #1D4ED8;
   --primary-light: #eff6ff;
 
   --admin-theme: #1e3a8a;
@@ -18,7 +18,7 @@
   /* Removed gradients */
   --student-theme-light: #eff6ff;
 
-  --bg: #fafafa;
+  --bg: #F9FAFB;
   --card-bg: #ffffff;
   --surface: #ffffff;
   --surface-hover: #f1f5f9;
@@ -29,7 +29,7 @@
   /* Secondary grey */
   --text-light: #9ca3af;
 
-  --border: #e5e7eb;
+  --border: #D1D5DB;
   --border-light: #f3f4f6;
 
   --danger: #991b1b;

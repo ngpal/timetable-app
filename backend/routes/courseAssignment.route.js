@@ -7,7 +7,8 @@ import {
     updateTimetableSlot,
     updateSlot,
     deleteCourseAssignment,
-    getFacultyTimetable
+    getFacultyTimetable,
+    getMyTimetable
 } from '../controllers/courseAssignment.controller.js';
 
 import { generateSampleTimetable } from '../controllers/sampleData.controller.js';
@@ -42,9 +43,18 @@ router.get('/find', verifyUser, getCourseAssignment);
 
 /**
  * @swagger
+ * /api/timetable/my-timetable:
+ *   get:
+ *     summary: Get timetable for currently logged-in faculty
+ *     tags: [Course Assignments]
+ */
+router.get('/my-timetable', verifyUser, getMyTimetable);
+
+/**
+ * @swagger
  * /api/timetable/faculty-timetable:
  *   get:
- *     summary: Get faculty timetable
+ *     summary: Get faculty timetable by facultyId
  *     tags: [Course Assignments]
  */
 router.get('/faculty-timetable', verifyUser, getFacultyTimetable);

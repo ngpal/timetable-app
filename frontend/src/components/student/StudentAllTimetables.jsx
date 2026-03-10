@@ -7,7 +7,7 @@ const StudentAllTimetables = () => {
     const [selectedDepartment, setSelectedDepartment] = useState('CSE');
     const [selectedSemester, setSelectedSemester] = useState('3');
     const [selectedSection, setSelectedSection] = useState('A');
-    const [selectedAcademicYear, setSelectedAcademicYear] = useState('2024-2025');
+    const [selectedAcademicYear, setSelectedAcademicYear] = useState('2025-2026');
     const [timetableData, setTimetableData] = useState(null);
     const [isLoading, setIsLoading] = useState(false);
     const [searchQuery, setSearchQuery] = useState('');
@@ -20,8 +20,8 @@ const StudentAllTimetables = () => {
 
     const departments = ['CSE', 'ECE', 'MECH', 'CIVIL', 'AIDS'];
     const semesters = ['1', '2', '3', '4', '5', '6', '7', '8'];
-    const sections = ['A', 'B', 'C'];
-    const academicYears = ['2024-2025', '2023-2024'];
+    const sections = ['A', 'B', 'C', 'D'];
+    const academicYears = ['2026-2027', '2025-2026', '2024-2025', '2023-2024', '2022-2023'];
 
     const slots = [
         { number: 1, start: '08:00', end: '09:00' },
@@ -108,8 +108,10 @@ const StudentAllTimetables = () => {
         const fetchTimetable = async () => {
             setIsLoading(true);
             try {
-                const response = await axios.get('/api/course-assignments/find', {
-                    params: { department: selectedDepartment, semester: selectedSemester, section: selectedSection, academicYear: selectedAcademicYear },
+                // Convert semester number to Odd/Even
+                const semesterType = parseInt(selectedSemester) % 2 !== 0 ? 'Odd' : 'Even';
+                const response = await axios.get('/api/timetable/find', {
+                    params: { department: selectedDepartment, semester: semesterType, section: selectedSection, academicYear: selectedAcademicYear },
                     withCredentials: true
                 });
                 if (response.data?.timetableSlots?.length > 0) {
@@ -340,7 +342,7 @@ const StudentAllTimetables = () => {
                                                     )}
                                                 </td>
                                                 <td>
-                                                    {course.faculty?.map(f => f.name || 'TBD').join(', ') || 'N/A'}
+                                                    {course.faculty?.map(f => f.facultyId?.name || f.name || 'TBD').join(', ') || 'TBD'}
                                                 </td>
                                                 <td>{venue}</td>
                                             </tr>
@@ -387,9 +389,9 @@ const StudentAllTimetables = () => {
                                                             </span>
                                                         )}
                                                     </td>
-                                                    <td>{incharge?.name || 'TBD'}</td>
+                                                    <td>{incharge?.facultyId?.name || incharge?.name || 'TBD'}</td>
                                                     <td>
-                                                        {assisting.length > 0 ? assisting.map(f => f.name || 'TBD').join(', ') : 'N/A'}
+                                                        {assisting.length > 0 ? assisting.map(f => f.facultyId?.name || f.name || 'TBD').join(', ') : 'N/A'}
                                                     </td>
                                                     <td>{venue}</td>
                                                 </tr>

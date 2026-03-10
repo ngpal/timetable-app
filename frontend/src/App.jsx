@@ -11,18 +11,22 @@ import AdminTimetable from './components/admin/AdminTimetable'
 import AmritaTimetable from './components/admin/AmritaTimetable'
 import AdminCourseAssignment from './components/admin/AdminCourseAssignment'
 import AdminFacultyTimetable from './components/admin/AdminFacultyTimetable'
+import AdminSlotRequests from './components/admin/AdminSlotRequests'
+import AdminRequests from './components/admin/AdminRequests'
 import FacultyDashboard from './components/faculty/FacultyDashboard'
 import FacultyHome from './components/faculty/FacultyHome'
 import FacultyTimetable from './components/faculty/FacultyTimetable'
 import FacultyRequests from './components/faculty/FacultyRequests'
 import FacultyLeave from './components/faculty/FacultyLeave'
 import FacultySlotEnquiry from './components/faculty/FacultySlotEnquiry'
+import FacultySlotRequests from './components/faculty/FacultySlotRequests'
 import FacultyAllTimetables from './components/faculty/FacultyAllTimetables'
 import StudentDashboard from './components/student/StudentDashboard'
 import StudentHome from './components/student/StudentHome'
 import StudentTimetable from './components/student/StudentTimetable'
 import StudentAllTimetables from './components/student/StudentAllTimetables'
 import CRReschedule from './components/student/CRReschedule'
+import RequestHistory from './components/student/RequestHistory'
 import './App.css'
 
 function App() {
@@ -43,6 +47,7 @@ function App() {
           <Route path="faculty-timetable" element={<AdminFacultyTimetable />} />
           <Route path="amrita-timetable" element={<AmritaTimetable />} />
           <Route path="timetable" element={<AdminTimetable />} />
+          <Route path="rescheduling-requests" element={<AdminRequests />} />
         </Route>
 
         {/* Faculty Module Routes */}
@@ -61,6 +66,7 @@ function App() {
           <Route path="timetable" element={<StudentTimetable />} />
           <Route path="all-timetables" element={<StudentAllTimetables />} />
           <Route path="reschedule" element={<CRReschedule />} />
+          <Route path="request-history" element={<RequestHistory />} />
         </Route>
       </Routes>
     </div>

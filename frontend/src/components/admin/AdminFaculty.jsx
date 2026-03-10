@@ -46,6 +46,25 @@ const AdminFaculty = () => {
     }
   };
 
+  const getDepartmentAbbreviation = (dept) => {
+    if (!dept) return '';
+    const abbrev = {
+      'Computer Science and Engineering': 'CSE',
+      'Computer Science': 'CSE',
+      'Electronics and Communication Engineering': 'ECE',
+      'Electronics': 'ECE',
+      'Mechanical Engineering': 'MECH',
+      'Civil Engineering': 'CIVIL',
+      'Electrical and Electronics Engineering': 'EEE',
+      'Information Technology': 'IT',
+      'Mathematics': 'MATH',
+      'Physics': 'PHY',
+      'Chemistry': 'CHEM',
+      'General': 'GEN'
+    };
+    return abbrev[dept] || dept;
+  };
+
   const handleInputChange = (e) => {
     const { name, value, type, checked } = e.target;
     
@@ -445,7 +464,7 @@ const AdminFaculty = () => {
                   <tr key={faculty._id}>
                     <td style={{fontWeight: '500'}}>{faculty.name || faculty.userId?.name || 'N/A'}</td>
                     <td style={{fontSize: '0.8rem'}}>{faculty.email || faculty.userId?.email || 'N/A'}</td>
-                    <td>{faculty.department}</td>
+                    <td>{getDepartmentAbbreviation(faculty.department)}</td>
                     <td style={{fontSize: '0.8rem'}}>{faculty.designation}</td>
                     <td>
                       <span className="status-badge status-active" style={{whiteSpace: 'nowrap', fontSize: '0.75rem'}}>

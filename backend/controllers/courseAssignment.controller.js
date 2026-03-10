@@ -279,3 +279,111 @@ export const getFacultyTimetable = async (req, res) => {
         res.status(500).json({ message: 'Error fetching faculty timetable', error: error.message });
     }
 };
+
+// Get timetable for currently logged-in faculty
+export const getMyTimetable = async (req, res) => {
+    try {
+        // Get faculty document for logged-in user
+        const faculty = await Faculty.findOne({ userId: req.user.id });
+        
+        if (!faculty) {
+            return res.status(404).json({ 
+                success: false,
+                message: 'Faculty profile not found for this user' 
+            });
+        }
+
+        const facultyId = faculty._id.toString();
+
+        // Find all active assignments where this faculty teaches at least one course
+        const assignments = await CourseAssignment.find({
+            isActive: true,
+            'courses.faculty.facultyId': facultyId
+        })
+            .populate('courses.faculty.facultyId', 'name department designation')
+            .populate('classAdvisors.facultyId', 'name department');
+
+        if (!assignments.length) {
+            return res.status(200).json({ 
+                success: true,
+                facultyName: faculty.name,
+                department: faculty.department,
+                designation: faculty.designation,
+                slots: [] 
+            });
+        }
+
+        // Aggregate slots from all assignments
+        const aggregatedSlots = [];
+        const coursesMap = new Map(); // Track unique courses
+
+        for (const assignment of assignments) {
+            const { department, section, semester, academicYear, timetableSlots, courses } = assignment;
+
+            // Collect course details for this faculty
+            for (const course of courses) {
+                const isFaculty = course.faculty.some(
+                    f => f.facultyId && f.facultyId._id && f.facultyId._id.toString() === facultyId
+                );
+                if (isFaculty) {
+                    if (!coursesMap.has(course.courseCode)) {
+                        const facultyRole = course.faculty.find(
+                            f => f.facultyId && f.facultyId._id && f.facultyId._id.toString() === facultyId
+                        );
+                        coursesMap.set(course.courseCode, {
+                            courseCode: course.courseCode,
+                            courseName: course.courseName,
+                            courseType: course.courseType,
+                            credits: course.credits,
+                            role: facultyRole?.role || 'Incharge'
+                        });
+                    }
+                }
+            }
+
+            // Collect slots for this faculty's courses
+            const facultyCourses = new Set(
+                courses
+                    .filter(c => c.faculty.some(
+                        f => f.facultyId && f.facultyId._id && f.facultyId._id.toString() === facultyId
+                    ))
+                    .map(c => c.courseCode)
+            );
+
+            for (const slot of timetableSlots) {
+                if (facultyCourses.has(slot.courseCode)) {
+                    aggregatedSlots.push({
+                        day: slot.day,
+                        slotNumber: slot.slotNumber,
+                        courseCode: slot.courseCode,
+                        sessionType: slot.sessionType,
+                        venue: slot.venue,
+                        section,
+                        department,
+                        semester,
+                        academicYear,
+                        spanSlots: slot.spanSlots,
+                        isSpanContinuation: slot.isSpanContinuation
+                    });
+                }
+            }
+        }
+
+        res.status(200).json({ 
+            success: true,
+            facultyName: faculty.name,
+            department: faculty.department,
+            designation: faculty.designation,
+            email: faculty.email,
+            slots: aggregatedSlots,
+            courses: Array.from(coursesMap.values())
+        });
+    } catch (error) {
+        console.error('getMyTimetable error:', error);
+        res.status(500).json({ 
+            success: false,
+            message: 'Error fetching your timetable', 
+            error: error.message 
+        });
+    }
+};

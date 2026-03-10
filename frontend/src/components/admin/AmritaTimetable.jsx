@@ -147,12 +147,17 @@ const AmritaTimetable = ({ previewData = null }) => {
         {/* ... existing controls ... */}
         <div>
           <label style={{marginRight: '0.5rem', fontWeight: 'bold'}}>Academic Year:</label>
-          <input 
-            type="text" 
+          <select 
             value={config.academicYear}
             onChange={(e) => setConfig({...config, academicYear: e.target.value})}
             style={{padding: '0.5rem', border: '1px solid #ddd', borderRadius: '4px'}}
-          />
+          >
+            <option value="2026-2027">2026-2027</option>
+            <option value="2025-2026">2025-2026</option>
+            <option value="2024-2025">2024-2025</option>
+            <option value="2023-2024">2023-2024</option>
+            <option value="2022-2023">2022-2023</option>
+          </select>
         </div>
         <div>
           <label style={{marginRight: '0.5rem', fontWeight: 'bold'}}>Semester:</label>
@@ -210,7 +215,7 @@ const AmritaTimetable = ({ previewData = null }) => {
         <div className="config-row">
           <div className="config-item">
             <label>Dept-{(timetableData?.department || config.department)}</label>
-            <span>Semester: {(timetableData?.semester === 'Odd' ? 'VI' : 'V') || 'VI'}</span>
+            <span>Semester: {(timetableData?.semester || config.semester)}</span>
           </div>
           <div className="config-item">
             <label>Class: {timetableData?.program || 'B.Tech'} {(timetableData?.department || config.department)}</label>

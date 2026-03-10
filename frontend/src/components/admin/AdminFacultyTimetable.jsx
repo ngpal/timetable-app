@@ -57,13 +57,36 @@ const AdminFacultyTimetable = () => {
         fetch();
     }, []);
 
-    // Unique departments sorted
-    const EXCLUDED_DEPARTMENTS = ['General', 'TEST', 'Computer Science'];
-    const departments = [...new Set(allFaculty.map(f => f.department).filter(d => d && !EXCLUDED_DEPARTMENTS.includes(d)))].sort();
+    const getDepartmentAbbreviation = (dept) => {
+        if (!dept) return '';
+        const abbrev = {
+            'Computer Science and Engineering': 'CSE',
+            'Computer Science': 'CSE',
+            'Electronics and Communication Engineering': 'ECE',
+            'Electronics': 'ECE',
+            'Mechanical Engineering': 'MECH',
+            'Civil Engineering': 'CIVIL',
+            'Electrical and Electronics Engineering': 'EEE',
+            'Information Technology': 'IT',
+            'Mathematics': 'MATH',
+            'Physics': 'PHY',
+            'Chemistry': 'CHEM',
+            'General': 'GEN'
+        };
+        return abbrev[dept] || dept;
+    };
 
-    // Faculty filtered by selected dept
+    // Unique departments sorted
+    const EXCLUDED_DEPARTMENTS = ['General', 'TEST'];
+    const departmentAbbreviations = [...new Set(
+        allFaculty
+            .map(f => getDepartmentAbbreviation(f.department))
+            .filter(d => d && !EXCLUDED_DEPARTMENTS.includes(d))
+    )].sort();
+
+    // Faculty filtered by selected dept abbreviation
     const filteredFaculty = selectedDept
-        ? allFaculty.filter(f => f.department === selectedDept)
+        ? allFaculty.filter(f => getDepartmentAbbreviation(f.department) === selectedDept)
         : allFaculty;
 
     // Reset faculty when dept changes
@@ -125,7 +148,7 @@ const AdminFacultyTimetable = () => {
                             style={{ padding: '0.5rem', border: '1px solid #ddd', borderRadius: '4px', minWidth: '120px' }}
                         >
                             <option value="">-- All --</option>
-                            {departments.map(d => (
+                            {departmentAbbreviations.map(d => (
                                 <option key={d} value={d}>{d}</option>
                             ))}
                         </select>

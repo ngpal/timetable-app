@@ -26,7 +26,7 @@ export const getStudentTimetable = async (req, res, next) => {
             department: department,
             section: section,
             isActive: true
-        });
+        }).populate('courses.faculty.facultyId', 'name email department');
 
         if (!timetable) {
             return res.status(200).json({
