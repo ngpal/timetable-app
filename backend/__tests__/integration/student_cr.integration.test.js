@@ -177,7 +177,7 @@ describe('Student & CR Integration Tests', () => {
             expect(movedSlot.venue).toBe('NEW ROOM 101');
         });
 
-        it('should NOT allow a normal student to submit a rescheduling request', async () => {
+        it('should allow a normal student to submit a rescheduling request', async () => {
             const student = await User.create({
                 name: 'Normal Student',
                 email: 'cb.en.u4cse21300@cb.students.amrita.edu',
@@ -186,10 +186,21 @@ describe('Student & CR Integration Tests', () => {
             });
             currentUser = { id: student._id.toString(), role: student.role, isCR: student.isCR };
 
-            const res = await request(app).post('/api/slot-change-requests').send({});
-            
-            expect(res.status).toBe(403);
-            expect(res.body.message).toMatch(/Only Class Representatives/i);
+            const res = await request(app).post('/api/slot-change-requests').send({
+                courseAssignmentId: assignment._id.toString(),
+                courseCode: 'CS101',
+                courseName: 'Algorithms',
+                facultyName: faculty.name,
+                venue: 'ROOM 101',
+                currentDay: 'Monday',
+                currentSlotNumber: 1,
+                requestedDay: 'Tuesday',
+                requestedSlotNumber: 3,
+                reason: 'Guest lecture overlap'
+            });
+
+            expect(res.status).toBe(201);
+            expect(res.body.request.status).toBe('Pending_Faculty');
         });
     });
 

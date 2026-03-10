@@ -42,8 +42,7 @@ describe('StudentHome Basic Tests', () => {
 
     expect(screen.getByText(/Welcome back/i)).toBeInTheDocument();
     expect(screen.getByText('Attendance')).toBeInTheDocument();
-    // Request Stats card should NOT be visible
-    expect(screen.queryByText(/Request Stats/i)).not.toBeInTheDocument();
+    expect(screen.getByText(/Request Stats/i)).toBeInTheDocument();
   });
 
   test('renders CR specific header and stats card', () => {

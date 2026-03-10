@@ -8,17 +8,17 @@ import { findAvailableClassroom } from '../services/classroomService.js';
 import { errorHandler } from '../utils/error.js';
 
 /**
- * Create a new slot change request (CR -> Faculty -> Admin)
+ * Create a new slot change request (Student -> Faculty -> Admin)
  * 3-Step Approval Chain:
- * 1. Request (CR): CR submits → Status: Pending_Faculty
+ * 1. Request (Student): Student submits → Status: Pending_Faculty
  * 2. Endorsement (Faculty): Faculty reviews and forwards → Status: Pending_Admin
  * 3. Finalization (Admin): Admin approves and assigns classroom → Status: Approved
  */
 export const createRequest = async (req, res, next) => {
     try {
-        // Only Class Representatives (CRs) can submit slot change requests
-        if (req.user.role !== 'Student' || !req.user.isCR) {
-            return next(errorHandler(403, 'Only Class Representatives can submit slot change requests'));
+        // Any authenticated student can submit slot change requests
+        if (req.user.role !== 'Student') {
+            return next(errorHandler(403, 'Only students can submit slot change requests'));
         }
 
         const {

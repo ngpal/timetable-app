@@ -248,16 +248,14 @@ const StudentHome = () => {
                     </div>
                 </div>
 
-                {isCR && (
-                    <div className="modern-card" onClick={() => navigate('/student/reschedule')} style={{ background: 'var(--surface)', padding: '1.5rem', borderRadius: 'var(--radius-lg)', boxShadow: 'var(--shadow-md)', border: '1px solid var(--warning)', cursor: 'pointer', transition: 'var(--transition)' }}>
-                        <h3 style={{ margin: '0 0 1.5rem 0', color: 'var(--text-main)' }}>Request Stats</h3>
-                        <div style={{ fontSize: '2.5rem', fontWeight: 700, color: 'var(--warning)', marginBottom: '0.5rem' }}>3 <span style={{ fontSize: '1rem', color: 'var(--text-muted)', fontWeight: 500 }}>Total Requests</span></div>
-                        <div style={{ display: 'flex', gap: '1rem', marginTop: '1rem' }}>
-                            <div style={{ padding: '0.5rem 1rem', background: 'var(--warning-light)', color: 'var(--warning)', borderRadius: 'var(--radius-md)', fontWeight: 500 }}>2 Pending</div>
-                            <div style={{ padding: '0.5rem 1rem', background: 'var(--student-theme-light)', color: 'var(--student-theme)', borderRadius: 'var(--radius-md)', fontWeight: 500 }}>1 Approved</div>
-                        </div>
+                <div className="modern-card" onClick={() => navigate('/student/reschedule')} style={{ background: 'var(--surface)', padding: '1.5rem', borderRadius: 'var(--radius-lg)', boxShadow: 'var(--shadow-md)', border: '1px solid var(--warning)', cursor: 'pointer', transition: 'var(--transition)' }}>
+                    <h3 style={{ margin: '0 0 1.5rem 0', color: 'var(--text-main)' }}>Request Stats</h3>
+                    <div style={{ fontSize: '2.5rem', fontWeight: 700, color: 'var(--warning)', marginBottom: '0.5rem' }}>3 <span style={{ fontSize: '1rem', color: 'var(--text-muted)', fontWeight: 500 }}>Total Requests</span></div>
+                    <div style={{ display: 'flex', gap: '1rem', marginTop: '1rem' }}>
+                        <div style={{ padding: '0.5rem 1rem', background: 'var(--warning-light)', color: 'var(--warning)', borderRadius: 'var(--radius-md)', fontWeight: 500 }}>2 Pending</div>
+                        <div style={{ padding: '0.5rem 1rem', background: 'var(--student-theme-light)', color: 'var(--student-theme)', borderRadius: 'var(--radius-md)', fontWeight: 500 }}>1 Approved</div>
                     </div>
-                )}
+                </div>
             </div>
         </div>
     );

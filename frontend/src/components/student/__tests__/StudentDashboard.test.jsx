@@ -47,7 +47,7 @@ describe('StudentDashboard Basic Tests', () => {
     expect(screen.getByText('Class Timetable')).toBeInTheDocument();
 
 
-    expect(screen.queryByText(/Reschedule Request/i)).not.toBeInTheDocument();
+    expect(screen.getByText(/Request Reschedule/i)).toBeInTheDocument();
   });
 
 
