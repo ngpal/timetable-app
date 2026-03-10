@@ -4,6 +4,7 @@ import '../App.css';
 import { auth, provider } from '../Firebase';
 import { signInWithPopup } from 'firebase/auth';
 
+const API_URL = process.env.VITE_API_URL || '';
 
 const Home = () => {
   const navigate = useNavigate();
@@ -16,7 +17,7 @@ const Home = () => {
         avatar: result.user.photoURL,
       };
 
-      const res = await fetch('/api/auth/login', {
+      const res = await fetch(`${API_URL}/api/auth/login`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(userData),
