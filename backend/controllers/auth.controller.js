@@ -99,8 +99,8 @@ export const login = async (req, res) => {
     // Set secure cookie
     res.cookie('access_token', token, { 
       httpOnly: true,
-      secure: process.env.NODE_ENV === 'production', // HTTPS in production
-      sameSite: 'strict',
+      secure: true,
+      sameSite: 'none', // Required for cross-origin requests (Vercel → AWS)
       maxAge: 7 * 24 * 60 * 60 * 1000 // 7 days
     })
     .status(200)
