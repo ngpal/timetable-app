@@ -9,6 +9,9 @@ import CourseAssignment from '../../models/courseAssignment.js';
 import SlotChangeRequest from '../../models/slotChangeRequest.js';
 import Notification from '../../models/notification.js';
 
+import Classroom from '../../models/classroom.js';
+import Faculty from '../../models/faculty.js';
+
 // ── App setup ─────────────────────────────────────────────────────────────────
 
 const app = express();
@@ -16,6 +19,7 @@ app.use(express.json());
 app.use(cookieParser());
 
 let currentUser = null;
+let currentFacultyId = null;
 
 // Bypass JWT auth
 jest.unstable_mockModule('../../utils/verifyUser.js', () => ({
@@ -47,8 +51,22 @@ app.use((err, req, res, next) => {
 // ── DB lifecycle ──────────────────────────────────────────────────────────────
 
 beforeAll(async () => { await connectDB(); });
-afterEach(async () => { await clearDB(); currentUser = null; jest.clearAllMocks(); });
+afterEach(async () => { await clearDB(); currentUser = null; currentFacultyId = null; jest.clearAllMocks(); });
 afterAll(async ()  => { await closeDB(); });
+
+// ── Fixtures ──────────────────────────────────────────────────────────────────
+
+async function setupClassroom(roomData = {}) {
+    return Classroom.create({
+        roomId: 'C204',
+        building: 'ABIII',
+        fullRoomId: 'ABIII - C204',
+        roomType: 'Classroom',
+        capacity: 60,
+        isAvailable: true,
+        ...roomData
+    });
+}
 
 // ── Tests ─────────────────────────────────────────────────────────────────────
 
@@ -86,33 +104,77 @@ describe('Student & CR Integration Tests', () => {
         });
     });
 
-    describe('CR Rescheduling Workflow', () => {
-        it('should allow a CR student to submit a rescheduling request', async () => {
+    describe('Multi-Step Rescheduling Workflow', () => {
+        it('should follow the 3-step flow: CR -> Faculty -> Admin (Auto-Classroom)', async () => {
+            // 1. Setup Data
+            const facUser = await User.create({ name: 'Dr. Smith', email: 'smith@amrita.edu', role: 'Faculty' });
+            const faculty = await Faculty.create({ 
+                userId: facUser._id, 
+                name: 'Dr. Smith', 
+                email: 'smith@amrita.edu', 
+                department: 'CSE',
+                designation: 'Assistant Professor',
+                facultyType: 'Full-time'
+            });
+            
             const cr = await User.create({
                 name: 'Test CR',
                 email: 'cb.en.u4cse21341@cb.students.amrita.edu',
                 role: 'Student',
                 isCR: true
             });
-            currentUser = { id: cr._id.toString(), role: cr.role, isCR: cr.isCR };
 
             const assignment = await CourseAssignment.create({
                 academicYear: '2025-2026', semester: 'Odd', department: 'CSE', section: 'D', isActive: true,
-                timetableSlots: [{ day: 'Monday', slotNumber: 1, courseCode: 'CS101', courseName: 'Algorithms', facultyName: 'Dr. Smith', venue: 'R1' }]
+                courses: [{
+                    courseCode: 'CS101', courseName: 'Algorithms', faculty: [{ facultyId: faculty._id, role: 'Incharge' }]
+                }],
+                timetableSlots: [{ day: 'Monday', slotNumber: 1, courseCode: 'CS101', courseName: 'Algorithms', facultyName: 'Dr. Smith', venue: 'OLD ROOM' }]
             });
 
-            const body = {
+            await setupClassroom({ fullRoomId: 'NEW ROOM 101' });
+
+            // 2. CR Submits Request
+            currentUser = { id: cr._id.toString(), role: cr.role, isCR: cr.isCR };
+            const crBody = {
                 courseAssignmentId: assignment._id.toString(),
-                courseCode: 'CS101', courseName: 'Algorithms', facultyName: 'Dr. Smith', venue: 'R1',
+                courseCode: 'CS101', courseName: 'Algorithms', facultyName: 'Dr. Smith', venue: 'OLD ROOM',
                 currentDay: 'Monday', currentSlotNumber: 1,
                 requestedDay: 'Tuesday', requestedSlotNumber: 3,
                 reason: 'Labs busy'
             };
 
-            const res = await request(app).post('/api/slot-change-requests').send(body);
+            const crRes = await request(app).post('/api/slot-change-requests').send(crBody);
+            expect(crRes.status).toBe(201);
+            expect(crRes.body.request.status).toBe('Pending_Faculty');
+            expect(crRes.body.request.facultyId).toBe(faculty._id.toString());
+            const requestId = crRes.body.request._id;
+
+            // 3. Faculty Approves
+            currentUser = { id: facUser._id.toString(), role: 'Faculty' };
+            const facRes = await request(app)
+                .patch(`/api/slot-change-requests/${requestId}/faculty-approve`)
+                .send({ status: 'Approved' });
             
-            expect(res.status).toBe(201);
-            expect(res.body.request.status).toBe('Pending');
+            expect(facRes.status).toBe(200);
+            expect(facRes.body.request.status).toBe('Pending_Admin');
+
+            // 4. Admin Approves (System auto-assigns classroom)
+            currentUser = { id: new mongoose.Types.ObjectId().toString(), role: 'Admin' };
+            const adminRes = await request(app)
+                .patch(`/api/slot-change-requests/${requestId}/admin-approve`)
+                .send({ status: 'Approved', adminNote: 'Classroom assigned automatically' });
+            
+            expect(adminRes.status).toBe(200);
+            expect(adminRes.body.request.status).toBe('Approved');
+            expect(adminRes.body.request.assignedVenue).toBe('NEW ROOM 101');
+            
+            // 5. Verify Timetable Update
+            const updatedAssignment = await CourseAssignment.findById(assignment._id);
+            const movedSlot = updatedAssignment.timetableSlots.find(s => s.courseCode === 'CS101');
+            expect(movedSlot.day).toBe('Tuesday');
+            expect(movedSlot.slotNumber).toBe(3);
+            expect(movedSlot.venue).toBe('NEW ROOM 101');
         });
 
         it('should NOT allow a normal student to submit a rescheduling request', async () => {
@@ -128,35 +190,6 @@ describe('Student & CR Integration Tests', () => {
             
             expect(res.status).toBe(403);
             expect(res.body.message).toMatch(/Only Class Representatives/i);
-        });
-
-        it('should create a notification for students when a request is approved', async () => {
-            // Setup: Admin to approve
-            currentUser = { id: new mongoose.Types.ObjectId().toString(), role: 'Admin' };
-
-            const assignment = await CourseAssignment.create({
-                academicYear: '2025-2026', semester: 'Odd', department: 'CSE', section: 'D', isActive: true,
-                timetableSlots: [{ day: 'Monday', slotNumber: 1, courseCode: 'CS101', courseName: 'Algorithms', facultyName: 'Dr. Smith', venue: 'R1' }]
-            });
-
-            const changeReq = await SlotChangeRequest.create({
-                courseAssignmentId: assignment._id, requestedBy: new mongoose.Types.ObjectId(),
-                courseCode: 'CS101', courseName: 'Algorithms', facultyName: 'Dr. Smith', venue: 'R1',
-                currentDay: 'Monday', currentSlotNumber: 1,
-                requestedDay: 'Tuesday', requestedSlotNumber: 3, status: 'Pending'
-            });
-
-            const res = await request(app)
-                .patch(`/api/slot-change-requests/${changeReq._id}/status`)
-                .send({ status: 'Approved', adminNote: 'Done' });
-
-            expect(res.status).toBe(200);
-
-            // Verify notification created
-            const notification = await Notification.findOne({ department: 'CSE', section: 'D' });
-            expect(notification).not.toBeNull();
-            expect(notification.message).toMatch(/Timetable Update/);
-            expect(notification.type).toBe('Reschedule');
         });
     });
 

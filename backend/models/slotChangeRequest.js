@@ -11,6 +11,10 @@ const slotChangeRequestSchema = new mongoose.Schema({
         ref: 'User',
         required: true,
     },
+    facultyId: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Faculty',
+    },
     courseCode: {
         type: String,
         required: true,
@@ -24,8 +28,11 @@ const slotChangeRequestSchema = new mongoose.Schema({
         required: true,
     },
     venue: {
-        type: String, // Denormalized for fast conflict check
+        type: String, // Current venue
         required: true,
+    },
+    assignedVenue: {
+        type: String, // System assigned venue after Admin approval
     },
     currentDay: {
         type: String,
@@ -45,8 +52,8 @@ const slotChangeRequestSchema = new mongoose.Schema({
     },
     status: {
         type: String,
-        enum: ['Pending', 'Approved', 'Rejected'],
-        default: 'Pending',
+        enum: ['Pending_Faculty', 'Pending_Admin', 'Approved', 'Rejected'],
+        default: 'Pending_Faculty',
     },
     reason: {
         type: String,
