@@ -4,6 +4,8 @@ import { auth, provider } from '../Firebase';
 import { signInWithPopup } from 'firebase/auth';
 import '../App.css';
 
+const API_URL = import.meta.env.VITE_API_URL || '';
+
 const Login = () => {
   const navigate = useNavigate();
   const handleMicrosoftLogin = async () => {
@@ -14,7 +16,7 @@ const Login = () => {
         email: result.user.email,
         avatar: result.user.photoURL,
       };
-      const res = await fetch('/api/auth/login', {
+      const res = await fetch(`${API_URL}/api/auth/login`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(userData),
