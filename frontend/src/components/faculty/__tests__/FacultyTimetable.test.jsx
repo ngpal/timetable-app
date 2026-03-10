@@ -38,7 +38,7 @@ describe('FacultyTimetable Basic Tests', () => {
     render(<FacultyTimetable />);
 
     expect(await screen.findByText(/FACULTY TIME TABLE/i)).toBeInTheDocument();
-    expect(screen.getByRole('button', { name: /Export PDF/i })).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: /Export ICS/i })).toBeInTheDocument();
   });
 
   test('renders all day headers', async () => {
