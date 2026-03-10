@@ -17,7 +17,7 @@ jobs:
 
       - name: Generate deployment package
         run: |
-          cd Backend
+          cd backend
           zip -r ../backend-deploy.zip . -x "node_modules/*" "__tests__/*" "*.test.js" ".env"
 
       - name: Deploy to Elastic Beanstalk
