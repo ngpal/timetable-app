@@ -3,6 +3,10 @@
     {
       "source": "/api/:path*",
       "destination": "http://timetable-app-env.eba-2pxaturd.ap-south-1.elasticbeanstalk.com/api/:path*"
+    },
+    {
+      "source": "/api/:path*/",
+      "destination": "http://timetable-app-env.eba-2pxaturd.ap-south-1.elasticbeanstalk.com/api/:path*/"
     }
   ]
 }
