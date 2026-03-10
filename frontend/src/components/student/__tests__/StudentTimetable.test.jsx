@@ -13,7 +13,7 @@ describe('StudentTimetable Basic Tests', () => {
         await waitFor(() => {
             expect(screen.getByText(/Class Timetable/i)).toBeInTheDocument();
         });
-        expect(screen.getByRole('button', { name: /Export PDF/i })).toBeInTheDocument();
+        expect(screen.getByRole('button', { name: /Export ICS/i })).toBeInTheDocument();
     });
 
     test('renders all day headers (Monday-Friday)', async () => {
