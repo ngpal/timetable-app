@@ -124,6 +124,28 @@ export const timetableService = {
         }
     },
 
+    // Get the student's personal timetable
+    getStudentPersonalTimetable: async () => {
+        try {
+            const response = await fetch(`${API_URL}/api/student/timetable`, {
+                method: 'GET',
+                credentials: 'include',
+                headers: {
+                    'Content-Type': 'application/json',
+                }
+            });
+
+            if (!response.ok) {
+                throw new Error('Failed to fetch student timetable');
+            }
+
+            return await response.json();
+        } catch (error) {
+            console.error('Error fetching student timetable:', error);
+            throw error;
+        }
+    },
+
     // Delete timetable
     deleteTimetable: async (id) => {
         try {

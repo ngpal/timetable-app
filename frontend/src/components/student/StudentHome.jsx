@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useOutletContext, useNavigate } from 'react-router-dom';
-import { Bell, BookOpen, Clock, CalendarDays } from 'lucide-react';
+import { Bell, BookOpen, Clock, CalendarDays, Loader2 } from 'lucide-react';
+import { timetableService } from '../../services/timetableService';
 
 const CircularProgress = ({ percentage, color }) => {
     const radius = 40;
@@ -42,6 +43,8 @@ const StudentHome = () => {
     const navigate = useNavigate();
     const [showNotifications, setShowNotifications] = useState(false);
     const [progress, setProgress] = useState(0);
+    const [todayClasses, setTodayClasses] = useState([]);
+    const [loading, setLoading] = useState(true);
     const targetAttendance = 78;
 
     const [notifications, setNotifications] = useState([
@@ -54,7 +57,53 @@ const StudentHome = () => {
         setTimeout(() => {
             setProgress(targetAttendance);
         }, 300);
+        fetchTodayClasses();
     }, []);
+
+    const fetchTodayClasses = async () => {
+        try {
+            setLoading(true);
+            const data = await timetableService.getStudentPersonalTimetable();
+            if (data && data.success && data.timetable) {
+                const days = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+                const today = days[new Date().getDay()];
+                
+                // Filter slots for today and sort by slot number
+                const slots = data.timetable.timetableSlots
+                    .filter(s => s.day === today && !s.isSpanContinuation)
+                    .sort((a, b) => a.slotNumber - b.slotNumber);
+                
+                // Map to display format
+                const formatted = slots.map(s => {
+                    const slotTimes = [
+                        { start: '08:00 AM', end: '09:00 AM' },
+                        { start: '09:00 AM', end: '10:00 AM' },
+                        { start: '10:00 AM', end: '11:00 AM' },
+                        { start: '11:00 AM', end: '12:00 PM' },
+                        { start: '12:00 PM', end: '01:00 PM' }, // Lunch
+                        { start: '01:00 PM', end: '02:00 PM' },
+                        { start: '02:00 PM', end: '03:00 PM' },
+                        { start: '03:00 PM', end: '04:00 PM' },
+                        { start: '04:00 PM', end: '05:00 PM' }
+                    ];
+                    const time = slotTimes[s.slotNumber - 1] || { start: 'TBD', end: '' };
+                    
+                    const course = data.timetable.courses.find(c => c.courseCode === s.courseCode);
+                    return {
+                        time: time.start,
+                        name: course ? course.courseName : s.courseCode,
+                        room: s.venue,
+                        type: s.sessionType
+                    };
+                });
+                setTodayClasses(formatted);
+            }
+        } catch (err) {
+            console.error('Error fetching today\'s classes:', err);
+        } finally {
+            setLoading(false);
+        }
+    };
 
     const toggleNotifications = () => setShowNotifications(!showNotifications);
 
@@ -142,7 +191,7 @@ const StudentHome = () => {
             </div>
 
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '1.5rem' }}>
-                {/* Today's Preview Placeholder */}
+                {/* Today's Preview Section */}
                 <div className="modern-card" style={{ background: 'var(--surface)', padding: '1.5rem', borderRadius: 'var(--radius-lg)', boxShadow: 'var(--shadow-md)', border: '1px solid var(--border)' }}>
                     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.5rem' }}>
                         <h3 style={{ margin: 0, color: 'var(--text-main)', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
@@ -151,17 +200,30 @@ const StudentHome = () => {
                         <button onClick={() => navigate('/student/timetable')} style={{ color: 'var(--primary)', fontSize: '0.9rem', fontWeight: 500 }}>View Timetable</button>
                     </div>
                     <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
-                        {[{ time: '09:00 AM', name: 'Software Engineering', room: 'Room 301' }, { time: '11:00 AM', name: 'Database Systems', room: 'Lab 2' }].map((cls, i) => (
-                            <div key={i} style={{ display: 'flex', gap: '1rem', padding: '1rem', background: 'var(--bg)', borderRadius: 'var(--radius-md)', borderLeft: '4px solid var(--student-theme)' }}>
-                                <div style={{ color: 'var(--text-main)', fontWeight: 600, minWidth: '80px' }}>{cls.time}</div>
-                                <div>
-                                    <div style={{ fontWeight: 500 }}>{cls.name}</div>
-                                    <div style={{ fontSize: '0.85rem', color: 'var(--text-muted)', display: 'flex', alignItems: 'center', gap: '0.25rem', marginTop: '0.25rem' }}>
-                                        <BookOpen size={14} /> {cls.room}
+                        {loading ? (
+                            <div style={{ display: 'flex', justifyContent: 'center', padding: '2rem' }}>
+                                <Loader2 className="animate-spin" />
+                            </div>
+                        ) : todayClasses.length > 0 ? (
+                            todayClasses.map((cls, i) => (
+                                <div key={i} style={{ display: 'flex', gap: '1rem', padding: '1rem', background: 'var(--bg)', borderRadius: 'var(--radius-md)', borderLeft: '4px solid var(--student-theme)' }}>
+                                    <div style={{ color: 'var(--text-main)', fontWeight: 600, minWidth: '80px' }}>{cls.time}</div>
+                                    <div>
+                                        <div style={{ fontWeight: 500 }}>
+                                            {cls.name}
+                                            {cls.type === 'Lab' && <span style={{ fontSize: '0.7rem', color: 'var(--info)', marginLeft: '0.5rem' }}> (Lab)</span>}
+                                        </div>
+                                        <div style={{ fontSize: '0.85rem', color: 'var(--text-muted)', display: 'flex', alignItems: 'center', gap: '0.25rem', marginTop: '0.25rem' }}>
+                                            <BookOpen size={14} /> {cls.room || 'TBD'}
+                                        </div>
                                     </div>
                                 </div>
+                            ))
+                        ) : (
+                            <div style={{ textAlign: 'center', padding: '2rem', color: 'var(--text-muted)' }}>
+                                No classes scheduled for today!
                             </div>
-                        ))}
+                        )}
                     </div>
                 </div>
 

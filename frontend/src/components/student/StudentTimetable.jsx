@@ -1,14 +1,36 @@
 import React, { useState, useEffect } from 'react';
-import { Download, Maximize2, Minimize2, Clock, MapPin, Users } from 'lucide-react';
+import { Download, Maximize2, Minimize2, Clock, MapPin, Users, AlertCircle, Loader2 } from 'lucide-react';
+import { timetableService } from '../../services/timetableService';
 import '../admin/AmritaTimetable.css';
 
 const StudentTimetable = () => {
     const [currentTime, setCurrentTime] = useState(new Date());
+    const [timetableData, setTimetableData] = useState(null);
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState(null);
 
     useEffect(() => {
         const timer = setInterval(() => setCurrentTime(new Date()), 60000);
+        fetchTimetable();
         return () => clearInterval(timer);
     }, []);
+
+    const fetchTimetable = async () => {
+        try {
+            setLoading(true);
+            const data = await timetableService.getStudentPersonalTimetable();
+            if (data && data.success) {
+                setTimetableData(data.timetable);
+            } else {
+                setError(data?.message || 'Failed to load timetable');
+            }
+        } catch (err) {
+            console.error('Error fetching timetable:', err);
+            setError('Failed to connect to server. Please try again later.');
+        } finally {
+            setLoading(false);
+        }
+    };
 
     // Slot structure matches AmritaTimetable
     const slots = [
@@ -25,56 +47,33 @@ const StudentTimetable = () => {
 
     const days = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'];
 
-    // Mock Timetable Data matching Amrita format
-    const timetableData = {
-        department: 'CSE',
-        semester: 'Odd',
-        program: 'B.Tech',
-        section: 'A',
-        classAdvisors: [{ name: 'Dr. Priya Sharma' }, { name: 'Dr. Ramesh Krishnan' }],
-        timetableSlots: [
-            { day: 'Monday', slotNumber: 1, courseCode: '23CSE312-S5', sessionType: 'Theory', venue: 'ABIII - D103' },
-            { day: 'Monday', slotNumber: 2, courseCode: '23CSE313-S5', sessionType: 'Lab', venue: 'ABIII - CP LAB 1', spanSlots: 2 },
-            { day: 'Monday', slotNumber: 3, isSpanContinuation: true },
-            { day: 'Tuesday', slotNumber: 2, courseCode: '23CSE313-S5', sessionType: 'Lab', venue: 'ABIII - CP LAB 1', spanSlots: 2 },
-            { day: 'Tuesday', slotNumber: 3, isSpanContinuation: true },
-            { day: 'Tuesday', slotNumber: 7, courseCode: '23CSE313-S5', sessionType: 'Theory', venue: 'ABIII - CP LAB 1' },
-            { day: 'Tuesday', slotNumber: 8, courseCode: '23CSE314-S5', sessionType: 'Theory', venue: 'ABIII - D102' },
-            { day: 'Wednesday', slotNumber: 3, courseCode: '23CSE315L-S5', sessionType: 'Lab', venue: 'ABIII - HW LAB 1', spanSlots: 3 },
-            { day: 'Wednesday', slotNumber: 4, isSpanContinuation: true },
-            { day: 'Thursday', slotNumber: 3, courseCode: '23CSE312-S5', sessionType: 'Theory', venue: 'ABIII - D103' },
-            { day: 'Thursday', slotNumber: 7, courseCode: '23CSE314-S5', sessionType: 'Theory', venue: 'ABIII - D102' },
-            { day: 'Thursday', slotNumber: 8, courseCode: '23CSE312-S5', sessionType: 'Theory', venue: 'ABIII - D103' },
-            { day: 'Friday', slotNumber: 1, courseCode: '23CSE311-S5', sessionType: 'Theory', venue: 'ABIII - HW LAB 1' },
-            { day: 'Friday', slotNumber: 4, courseCode: '23CSE314-S5', sessionType: 'Theory', venue: 'ABIII - D102' }
-        ],
-        courses: [
-            {
-                courseType: 'Core', courseCode: '23CSE311-S5', courseName: 'Data Structures II',
-                faculty: [{ name: 'Dr. Rajesh Kumar' }], venue: 'ABIII - HW LAB 1'
-            },
-            {
-                courseType: 'Core', courseCode: '23CSE312-S5', courseName: 'Database Management Systems II',
-                faculty: [{ name: 'Dr. Priya Sharma' }], venue: 'ABIII - D103'
-            },
-            {
-                courseType: 'Core', courseCode: '23CSE313-S5', courseName: 'Operating Systems II',
-                faculty: [{ name: 'Dr. Arun Menon' }], venue: 'ABIII - CP LAB 1'
-            },
-            {
-                courseType: 'Core', courseCode: '23CSE314-S5', courseName: 'Computer Networks II',
-                faculty: [{ name: 'Ms. Divya K' }], venue: 'ABIII - D102'
-            },
-            {
-                courseType: 'Lab', courseCode: '23CSE315L-S5', courseName: 'Data Structures Lab II',
-                faculty: [{ role: 'Incharge', name: 'Mr. Karthik S' }, { role: 'Assisting', name: 'Dr. Priya Sharma' }],
-                venue: 'ABIII - HW LAB 1'
-            }
-        ]
-    };
+    if (loading) {
+        return (
+            <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', height: '60vh', gap: '1rem' }}>
+                <Loader2 className="animate-spin" size={48} color="var(--primary)" />
+                <p style={{ color: 'var(--text-muted)' }}>Loading your personal timetable...</p>
+            </div>
+        );
+    }
+
+    if (error || !timetableData) {
+        return (
+            <div style={{ padding: '2rem' }}>
+                <div style={{ background: 'var(--danger-light)', border: '1px solid var(--danger)', padding: '1.5rem', borderRadius: 'var(--radius-lg)', display: 'flex', alignItems: 'center', gap: '1rem', color: 'var(--danger)' }}>
+                    <AlertCircle size={32} />
+                    <div>
+                        <h3 style={{ margin: 0 }}>Timetable Not Found</h3>
+                        <p style={{ margin: '0.25rem 0 0 0' }}>{error || 'No active timetable found for your section.'}</p>
+                    </div>
+                </div>
+            </div>
+        );
+    }
+
+    const { department, semester, program, section, timetableSlots, courses, classAdvisors } = timetableData;
 
     const getSlotData = (day, slotNumber) => {
-        return timetableData.timetableSlots.find(
+        return timetableSlots.find(
             slot => slot.day === day && slot.slotNumber === slotNumber
         );
     };
