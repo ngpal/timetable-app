@@ -37,7 +37,7 @@ describe("AdminDashboard", () => {
       </MemoryRouter>
     );
 
-    const activeLink = screen.getByText(/faculty management/i);
+    const activeLink = screen.getByText(/faculty management/i).closest('a');
     expect(activeLink).toHaveClass("active");
   });
 
