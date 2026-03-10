@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import axios from 'axios';
-import { Search, Loader2, BookOpen, Clock, Calendar } from 'lucide-react';
+import { Search, Loader2, BookOpen, Clock, Calendar, Download } from 'lucide-react';
+import { exportToICS } from '../../utils/icsExport';
 import '../admin/AmritaTimetable.css';
 
 const StudentAllTimetables = () => {
@@ -149,16 +150,26 @@ const StudentAllTimetables = () => {
                         <h2 style={{ fontSize: '1.8rem', fontWeight: 700, color: 'var(--text-main)', margin: 0 }}>University Timetable Grid</h2>
                         <p style={{ color: 'var(--text-muted)', marginTop: '0.25rem' }}>View global institutional timetables instantly</p>
                     </div>
-                    <div className="modern-card" style={{ display: 'flex', gap: '1.5rem', padding: '0.75rem 1.5rem', borderRadius: 'var(--radius-full)', background: 'var(--surface)', border: '1px solid var(--border)' }}>
-                        <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                            <Clock size={16} color="var(--primary)" />
-                            <span style={{ fontWeight: 600, color: 'var(--text-main)' }}>{metrics.totalHours} <span style={{ fontWeight: 400, color: 'var(--text-muted)' }}>Class Hrs</span></span>
+                    <div style={{ display: 'flex', gap: '1rem', alignItems: 'center' }}>
+                        <div className="modern-card" style={{ display: 'flex', gap: '1.5rem', padding: '0.75rem 1.5rem', borderRadius: 'var(--radius-full)', background: 'var(--surface)', border: '1px solid var(--border)' }}>
+                            <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                                <Clock size={16} color="var(--primary)" />
+                                <span style={{ fontWeight: 600, color: 'var(--text-main)' }}>{metrics.totalHours} <span style={{ fontWeight: 400, color: 'var(--text-muted)' }}>Class Hrs</span></span>
+                            </div>
+                            <div style={{ width: '1px', background: 'var(--border)' }}></div>
+                            <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                                <BookOpen size={16} color="var(--student-theme)" />
+                                <span style={{ fontWeight: 600, color: 'var(--text-main)' }}>{metrics.distinctSubjects} <span style={{ fontWeight: 400, color: 'var(--text-muted)' }}>Subjects</span></span>
+                            </div>
                         </div>
-                        <div style={{ width: '1px', background: 'var(--border)' }}></div>
-                        <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                            <BookOpen size={16} color="var(--student-theme)" />
-                            <span style={{ fontWeight: 600, color: 'var(--text-main)' }}>{metrics.distinctSubjects} <span style={{ fontWeight: 400, color: 'var(--text-muted)' }}>Subjects</span></span>
-                        </div>
+                        <button
+                            onClick={() => exportToICS(timetableData, `global-student-${selectedDepartment}-${selectedSection}.ics`)}
+                            disabled={!timetableData?.timetableSlots?.length}
+                            style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', backgroundColor: 'var(--primary)', color: 'white', border: 'none', padding: '0.75rem 1.5rem', borderRadius: 'var(--radius-full)', cursor: !timetableData?.timetableSlots?.length ? 'not-allowed' : 'pointer', fontWeight: 500, transition: 'var(--transition)', boxShadow: 'var(--shadow-sm)', opacity: !timetableData?.timetableSlots?.length ? 0.7 : 1 }}
+                        >
+                            <Download size={16} />
+                            Export ICS
+                        </button>
                     </div>
                 </div>
 

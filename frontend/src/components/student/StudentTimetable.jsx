@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Download, Maximize2, Minimize2, Clock, MapPin, Users, AlertCircle, Loader2, RefreshCw } from 'lucide-react';
 import { timetableService } from '../../services/timetableService';
+import { exportToICS } from '../../utils/icsExport';
 import '../admin/AmritaTimetable.css';
 
 const StudentTimetable = () => {
@@ -148,10 +149,11 @@ const StudentTimetable = () => {
                         Refresh
                     </button>
                     <button
+                        onClick={() => exportToICS(timetableData, `student-timetable-${timetableData?.program || ''}-${timetableData?.department || ''}-${timetableData?.section || ''}.ics`)}
                         style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', backgroundColor: 'var(--primary)', color: 'white', border: 'none', padding: '0.5rem 1rem', borderRadius: 'var(--radius-md)', cursor: 'pointer', fontWeight: 500, transition: 'var(--transition)', boxShadow: 'var(--shadow-sm)' }}
                     >
                         <Download size={16} />
-                        Export PDF
+                        Export ICS
                     </button>
                 </div>
             </div>
