@@ -3,14 +3,12 @@ name: Deploy Backend to AWS Elastic Beanstalk
 on:
   push:
     branches: ["master"]
-    paths:
-      - "Backend/**"
 
 jobs:
   deploy:
     name: Deploy to Elastic Beanstalk
     runs-on: ubuntu-latest
-    # Only deploy after CI passes
+    # Only deploy after CI passes 
     needs: []
 
     steps:
