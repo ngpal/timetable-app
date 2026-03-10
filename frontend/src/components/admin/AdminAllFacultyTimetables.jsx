@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from 'react';
+import { Download } from 'lucide-react';
 import { getAllFaculty } from '../../services/facultyService';
 import { getFacultyTimetable } from '../../services/courseAssignmentService';
+import { exportToICS } from '../../utils/icsExport';
 import './AmritaTimetable.css';
 
 const slots = [
@@ -44,12 +46,20 @@ const FacultyGrid = ({ faculty, data }) => {
     return (
         <div style={{ marginBottom: '3rem', pageBreakInside: 'avoid' }}>
             {/* Faculty header banner */}
-            <div className="timetable-header" style={{ borderRadius: '8px 8px 0 0' }}>
+            <div className="timetable-header" style={{ borderRadius: '8px 8px 0 0', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                 <h2 style={{ fontSize: '1.3rem', margin: 0 }}>
                     {faculty.name}
                     {faculty.department ? ` — ${faculty.department}` : ''}
                     {faculty.designation ? ` (${faculty.designation})` : ''}
                 </h2>
+                {hasAnySlot && (
+                    <button
+                        onClick={() => exportToICS(data, `faculty-${faculty.name.replace(/\s+/g, '-')}.ics`)}
+                        style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', backgroundColor: 'rgba(255,255,255,0.2)', color: 'white', border: '1px solid rgba(255,255,255,0.4)', padding: '0.4rem 0.8rem', borderRadius: '4px', cursor: 'pointer', fontSize: '0.85rem' }}
+                    >
+                        <Download size={14} /> Export ICS
+                    </button>
+                )}
             </div>
 
             {!hasAnySlot ? (

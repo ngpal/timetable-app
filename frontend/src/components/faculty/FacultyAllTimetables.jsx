@@ -1,5 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
+import { Download } from 'lucide-react';
+import { exportToICS } from '../../utils/icsExport';
 import '../admin/AmritaTimetable.css';
 
 const FacultyAllTimetables = () => {
@@ -193,6 +195,15 @@ const FacultyAllTimetables = () => {
                             ))}
                         </select>
                     </div>
+
+                    <button
+                        onClick={() => exportToICS(timetableData, `global-faculty-${selectedDepartment}-${selectedSection}.ics`)}
+                        disabled={!timetableData?.timetableSlots?.length}
+                        style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', backgroundColor: 'var(--primary)', color: 'white', border: 'none', padding: '0.5rem 1rem', borderRadius: 'var(--radius-md)', cursor: !timetableData?.timetableSlots?.length ? 'not-allowed' : 'pointer', fontWeight: 500, transition: 'var(--transition)', boxShadow: 'var(--shadow-sm)', opacity: !timetableData?.timetableSlots?.length ? 0.7 : 1, marginLeft: '0.5rem' }}
+                    >
+                        <Download size={16} />
+                        Export ICS
+                    </button>
                 </div>
             </div>
 

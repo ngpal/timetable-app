@@ -1,5 +1,7 @@
 import React, { useState, useEffect } from 'react';
+import { Download } from 'lucide-react';
 import { getCourseAssignment } from '../../services/courseAssignmentService';
+import { exportToICS } from '../../utils/icsExport';
 import './AmritaTimetable.css';
 
 const AmritaTimetable = ({ previewData = null }) => {
@@ -202,6 +204,24 @@ const AmritaTimetable = ({ previewData = null }) => {
         >
           Load Timetable
         </button>
+        {timetableData && (
+          <button
+            onClick={() => exportToICS(timetableData, `amrita-timetable-${config.department}-${config.section}.ics`)}
+            style={{
+              display: 'flex', alignItems: 'center', gap: '0.5rem',
+              padding: '0.5rem 1rem',
+              backgroundColor: 'var(--primary)',
+              color: 'white',
+              border: 'none',
+              borderRadius: '4px',
+              cursor: 'pointer',
+              fontWeight: 'bold'
+            }}
+          >
+            <Download size={16} />
+            Export ICS
+          </button>
+        )}
       </div>
       )}
 

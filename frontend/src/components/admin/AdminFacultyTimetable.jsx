@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from 'react';
+import { Download } from 'lucide-react';
 import { getAllFaculty } from '../../services/facultyService';
 import { getFacultyTimetable } from '../../services/courseAssignmentService';
+import { exportToICS } from '../../utils/icsExport';
 import './AmritaTimetable.css';
 
 const slots = [
@@ -188,6 +190,26 @@ const AdminFacultyTimetable = () => {
                 >
                     {loading ? 'Loading...' : 'Load Timetable'}
                 </button>
+                {/* Export Button */}
+                {timetableData && (
+                    <button
+                        onClick={() => exportToICS(timetableData, `faculty-${selectedFaculty?.name || 'timetable'}.ics`)}
+                        style={{
+                            display: 'flex', alignItems: 'center', gap: '0.5rem',
+                            padding: '0.5rem 1.2rem',
+                            backgroundColor: 'var(--primary)',
+                            color: 'white',
+                            border: 'none',
+                            borderRadius: '4px',
+                            cursor: 'pointer',
+                            fontWeight: 'bold',
+                            whiteSpace: 'nowrap'
+                        }}
+                    >
+                        <Download size={16} />
+                        Export ICS
+                    </button>
+                )}
             </div>
 
             {/* Error */}
