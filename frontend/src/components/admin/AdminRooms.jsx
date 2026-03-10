@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
-import { Pencil, Trash2 } from 'lucide-react';
+import { Pencil, Trash2, Calendar } from 'lucide-react';
 import { getAllClassrooms, addClassroom, updateClassroom, deleteClassroom } from '../../services/classroomService';
+import RoomDetailsModal from './RoomDetailsModal';
 
 const AdminRooms = () => {
   const [rooms, setRooms] = useState([]);
@@ -9,6 +10,7 @@ const AdminRooms = () => {
   const [error, setError] = useState(null);
   const [editingRoom, setEditingRoom] = useState(null);
   const [selectedFacilities, setSelectedFacilities] = useState([]);
+  const [selectedRoomForSchedule, setSelectedRoomForSchedule] = useState(null);
 
   // Form state
   const [formData, setFormData] = useState({
@@ -407,6 +409,15 @@ const AdminRooms = () => {
                     <td>{room.capacity}</td>
                     <td>
                       <button 
+                        className="icon-btn" 
+                        title="View Schedule"
+                        style={{ color: '#0ea5e9', marginRight: '0.5rem' }}
+                        onClick={() => setSelectedRoomForSchedule(room)}
+                        disabled={loading}
+                      >
+                        <Calendar size={24} />
+                      </button>
+                      <button 
                         className="icon-btn edit-btn" 
                         title="Edit"
                         onClick={() => handleEdit(room)}
@@ -429,6 +440,15 @@ const AdminRooms = () => {
             </table>
           )}
         </div>
+      )}
+
+      {/* Room Schedule Modal */}
+      {selectedRoomForSchedule && (
+        <RoomDetailsModal
+          isOpen={!!selectedRoomForSchedule}
+          onClose={() => setSelectedRoomForSchedule(null)}
+          room={selectedRoomForSchedule}
+        />
       )}
     </div>
   );

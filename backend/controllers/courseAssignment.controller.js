@@ -387,3 +387,85 @@ export const getMyTimetable = async (req, res) => {
         });
     }
 };
+
+// Get timetable for a specific room across all active assignments
+export const getRoomTimetable = async (req, res) => {
+    try {
+        const { venue } = req.params;
+        if (!venue) {
+            return res.status(400).json({ message: 'Venue parameter is required' });
+        }
+
+        // Find all active assignments that contain this venue
+        const assignments = await CourseAssignment.find({
+            isActive: true,
+            'timetableSlots.venue': venue
+        })
+            .populate('courses.faculty.facultyId', 'name department designation email')
+            .populate('classAdvisors.facultyId', 'name department');
+
+        const aggregatedSlots = [];
+        const coursesMap = new Map();
+
+        for (const assignment of assignments) {
+            const { department, section, program, semester, academicYear, timetableSlots, courses } = assignment;
+
+            // Map courses to their details for quick lookup
+            const localCoursesMap = new Map(
+                courses.map(c => [c.courseCode, c])
+            );
+
+            for (const slot of timetableSlots) {
+                if (slot.venue === venue) {
+                    const courseInfo = localCoursesMap.get(slot.courseCode) || {};
+                    
+                    // Add this slot exactly as it is assigned for the room
+                    aggregatedSlots.push({
+                        day: slot.day,
+                        slotNumber: slot.slotNumber,
+                        courseCode: slot.courseCode,
+                        courseName: courseInfo.courseName || slot.courseName,
+                        sessionType: slot.sessionType,
+                        section,
+                        department,
+                        program,
+                        semester,
+                        academicYear,
+                        spanSlots: slot.spanSlots,
+                        isSpanContinuation: slot.isSpanContinuation,
+                        // Attach faculty info mapped from course array
+                        facultyNames: courseInfo.faculty ? courseInfo.faculty.map(f => f.facultyId?.name).filter(Boolean) : []
+                    });
+
+                    // Track unique courses taught in this room
+                    if (slot.courseCode && !coursesMap.has(slot.courseCode)) {
+                        coursesMap.set(slot.courseCode, {
+                            courseCode: slot.courseCode,
+                            courseName: courseInfo.courseName || slot.courseName,
+                            courseType: courseInfo.courseType,
+                            credits: courseInfo.credits,
+                            faculty: courseInfo.faculty ? courseInfo.faculty.map(f => ({
+                                name: f.facultyId?.name,
+                                role: f.role
+                            })) : []
+                        });
+                    }
+                }
+            }
+        }
+
+        res.status(200).json({
+            success: true,
+            venue,
+            slots: aggregatedSlots,
+            courses: Array.from(coursesMap.values())
+        });
+    } catch (error) {
+        console.error('getRoomTimetable error:', error);
+        res.status(500).json({ 
+            success: false,
+            message: 'Error fetching room timetable', 
+            error: error.message 
+        });
+    }
+};

@@ -8,7 +8,8 @@ import {
     updateSlot,
     deleteCourseAssignment,
     getFacultyTimetable,
-    getMyTimetable
+    getMyTimetable,
+    getRoomTimetable
 } from '../controllers/courseAssignment.controller.js';
 
 import { generateSampleTimetable } from '../controllers/sampleData.controller.js';
@@ -58,6 +59,15 @@ router.get('/my-timetable', verifyUser, getMyTimetable);
  *     tags: [Course Assignments]
  */
 router.get('/faculty-timetable', verifyUser, getFacultyTimetable);
+
+/**
+ * @swagger
+ * /api/timetable/room/{venue}:
+ *   get:
+ *     summary: Get timetable for a specific room across all assignments
+ *     tags: [Course Assignments]
+ */
+router.get('/room/:venue', verifyUser, getRoomTimetable);
 
 /**
  * @swagger
