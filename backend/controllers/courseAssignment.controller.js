@@ -469,3 +469,79 @@ export const getRoomTimetable = async (req, res) => {
         });
     }
 };
+
+// Get timetable for a specific course across all active sections
+export const getCourseTimetable = async (req, res) => {
+    try {
+        const { courseCode } = req.params;
+        if (!courseCode) {
+            return res.status(400).json({ message: 'courseCode parameter is required' });
+        }
+
+        // Find all active assignments containing this course
+        const assignments = await CourseAssignment.find({
+            isActive: true,
+            'courses.courseCode': courseCode
+        })
+            .populate('courses.faculty.facultyId', 'name department email')
+            .populate('classAdvisors.facultyId', 'name department');
+
+        const aggregatedSlots = [];
+        let courseName = 'Unknown Course';
+        let courseType = 'Core';
+        let credits = 3;
+
+        for (const assignment of assignments) {
+            const { department, section, program, semester, academicYear, timetableSlots, courses } = assignment;
+
+            // Extract basic info about the course from the first assignment we check
+            const matchedCourse = courses.find(c => c.courseCode === courseCode);
+            if (matchedCourse && courseName === 'Unknown Course') {
+                courseName = matchedCourse.courseName;
+                courseType = matchedCourse.courseType || 'Core';
+                credits = matchedCourse.credits || 3;
+            }
+
+            // Grab the faculty names specifically for this course in this section
+            const facultyNames = matchedCourse?.faculty 
+                ? matchedCourse.faculty.map(f => f.facultyId?.name).filter(Boolean)
+                : [];
+
+            // Grab slots
+            for (const slot of timetableSlots) {
+                if (slot.courseCode === courseCode) {
+                    aggregatedSlots.push({
+                        day: slot.day,
+                        slotNumber: slot.slotNumber,
+                        venue: slot.venue,
+                        sessionType: slot.sessionType,
+                        section,
+                        department,
+                        program,
+                        semester,
+                        academicYear,
+                        spanSlots: slot.spanSlots,
+                        isSpanContinuation: slot.isSpanContinuation,
+                        facultyNames
+                    });
+                }
+            }
+        }
+
+        res.status(200).json({
+            success: true,
+            courseCode,
+            courseName,
+            courseType,
+            credits,
+            slots: aggregatedSlots
+        });
+    } catch (error) {
+        console.error('getCourseTimetable error:', error);
+        res.status(500).json({ 
+            success: false,
+            message: 'Error fetching course timetable', 
+            error: error.message 
+        });
+    }
+};

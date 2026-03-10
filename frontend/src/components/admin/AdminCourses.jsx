@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
-import { Pencil, Trash2 } from 'lucide-react';
+import { Pencil, Trash2, Calendar } from 'lucide-react';
 import { getAllCourses, addCourse, updateCourse, deleteCourse } from '../../services/courseService';
+import CourseDetailsModal from './CourseDetailsModal';
 
 const AdminCourses = () => {
   const [courses, setCourses] = useState([]);
@@ -9,6 +10,7 @@ const AdminCourses = () => {
   const [error, setError] = useState(null);
   const [editingCourse, setEditingCourse] = useState(null);
   const [showAdvanced, setShowAdvanced] = useState(false);
+  const [selectedCourseForSchedule, setSelectedCourseForSchedule] = useState(null);
 
   // Form state
   const [formData, setFormData] = useState({
@@ -544,6 +546,15 @@ const AdminCourses = () => {
                     <td>{course.labHours}</td>
                     <td>
                       <button 
+                        className="icon-btn" 
+                        title="View Schedule"
+                        style={{ color: '#8b5cf6', marginRight: '0.5rem' }}
+                        onClick={() => setSelectedCourseForSchedule(course)}
+                        disabled={loading}
+                      >
+                        <Calendar size={24} />
+                      </button>
+                      <button 
                         className="icon-btn edit-btn" 
                         title="Edit"
                         onClick={() => handleEdit(course)}
@@ -566,6 +577,15 @@ const AdminCourses = () => {
             </table>
           )}
         </div>
+      )}
+
+      {/* Course Schedule Modal */}
+      {selectedCourseForSchedule && (
+        <CourseDetailsModal
+          isOpen={!!selectedCourseForSchedule}
+          onClose={() => setSelectedCourseForSchedule(null)}
+          course={selectedCourseForSchedule}
+        />
       )}
     </div>
   );
