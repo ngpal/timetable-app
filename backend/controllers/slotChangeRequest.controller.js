@@ -1,5 +1,7 @@
 import SlotChangeRequest from '../models/slotChangeRequest.js';
 import CourseAssignment from '../models/courseAssignment.js';
+import Notification from '../models/notification.js';
+import User from '../models/user.js';
 import { validateSlotChangeConstraints } from '../services/constraintValidator.js';
 import { errorHandler } from '../utils/error.js';
 
@@ -8,6 +10,10 @@ import { errorHandler } from '../utils/error.js';
  */
 export const createRequest = async (req, res, next) => {
     try {
+        if (req.user.role === 'Student' && !req.user.isCR) {
+            return next(errorHandler(403, 'Only Class Representatives or Faculty can request slot changes'));
+        }
+
         const {
             courseAssignmentId,
             courseCode,
@@ -157,6 +163,19 @@ export const approveOrRejectRequest = async (req, res, next) => {
         request.status = 'Approved';
         request.adminNote = adminNote;
         await request.save();
+
+        // Notify students of the section
+        try {
+            await Notification.create({
+                department: assignment.department,
+                section: assignment.section,
+                type: 'Reschedule',
+                message: `Timetable Update: ${request.courseName} (${request.courseCode}) moved from ${request.currentDay} Slot ${request.currentSlotNumber} to ${request.requestedDay} Slot ${request.requestedSlotNumber}.`
+            });
+        } catch (notifError) {
+            console.error('Failed to create notification:', notifError);
+            // Non-blocking
+        }
 
         res.status(200).json({
             message: 'Request approved and timetable updated surgically',

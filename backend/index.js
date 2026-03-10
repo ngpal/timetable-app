@@ -16,6 +16,7 @@ import CourseAssignmentRoute from './routes/courseAssignment.route.js';
 import SlotChangeRequestRoute from './routes/slotChangeRequest.route.js';
 import GeneratorRoute from './routes/generator.route.js';
 import RequestRoute from './routes/request.route.js';
+import StudentRoute from './routes/student.route.js';
 
 const PORT = process.env.PORT;
 
@@ -43,6 +44,7 @@ app.use("/api/course-assignments", CourseAssignmentRoute);
 app.use('/api/slot-change-requests', SlotChangeRequestRoute);
 app.use('/api/generator', GeneratorRoute);
 app.use('/api/requests', RequestRoute);
+app.use('/api/student', StudentRoute);
 
 app.use((err, req, res, next) => {
     const statusCode = err.statusCode || 500;

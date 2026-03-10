@@ -13,7 +13,11 @@ import mongoose from "mongoose";
         type: String, 
         enum: ['Admin', 'Student', 'Faculty'], 
         default: 'Student' 
-      }
+      },
+    isCR: {
+        type: Boolean,
+        default: false
+    }
  },{timestamps:true});
 
  const User = mongoose.model('User',userSchema,'users');

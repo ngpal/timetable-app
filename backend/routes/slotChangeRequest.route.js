@@ -1,6 +1,6 @@
 import express from 'express';
 import { createRequest, getAllRequests, approveOrRejectRequest } from '../controllers/slotChangeRequest.controller.js';
-import { verifyAdmin } from '../utils/verifyUser.js';
+import { verifyAdmin, verifyUser } from '../utils/verifyUser.js';
 
 const router = express.Router();
 
@@ -13,7 +13,7 @@ const router = express.Router();
  *     security:
  *       - bearerAuth: []
  */
-router.post('/', verifyAdmin, createRequest); // Using verifyAdmin for now as per system policy
+router.post('/', verifyUser, createRequest); // Allowed for Faculty and CRs (checked in controller)
 
 /**
  * @swagger
