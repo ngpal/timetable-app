@@ -1,5 +1,5 @@
 import express from 'express';
-import { getStudentTimetable, getStudentNotifications } from '../controllers/student.controller.js';
+import { getStudentTimetable, getStudentNotifications, getStudentDashboardStats } from '../controllers/student.controller.js';
 import { verifyUser } from '../utils/verifyUser.js';
 
 const router = express.Router();
@@ -25,5 +25,16 @@ router.get('/timetable', verifyUser, getStudentTimetable);
  *       - cookieAuth: []
  */
 router.get('/notifications', verifyUser, getStudentNotifications);
+
+/**
+ * @swagger
+ * /api/student/dashboard-stats:
+ *   get:
+ *     summary: Get aggregated dashboard stats for the student
+ *     tags: [Student]
+ *     security:
+ *       - cookieAuth: []
+ */
+router.get('/dashboard-stats', verifyUser, getStudentDashboardStats);
 
 export default router;
