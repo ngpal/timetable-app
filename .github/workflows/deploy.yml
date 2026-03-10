@@ -1,0 +1,35 @@
+name: Deploy Backend to AWS Elastic Beanstalk
+
+on:
+  push:
+    branches: ["master"]
+    paths:
+      - "Backend/**"
+
+jobs:
+  deploy:
+    name: Deploy to Elastic Beanstalk
+    runs-on: ubuntu-latest
+    # Only deploy after CI passes
+    needs: []
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Generate deployment package
+        run: |
+          cd Backend
+          zip -r ../backend-deploy.zip . -x "node_modules/*" "__tests__/*" "*.test.js" ".env"
+
+      - name: Deploy to Elastic Beanstalk
+        uses: einaregilsson/beanstalk-deploy@v22
+        with:
+          aws_access_key: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws_secret_key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          application_name: ${{ secrets.EB_APPLICATION_NAME }}
+          environment_name: ${{ secrets.EB_ENVIRONMENT_NAME }}
+          region: ${{ secrets.AWS_REGION }}
+          version_label: "backend-${{ github.sha }}-${{ github.run_number }}"
+          deployment_package: backend-deploy.zip
+          wait_for_environment_recovery: 120
