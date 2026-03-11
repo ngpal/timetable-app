@@ -33,13 +33,9 @@ jobs:
         working-directory: backend
         run: npx eslint . || echo "Lint warnings found"
 
-      - name: Run backend unit tests
+      - name: Run backend tests
         working-directory: backend
-        run: npm test -- --testPathPattern="__tests__/(controllers|models|services|utils|routes)" --verbose
-
-      - name: Run backend integration tests
-        working-directory: backend
-        run: npm test -- --testPathPattern="__tests__/integration" --verbose
+        run: npm test -- --verbose
 
   # ─────────────────────────────────────────────
   # Frontend CI — lint, unit tests, build

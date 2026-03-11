@@ -2,8 +2,8 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { getDashboardStats } from '../../services/dashboardService';
 import {
-  PieChart, Pie, BarChart, Bar, Cell, Tooltip, Legend, ResponsiveContainer,
-  XAxis, YAxis, CartesianGrid, RadialBarChart, RadialBar, AreaChart, Area
+  PieChart, Pie, BarChart, Bar, Cell, Tooltip, ResponsiveContainer,
+  XAxis, YAxis, CartesianGrid
 } from 'recharts';
 import {
   Users, BookOpen, Building2, CalendarCheck, Clock, AlertCircle,
@@ -158,11 +158,6 @@ const AdminHome = () => {
     1,
     ...days.flatMap(d => Array.from({ length: 9 }, (_, i) => data.slotHeatmap?.[d]?.[i + 1] || 0))
   );
-
-  // Prepare radial data for faculty type
-  const facultyTypeRadial = (data.facultyByType || []).map((d, i) => ({
-    ...d, fill: COLORS[i % COLORS.length]
-  }));
 
   // Prepare area chart data for requests (by status)
   const requestStatusMap = {};
