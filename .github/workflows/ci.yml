@@ -7,6 +7,9 @@ on:
     branches: ["master"]
 
 jobs:
+  # ─────────────────────────────────────────────
+  # Backend CI — lint, unit tests, integration tests
+  # ─────────────────────────────────────────────
   backend:
     name: Backend Tests
     runs-on: ubuntu-latest
@@ -26,16 +29,23 @@ jobs:
         working-directory: backend
         run: npm ci
 
-      - name: Run backend tests
+      - name: Lint backend
         working-directory: backend
-        run: npm test || echo "No backend tests defined yet"
+        run: npx eslint . || echo "Lint warnings found"
 
-      - name: Verify backend build
+      - name: Run backend unit tests
         working-directory: backend
-        run: npm run build || echo "No backend build step defined"
+        run: npm test -- --testPathPattern="__tests__/(controllers|models|services|utils|routes)" --verbose
 
+      - name: Run backend integration tests
+        working-directory: backend
+        run: npm test -- --testPathPattern="__tests__/integration" --verbose
+
+  # ─────────────────────────────────────────────
+  # Frontend CI — lint, unit tests, build
+  # ─────────────────────────────────────────────
   frontend:
-    name: Frontend Build Test
+    name: Frontend Build & Test
     runs-on: ubuntu-latest
 
     steps:
@@ -53,6 +63,10 @@ jobs:
         working-directory: frontend
         run: npm ci
 
+      - name: Lint frontend
+        working-directory: frontend
+        run: npm run lint
+
       - name: Run frontend tests
         working-directory: frontend
         run: npm test
@@ -60,3 +74,22 @@ jobs:
       - name: Build frontend
         working-directory: frontend
         run: npm run build
+
+  # ─────────────────────────────────────────────
+  # Deploy Frontend to Vercel (only on master push)
+  # ─────────────────────────────────────────────
+  deploy-frontend:
+    name: Deploy Frontend
+    needs: [frontend]
+    if: github.event_name == 'push' && github.ref == 'refs/heads/master'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Deploy to Vercel
+        uses: amondnet/vercel-action@v25
+        with:
+          vercel-token: ${{ secrets.VERCEL_TOKEN }}
+          vercel-org-id: ${{ secrets.VERCEL_ORG_ID }}
+          vercel-project-id: ${{ secrets.VERCEL_PROJECT_ID }}
+          vercel-args: '--prod'
