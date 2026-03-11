@@ -1,8 +1,6 @@
 import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
 
 const FacultySlotEnquiry = () => {
-    const navigate = useNavigate();
     const [formData, setFormData] = useState({
         day: 'Monday',
         timeSlot: '8am - 9am',

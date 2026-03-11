@@ -2,14 +2,14 @@
 
 services:
   backend:
-    build: ./backend
+    build: ./Backend
     ports:
       - "3000:3000"
     volumes:
-      - ./backend:/app
+      - ./Backend:/app
       - /app/node_modules
     env_file:
-      - ./backend/.env
+      - ./Backend/.env
     environment:
       - CHOKIDAR_USEPOLLING=true # Helps nodemon detect changes in some Docker environments
 

@@ -5,7 +5,6 @@ import AdminCourseAssignment from "../AdminCourseAssignment";
 import {
   getAllCourseAssignments,
   createCourseAssignment,
-  updateCourseAssignment,
   deleteCourseAssignment,
 } from "../../../services/courseAssignmentService";
 

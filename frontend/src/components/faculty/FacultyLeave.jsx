@@ -60,7 +60,7 @@ const FacultyLeave = () => {
             
             // Refresh requests list
             fetchMyRequests();
-        } catch (error) {
+        } catch (_error) {
             alert('Failed to submit leave request. Please try again.');
         } finally {
             setLoading(false);

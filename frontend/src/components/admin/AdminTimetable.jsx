@@ -136,7 +136,7 @@ const AdminTimetable = () => {
     }
   };
 
-  const handleResetConstraints = async () => {
+  const _handleResetConstraints = async () => {
     if (!window.confirm('Reset constraints to default?')) return;
     try {
       setLoading(true);

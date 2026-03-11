@@ -6,30 +6,20 @@ import './student.css';
 const StudentDashboard = () => {
     const navigate = useNavigate();
     const location = useLocation();
-    const [userRole, setUserRole] = useState('student');
-    const [userName, setUserName] = useState('Student');
     const [theme, setTheme] = useState(localStorage.getItem('theme') || 'light');
 
-    useEffect(() => {
-        const email = localStorage.getItem('lastLoginEmail');
-        if (email) {
-            const users = JSON.parse(localStorage.getItem('users') || '[]');
-            const user = users.find(u => u.email === email);
-            if (user) {
-                setUserRole(user.role);
-                setUserName(user.fullName);
-            }
-        }
-    }, []);
+    // Compute user info from localStorage (no need for state + effect)
+    const email = localStorage.getItem('lastLoginEmail');
+    const users = JSON.parse(localStorage.getItem('users') || '[]');
+    const currentUser = email ? users.find(u => u.email === email) : null;
+    const userRole = currentUser?.role || 'student';
+    const userName = currentUser?.fullName || 'Student';
 
     useEffect(() => {
         document.documentElement.setAttribute('data-theme', theme);
         localStorage.setItem('theme', theme);
     }, [theme]);
 
-    const toggleTheme = () => {
-        setTheme(prev => prev === 'light' ? 'dark' : 'light');
-    };
 
     const lastLoginTime = localStorage.getItem('lastLoginTime');
 

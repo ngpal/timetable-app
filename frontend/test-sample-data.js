@@ -26,7 +26,7 @@ async function generateSampleData() {
 
 // Run the function
 generateSampleData()
-    .then(data => {
+    .then(() => {
         console.log(' Sample timetable created!');
         console.log('Navigate to /admin/amrita-timetable to view it');
     })

@@ -6,7 +6,6 @@ import { exportToPDF } from '../../utils/pdfExport';
 import '../admin/AmritaTimetable.css';
 
 const StudentTimetable = () => {
-    const [currentTime, setCurrentTime] = useState(new Date());
     const [timetableData, setTimetableData] = useState(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
@@ -73,7 +72,7 @@ const StudentTimetable = () => {
         );
     }
 
-    const { department, semester, program, section, timetableSlots, courses, classAdvisors } = timetableData;
+    const { department: _department, semester: _semester, program: _program, section: _section, timetableSlots, courses: _courses, classAdvisors: _classAdvisors } = timetableData;
 
     const getSlotData = (day, slotNumber) => {
         return timetableSlots.find(

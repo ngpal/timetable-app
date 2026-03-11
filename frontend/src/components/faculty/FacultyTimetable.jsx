@@ -5,7 +5,6 @@ import { exportToPDF } from '../../utils/pdfExport';
 import '../admin/AmritaTimetable.css';
 
 const FacultyTimetable = () => {
-    const [currentTime, setCurrentTime] = useState(new Date());
     const [loading, setLoading] = useState(true);
     const [timetableData, setTimetableData] = useState(null);
     const [facultyDetails, setFacultyDetails] = useState(null);

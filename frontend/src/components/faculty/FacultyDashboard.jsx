@@ -9,6 +9,19 @@ const FacultyDashboard = () => {
     const [userName, setUserName] = useState('Faculty');
     const [pendingCount, setPendingCount] = useState(0);
 
+    const fetchPendingRequests = async () => {
+        try {
+            const res = await fetch('/api/requests/all');
+            const data = await res.json();
+            if (data.success) {
+                const pending = data.requests.filter(r => r.status === 'Pending').length;
+                setPendingCount(pending);
+            }
+        } catch (error) {
+            console.error("Error fetching pending requests:", error);
+        }
+    };
+
     useEffect(() => {
         const email = localStorage.getItem('lastLoginEmail');
         if (email) {
@@ -27,18 +40,6 @@ const FacultyDashboard = () => {
         return () => clearInterval(interval);
     }, []);
 
-    const fetchPendingRequests = async () => {
-        try {
-            const res = await fetch('/api/requests/all');
-            const data = await res.json();
-            if (data.success) {
-                const pending = data.requests.filter(r => r.status === 'Pending').length;
-                setPendingCount(pending);
-            }
-        } catch (error) {
-            console.error("Error fetching pending requests:", error);
-        }
-    };
 
     const handleLogout = () => {
         navigate('/');

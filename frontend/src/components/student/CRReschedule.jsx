@@ -4,7 +4,7 @@ import { Loader2, AlertCircle } from 'lucide-react';
 import { timetableService } from '../../services/timetableService';
 
 const CRReschedule = () => {
-    const { userName } = useOutletContext();
+    const { userName: _userName } = useOutletContext();
     const [timetableData, setTimetableData] = useState(null);
     const [loading, setLoading] = useState(true);
     const [submitting, setSubmitting] = useState(false);

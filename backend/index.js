@@ -21,25 +21,14 @@ import StudentRoute from './routes/student.route.js';
 const PORT = process.env.PORT;
 
 const app = express();
-
 app.use(express.json());
 app.use(cookieParser());
-const allowedOrigins = [
-    'http://localhost:5173',
-    process.env.FRONTEND_URL || 'https://timetable-app-taupe.vercel.app'
-];
-
-app.use(cors({
-    origin: function (origin, callback) {
-        // Allow requests with no origin (like mobile apps or curl)
-        if (!origin) return callback(null, true);
-        if (allowedOrigins.includes(origin)) {
-            return callback(null, true);
-        }
-        return callback(new Error('Not allowed by CORS'));
-    },
-    credentials: true
-}));
+app.use(cors(
+    {
+        origin: 'http://localhost:5173',
+        credentials: true
+    }
+));
 
 // Health check endpoint (used by Elastic Beanstalk for instance monitoring)
 app.get('/health', (req, res) => {

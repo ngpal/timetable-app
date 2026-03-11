@@ -9,7 +9,6 @@ const AdminRooms = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const [editingRoom, setEditingRoom] = useState(null);
-  const [selectedFacilities, setSelectedFacilities] = useState([]);
   const [selectedRoomForSchedule, setSelectedRoomForSchedule] = useState(null);
 
   // Form state
