@@ -1,7 +1,8 @@
-import React, { useState, useEffect } from 'react';
-import { Download } from 'lucide-react';
+import React, { useState, useEffect, useRef } from 'react';
+import { Download, FileText } from 'lucide-react';
 import { getCourseAssignment } from '../../services/courseAssignmentService';
 import { exportToICS } from '../../utils/icsExport';
+import { exportToPDF } from '../../utils/pdfExport';
 import './AmritaTimetable.css';
 
 const AmritaTimetable = ({ previewData = null }) => {
@@ -14,6 +15,7 @@ const AmritaTimetable = ({ previewData = null }) => {
   
   const [timetableData, setTimetableData] = useState(null);
   const [loading, setLoading] = useState(false);
+  const timetableRef = useRef(null);
 
   // If previewData is provided, use it directly (Preview Mode)
   useEffect(() => {
@@ -132,7 +134,7 @@ const AmritaTimetable = ({ previewData = null }) => {
   };
 
   return (
-    <div className="amrita-timetable-container">
+    <div className="amrita-timetable-container" ref={timetableRef}>
       {/* Control Panel - Hide in Preview Mode to avoid confusion */}
       {!previewData && (
       <div style={{
@@ -205,6 +207,7 @@ const AmritaTimetable = ({ previewData = null }) => {
           Load Timetable
         </button>
         {timetableData && (
+          <>
           <button
             onClick={() => exportToICS(timetableData, `amrita-timetable-${config.department}-${config.section}.ics`)}
             style={{
@@ -221,6 +224,23 @@ const AmritaTimetable = ({ previewData = null }) => {
             <Download size={16} />
             Export ICS
           </button>
+          <button
+            onClick={() => exportToPDF(timetableRef.current, `timetable-${config.department}-${config.section}`)}
+            style={{
+              display: 'flex', alignItems: 'center', gap: '0.5rem',
+              padding: '0.5rem 1rem',
+              backgroundColor: '#e53e3e',
+              color: 'white',
+              border: 'none',
+              borderRadius: '4px',
+              cursor: 'pointer',
+              fontWeight: 'bold'
+            }}
+          >
+            <FileText size={16} />
+            Download PDF
+          </button>
+          </>
         )}
       </div>
       )}

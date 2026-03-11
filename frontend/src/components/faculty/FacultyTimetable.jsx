@@ -1,6 +1,7 @@
-import React, { useState, useEffect } from 'react';
-import { Download, Loader2, AlertCircle } from 'lucide-react';
+import React, { useState, useEffect, useRef } from 'react';
+import { Download, FileText, Loader2, AlertCircle } from 'lucide-react';
 import { exportToICS } from '../../utils/icsExport';
+import { exportToPDF } from '../../utils/pdfExport';
 import '../admin/AmritaTimetable.css';
 
 const FacultyTimetable = () => {
@@ -9,6 +10,7 @@ const FacultyTimetable = () => {
     const [timetableData, setTimetableData] = useState(null);
     const [facultyDetails, setFacultyDetails] = useState(null);
     const [error, setError] = useState(null);
+    const timetableRef = useRef(null);
 
     useEffect(() => {
         const timer = setInterval(() => setCurrentTime(new Date()), 60000);
@@ -177,7 +179,7 @@ const FacultyTimetable = () => {
     }
 
     return (
-        <div className="dashboard-fade-in amrita-timetable-container" style={{ width: '100%', paddingBottom: '2rem' }}>
+        <div className="dashboard-fade-in amrita-timetable-container" style={{ width: '100%', paddingBottom: '2rem' }} ref={timetableRef}>
             <div className="page-header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: '1rem', marginBottom: '1.5rem' }}>
                 <div>
                     <h2 style={{ fontSize: '1.8rem', fontWeight: 700, color: 'var(--text-main)', margin: 0 }}>My Timetable</h2>
@@ -190,6 +192,13 @@ const FacultyTimetable = () => {
                     >
                         <Download size={16} />
                         Export ICS
+                    </button>
+                    <button
+                        onClick={() => exportToPDF(timetableRef.current, `faculty-timetable-${facultyDetails?.name || 'export'}`)}
+                        style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', backgroundColor: '#e53e3e', color: 'white', border: 'none', padding: '0.5rem 1rem', borderRadius: 'var(--radius-md)', cursor: 'pointer', fontWeight: 500, transition: 'var(--transition)', boxShadow: 'var(--shadow-sm)' }}
+                    >
+                        <FileText size={16} />
+                        Download PDF
                     </button>
                 </div>
             </div>

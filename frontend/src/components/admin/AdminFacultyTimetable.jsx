@@ -1,8 +1,9 @@
-import React, { useState, useEffect } from 'react';
-import { Download } from 'lucide-react';
+import React, { useState, useEffect, useRef } from 'react';
+import { Download, FileText } from 'lucide-react';
 import { getAllFaculty } from '../../services/facultyService';
 import { getFacultyTimetable } from '../../services/courseAssignmentService';
 import { exportToICS } from '../../utils/icsExport';
+import { exportToPDF } from '../../utils/pdfExport';
 import './AmritaTimetable.css';
 
 const slots = [
@@ -42,6 +43,7 @@ const AdminFacultyTimetable = () => {
     const [timetableData, setTimetableData] = useState(null);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState(null);
+    const timetableRef = useRef(null);
 
     // Load all faculty on mount
     useEffect(() => {
@@ -124,7 +126,7 @@ const AdminFacultyTimetable = () => {
     const selectedFaculty = allFaculty.find(f => f._id === selectedFacultyId);
 
     return (
-        <div className="amrita-timetable-container">
+        <div className="amrita-timetable-container" ref={timetableRef}>
 
             {/* Filter Bar — same style as class timetable */}
             <div style={{
@@ -190,8 +192,9 @@ const AdminFacultyTimetable = () => {
                 >
                     {loading ? 'Loading...' : 'Load Timetable'}
                 </button>
-                {/* Export Button */}
+                {/* Export Buttons */}
                 {timetableData && (
+                    <>
                     <button
                         onClick={() => exportToICS(timetableData, `faculty-${selectedFaculty?.name || 'timetable'}.ics`)}
                         style={{
@@ -209,6 +212,24 @@ const AdminFacultyTimetable = () => {
                         <Download size={16} />
                         Export ICS
                     </button>
+                    <button
+                        onClick={() => exportToPDF(timetableRef.current, `faculty-timetable-${selectedFaculty?.name || 'export'}`)}
+                        style={{
+                            display: 'flex', alignItems: 'center', gap: '0.5rem',
+                            padding: '0.5rem 1.2rem',
+                            backgroundColor: '#e53e3e',
+                            color: 'white',
+                            border: 'none',
+                            borderRadius: '4px',
+                            cursor: 'pointer',
+                            fontWeight: 'bold',
+                            whiteSpace: 'nowrap'
+                        }}
+                    >
+                        <FileText size={16} />
+                        Download PDF
+                    </button>
+                    </>
                 )}
             </div>
 

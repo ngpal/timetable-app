@@ -1,8 +1,9 @@
-import React, { useState, useEffect } from 'react';
-import { Download } from 'lucide-react';
+import React, { useState, useEffect, useRef } from 'react';
+import { Download, FileText } from 'lucide-react';
 import { getAllFaculty } from '../../services/facultyService';
 import { getFacultyTimetable } from '../../services/courseAssignmentService';
 import { exportToICS } from '../../utils/icsExport';
+import { exportToPDF } from '../../utils/pdfExport';
 import './AmritaTimetable.css';
 
 const slots = [
@@ -34,6 +35,7 @@ const getSlotColor = (sessionType) => {
 
 // Single faculty timetable grid
 const FacultyGrid = ({ faculty, data }) => {
+    const gridRef = useRef(null);
     const getSlotData = (day, slotNumber) => {
         if (!data?.slots) return null;
         return data.slots.find(
@@ -44,7 +46,7 @@ const FacultyGrid = ({ faculty, data }) => {
     const hasAnySlot = data?.slots?.length > 0;
 
     return (
-        <div style={{ marginBottom: '3rem', pageBreakInside: 'avoid' }}>
+        <div style={{ marginBottom: '3rem', pageBreakInside: 'avoid' }} ref={gridRef}>
             {/* Faculty header banner */}
             <div className="timetable-header" style={{ borderRadius: '8px 8px 0 0', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                 <h2 style={{ fontSize: '1.3rem', margin: 0 }}>
@@ -53,12 +55,20 @@ const FacultyGrid = ({ faculty, data }) => {
                     {faculty.designation ? ` (${faculty.designation})` : ''}
                 </h2>
                 {hasAnySlot && (
+                    <div style={{ display: 'flex', gap: '0.5rem' }}>
                     <button
                         onClick={() => exportToICS(data, `faculty-${faculty.name.replace(/\s+/g, '-')}.ics`)}
                         style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', backgroundColor: 'rgba(255,255,255,0.2)', color: 'white', border: '1px solid rgba(255,255,255,0.4)', padding: '0.4rem 0.8rem', borderRadius: '4px', cursor: 'pointer', fontSize: '0.85rem' }}
                     >
                         <Download size={14} /> Export ICS
                     </button>
+                    <button
+                        onClick={() => exportToPDF(gridRef.current, `faculty-${faculty.name.replace(/\s+/g, '-')}`)}
+                        style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', backgroundColor: 'rgba(229,62,62,0.8)', color: 'white', border: '1px solid rgba(255,255,255,0.4)', padding: '0.4rem 0.8rem', borderRadius: '4px', cursor: 'pointer', fontSize: '0.85rem' }}
+                    >
+                        <FileText size={14} /> PDF
+                    </button>
+                    </div>
                 )}
             </div>
 
