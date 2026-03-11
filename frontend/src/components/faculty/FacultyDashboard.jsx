@@ -28,6 +28,7 @@ const FacultyDashboard = () => {
 
     useEffect(() => {
         // Initial fetch
+        // eslint-disable-next-line react-hooks/set-state-in-effect
         fetchPendingRequests();
 
         // Poll every 30 seconds

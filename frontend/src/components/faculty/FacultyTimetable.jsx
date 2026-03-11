@@ -9,7 +9,7 @@ const FacultyTimetable = () => {
     const [timetableData, setTimetableData] = useState(null);
     const [facultyDetails, setFacultyDetails] = useState(null);
     const [error, setError] = useState(null);
-    const [currentTime, setCurrentTime] = useState(new Date());
+    const [, setCurrentTime] = useState(new Date());
     const timetableRef = useRef(null);
 
     useEffect(() => {

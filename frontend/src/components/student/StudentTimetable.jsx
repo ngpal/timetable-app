@@ -9,7 +9,7 @@ const StudentTimetable = () => {
     const [timetableData, setTimetableData] = useState(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
-    const [currentTime, setCurrentTime] = useState(new Date());
+    const [, setCurrentTime] = useState(new Date());
     const timetableRef = useRef(null);
 
     useEffect(() => {
