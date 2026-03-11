@@ -3,10 +3,8 @@ import jsPDF from 'jspdf';
 
 /**
  * Export a DOM element as a landscape A4 PDF with crisp, solid colors.
- * 
- * @param {HTMLElement} element - The DOM element to capture
- * @param {string} filename - Output filename (without .pdf extension is fine)
- * @returns {Promise<void>}
+ * Clones the element into an isolated offscreen container to avoid
+ * inherited transparency, opacity, and CSS variable issues.
  */
 export const exportToPDF = async (element, filename = 'timetable') => {
     if (!element) {
@@ -14,54 +12,98 @@ export const exportToPDF = async (element, filename = 'timetable') => {
         return;
     }
 
-    // Save original styles we'll modify
-    const originalOverflow = element.style.overflow;
-    const originalWidth = element.style.width;
-    const originalBg = element.style.backgroundColor;
+    // Create an offscreen container with guaranteed solid white background
+    const offscreen = document.createElement('div');
+    offscreen.style.cssText = `
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: ${element.scrollWidth + 40}px;
+        background: #ffffff;
+        z-index: -9999;
+        opacity: 1;
+        pointer-events: none;
+        padding: 20px;
+    `;
+    document.body.appendChild(offscreen);
 
-    // Force solid white background and full visibility
-    element.style.overflow = 'visible';
-    element.style.width = 'max-content';
-    element.style.backgroundColor = '#ffffff';
+    // Deep clone the element
+    const clone = element.cloneNode(true);
+    clone.style.overflow = 'visible';
+    clone.style.width = 'max-content';
+    clone.style.backgroundColor = '#ffffff';
+    clone.style.opacity = '1';
+    clone.style.transform = 'none';
+    clone.style.filter = 'none';
+    offscreen.appendChild(clone);
 
-    // Force all child elements to full opacity and solid backgrounds
-    const allChildren = element.querySelectorAll('*');
-    const savedStyles = [];
-    allChildren.forEach((child, i) => {
-        const computed = window.getComputedStyle(child);
-        savedStyles[i] = {
-            opacity: child.style.opacity,
-            backgroundColor: child.style.backgroundColor
-        };
+    // Force all elements in clone to solid colors
+    const allElements = clone.querySelectorAll('*');
+    allElements.forEach(el => {
+        const computed = window.getComputedStyle(el);
+        
         // Force full opacity
-        if (parseFloat(computed.opacity) < 1) {
-            child.style.opacity = '1';
-        }
-        // Convert any rgba backgrounds with alpha to solid rgb
+        el.style.opacity = '1';
+        el.style.filter = 'none';
+        
+        // Convert rgba backgrounds to solid rgb (blend with white)
         const bg = computed.backgroundColor;
-        if (bg && bg.startsWith('rgba')) {
-            const match = bg.match(/rgba?\((\d+),\s*(\d+),\s*(\d+),?\s*([\d.]+)?\)/);
-            if (match && match[4] && parseFloat(match[4]) < 1) {
-                // Blend with white background
-                const alpha = parseFloat(match[4]);
-                const r = Math.round(parseInt(match[1]) * alpha + 255 * (1 - alpha));
-                const g = Math.round(parseInt(match[2]) * alpha + 255 * (1 - alpha));
-                const b = Math.round(parseInt(match[3]) * alpha + 255 * (1 - alpha));
-                child.style.backgroundColor = `rgb(${r}, ${g}, ${b})`;
+        if (bg && bg.includes('rgba')) {
+            const match = bg.match(/rgba?\(\s*(\d+)\s*,\s*(\d+)\s*,\s*(\d+)\s*,\s*([\d.]+)\s*\)/);
+            if (match) {
+                const a = parseFloat(match[4]);
+                if (a < 1) {
+                    const r = Math.round(parseInt(match[1]) * a + 255 * (1 - a));
+                    const g = Math.round(parseInt(match[2]) * a + 255 * (1 - a));
+                    const b = Math.round(parseInt(match[3]) * a + 255 * (1 - a));
+                    el.style.backgroundColor = `rgb(${r}, ${g}, ${b})`;
+                }
+            }
+        }
+
+        // Convert rgba text colors to solid
+        const color = computed.color;
+        if (color && color.includes('rgba')) {
+            const match = color.match(/rgba?\(\s*(\d+)\s*,\s*(\d+)\s*,\s*(\d+)\s*,\s*([\d.]+)\s*\)/);
+            if (match) {
+                const a = parseFloat(match[4]);
+                if (a < 1) {
+                    const r = Math.round(parseInt(match[1]) * a + 255 * (1 - a));
+                    const g = Math.round(parseInt(match[2]) * a + 255 * (1 - a));
+                    const b = Math.round(parseInt(match[3]) * a + 255 * (1 - a));
+                    el.style.color = `rgb(${r}, ${g}, ${b})`;
+                }
+            }
+        }
+
+        // Convert rgba border colors to solid
+        const borderColor = computed.borderColor;
+        if (borderColor && borderColor.includes('rgba')) {
+            const match = borderColor.match(/rgba?\(\s*(\d+)\s*,\s*(\d+)\s*,\s*(\d+)\s*,\s*([\d.]+)\s*\)/);
+            if (match) {
+                const a = parseFloat(match[4]);
+                if (a < 1) {
+                    const r = Math.round(parseInt(match[1]) * a + 255 * (1 - a));
+                    const g = Math.round(parseInt(match[2]) * a + 255 * (1 - a));
+                    const b = Math.round(parseInt(match[3]) * a + 255 * (1 - a));
+                    el.style.borderColor = `rgb(${r}, ${g}, ${b})`;
+                }
             }
         }
     });
 
+    // Remove buttons from clone so they don't appear in the PDF
+    clone.querySelectorAll('button').forEach(btn => btn.remove());
+
     try {
-        const canvas = await html2canvas(element, {
+        const canvas = await html2canvas(clone, {
             scale: 3,
             useCORS: true,
             logging: false,
             backgroundColor: '#ffffff',
-            windowWidth: element.scrollWidth,
-            windowHeight: element.scrollHeight,
-            imageTimeout: 0,
-            removeContainer: true
+            windowWidth: clone.scrollWidth + 40,
+            windowHeight: clone.scrollHeight + 40,
+            imageTimeout: 0
         });
 
         const imgData = canvas.toDataURL('image/png', 1.0);
@@ -81,12 +123,12 @@ export const exportToPDF = async (element, filename = 'timetable') => {
         const usableWidth = pageWidth - margin * 2;
         const usableHeight = pageHeight - margin * 2;
 
-        // Scale to fit width, then check if it overflows height
+        // Scale to fit width
         const ratio = usableWidth / imgWidth;
         let finalWidth = usableWidth;
         let finalHeight = imgHeight * ratio;
 
-        // If too tall for one page, scale to fit height instead
+        // If too tall, scale to fit height instead
         if (finalHeight > usableHeight) {
             const heightRatio = usableHeight / imgHeight;
             finalHeight = usableHeight;
@@ -99,22 +141,13 @@ export const exportToPDF = async (element, filename = 'timetable') => {
 
         pdf.addImage(imgData, 'PNG', xOffset, yOffset, finalWidth, finalHeight);
 
-        // Clean filename
         const cleanName = filename.replace(/\.pdf$/i, '');
         pdf.save(`${cleanName}.pdf`);
     } catch (error) {
         console.error('PDF export error:', error);
         alert('Failed to generate PDF. Please try again.');
     } finally {
-        // Restore all original styles
-        element.style.overflow = originalOverflow;
-        element.style.width = originalWidth;
-        element.style.backgroundColor = originalBg;
-        allChildren.forEach((child, i) => {
-            if (savedStyles[i]) {
-                child.style.opacity = savedStyles[i].opacity;
-                child.style.backgroundColor = savedStyles[i].backgroundColor;
-            }
-        });
+        // Clean up the offscreen container
+        document.body.removeChild(offscreen);
     }
 };
