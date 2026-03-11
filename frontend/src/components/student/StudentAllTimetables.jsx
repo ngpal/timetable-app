@@ -1,7 +1,8 @@
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useState, useEffect, useMemo, useRef } from 'react';
 import axios from 'axios';
-import { Search, Loader2, BookOpen, Clock, Calendar, Download } from 'lucide-react';
+import { Search, Loader2, BookOpen, Clock, Calendar, Download, FileText } from 'lucide-react';
 import { exportToICS } from '../../utils/icsExport';
+import { exportToPDF } from '../../utils/pdfExport';
 import '../admin/AmritaTimetable.css';
 
 const StudentAllTimetables = () => {
@@ -13,6 +14,7 @@ const StudentAllTimetables = () => {
     const [isLoading, setIsLoading] = useState(false);
     const [searchQuery, setSearchQuery] = useState('');
     const [debouncedQuery, setDebouncedQuery] = useState('');
+    const timetableRef = useRef(null);
 
     useEffect(() => {
         const timer = setTimeout(() => setDebouncedQuery(searchQuery), 300);
@@ -143,7 +145,7 @@ const StudentAllTimetables = () => {
     }, [timetableData]);
 
     return (
-        <div className="dashboard-fade-in amrita-timetable-container" style={{ width: '100%', paddingBottom: '2rem' }}>
+        <div className="dashboard-fade-in amrita-timetable-container" style={{ width: '100%', paddingBottom: '2rem' }} ref={timetableRef}>
             <div className="page-header" style={{ display: 'flex', flexDirection: 'column', gap: '1rem', marginBottom: '1.5rem' }}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '1rem' }}>
                     <div>
@@ -169,6 +171,14 @@ const StudentAllTimetables = () => {
                         >
                             <Download size={16} />
                             Export ICS
+                        </button>
+                        <button
+                            onClick={() => exportToPDF(timetableRef.current, `timetable-${selectedDepartment}-${selectedSection}`)}
+                            disabled={!timetableData?.timetableSlots?.length}
+                            style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', backgroundColor: '#e53e3e', color: 'white', border: 'none', padding: '0.75rem 1.5rem', borderRadius: 'var(--radius-full)', cursor: !timetableData?.timetableSlots?.length ? 'not-allowed' : 'pointer', fontWeight: 500, transition: 'var(--transition)', boxShadow: 'var(--shadow-sm)', opacity: !timetableData?.timetableSlots?.length ? 0.7 : 1 }}
+                        >
+                            <FileText size={16} />
+                            Download PDF
                         </button>
                     </div>
                 </div>
